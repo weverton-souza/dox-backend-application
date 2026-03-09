@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:dox}
+    username: ${POSTGRES_USER:dox}
+    password: ${POSTGRES_PASSWORD:dox_secret}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        multiTenancy: SCHEMA
+        tenant_identifier_resolver: com.dox.adapter.out.tenant.TenantIdentifierResolver
+        multi_tenant_connection_provider: com.dox.adapter.out.tenant.TenantConnectionProvider
+        generate_statistics: false
+    generate-ddl: false
+    show-sql: true
+    open-in-view: false
+  flyway:
+    enabled: true
+
+dox:
+  security:
+    jwt-signing-key: ${JWT_SECRET:change-me-in-production-this-is-a-long-enough-key-for-hmac-sha256-algorithm}
+    access-token-expiration: 900000
+    refresh-token-expiration: 604800000
+
+spring.ai:
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:}
+    chat:
+      options:
+        model: claude-sonnet-4-20250514
+        max-tokens: 4096
