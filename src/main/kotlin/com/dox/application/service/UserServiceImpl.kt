@@ -16,7 +16,7 @@ class UserServiceImpl(
 
     override fun getMe(userId: UUID): UserInfo {
         val user = userPersistencePort.findById(userId)
-            ?: throw ResourceNotFoundException("Usuário não encontrado")
+            ?: throw ResourceNotFoundException("Usuário", userId.toString())
         return UserInfo(
             id = user.id,
             email = user.email,
@@ -28,7 +28,7 @@ class UserServiceImpl(
     @Transactional
     override fun updateMe(command: UpdateUserCommand): UserInfo {
         val user = userPersistencePort.findById(command.userId)
-            ?: throw ResourceNotFoundException("Usuário não encontrado")
+            ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
 
         val updated = userPersistencePort.save(user.copy(name = command.name))
         return UserInfo(

@@ -35,7 +35,7 @@ class ReportServiceImpl(
 
     override fun findById(id: UUID): Report =
         reportPersistencePort.findById(id)
-            ?: throw ResourceNotFoundException("Relatório não encontrado")
+            ?: throw ResourceNotFoundException("Relatório", id.toString())
 
     override fun findAll(pageable: Pageable): Page<Report> =
         reportPersistencePort.findAll(pageable)
@@ -46,7 +46,7 @@ class ReportServiceImpl(
     @Transactional
     override fun update(command: UpdateReportCommand): Report {
         val existing = reportPersistencePort.findById(command.id)
-            ?: throw ResourceNotFoundException("Relatório não encontrado")
+            ?: throw ResourceNotFoundException("Relatório", command.id.toString())
 
         return reportPersistencePort.save(
             existing.copy(
@@ -68,7 +68,7 @@ class ReportServiceImpl(
     @Transactional
     override fun createVersion(command: CreateVersionCommand): ReportVersion {
         val report = reportPersistencePort.findById(command.reportId)
-            ?: throw ResourceNotFoundException("Relatório não encontrado")
+            ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
 
         if (reportPersistencePort.countVersionsByReportId(command.reportId) >= MAX_VERSIONS) {
             reportPersistencePort.deleteOldestVersion(command.reportId)
@@ -85,4 +85,5 @@ class ReportServiceImpl(
             )
         )
     }
+
 }

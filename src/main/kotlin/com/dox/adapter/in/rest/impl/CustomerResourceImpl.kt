@@ -16,7 +16,6 @@ import com.dox.domain.model.Customer
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -27,8 +26,11 @@ class CustomerResourceImpl(
     private val customerUseCase: CustomerUseCase
 ) : CustomerResource {
 
-    override fun findAll(search: String?, pageable: Pageable): ResponseEntity<Page<CustomerResponse>> =
-        responseEntity(customerUseCase.findAll(search, pageable).map { it.toResponse() })
+    override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<CustomerResponse>> {
+        val search = parameters["search"]?.toString()?.takeIf { it.isNotBlank() }
+        val pageable = retrievePageableParameter(parameters)
+        return responseEntity(customerUseCase.findAll(search, pageable).map { it.toResponse() })
+    }
 
     override fun create(request: CustomerRequest): ResponseEntity<CustomerResponse> =
         responseEntity(customerUseCase.create(CreateCustomerCommand(request.data)).toResponse(), HttpStatus.CREATED)

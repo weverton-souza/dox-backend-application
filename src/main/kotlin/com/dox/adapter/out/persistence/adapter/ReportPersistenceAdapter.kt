@@ -41,7 +41,7 @@ class ReportPersistenceAdapter(
 
     override fun softDelete(id: UUID) {
         val entity = reportJpaRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Relatório não encontrado") }
+            .orElseThrow { ResourceNotFoundException("Relatório", id.toString()) }
         entity.deleted = true
         reportJpaRepository.save(entity)
     }

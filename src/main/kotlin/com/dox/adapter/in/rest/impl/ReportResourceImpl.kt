@@ -12,7 +12,6 @@ import com.dox.application.port.input.UpdateReportCommand
 import com.dox.domain.model.Report
 import com.dox.domain.model.ReportVersion
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -23,8 +22,8 @@ class ReportResourceImpl(
     private val reportUseCase: ReportUseCase
 ) : ReportResource {
 
-    override fun findAll(pageable: Pageable): ResponseEntity<Page<ReportResponse>> =
-        responseEntity(reportUseCase.findAll(pageable).map { it.toResponse() })
+    override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<ReportResponse>> =
+        responseEntity(reportUseCase.findAll(retrievePageableParameter(parameters)).map { it.toResponse() })
 
     override fun create(request: ReportRequest): ResponseEntity<ReportResponse> =
         responseEntity(

@@ -11,7 +11,7 @@ import com.dox.application.port.output.TenantProvisioningPort
 import com.dox.application.port.output.UserPersistencePort
 import com.dox.domain.enum.MemberRole
 import com.dox.domain.enum.TenantType
-import com.dox.domain.exception.BusinessException
+import com.dox.domain.exception.DuplicateResourceException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Organization
 import com.dox.domain.model.OrganizationMember
@@ -30,7 +30,7 @@ class WorkspaceServiceImpl(
 
     override fun listWorkspaces(userId: UUID): List<WorkspaceInfo> {
         val user = userPersistencePort.findById(userId)
-            ?: throw ResourceNotFoundException("Usuário não encontrado")
+            ?: throw ResourceNotFoundException("Usuário", userId.toString())
 
         val workspaces = mutableListOf<WorkspaceInfo>()
 
@@ -113,10 +113,10 @@ class WorkspaceServiceImpl(
     @Transactional
     override fun inviteMember(command: InviteMemberCommand) {
         val user = userPersistencePort.findByEmail(command.email)
-            ?: throw ResourceNotFoundException("Usuário não encontrado com este email")
+            ?: throw ResourceNotFoundException("Usuário")
 
         if (organizationPersistencePort.existsMember(command.organizationId, user.id)) {
-            throw BusinessException("Usuário já é membro desta organização")
+            throw DuplicateResourceException("membro", command.email)
         }
 
         organizationPersistencePort.saveMember(

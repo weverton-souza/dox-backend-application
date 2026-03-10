@@ -2,6 +2,7 @@ package com.dox.config
 
 import com.dox.adapter.`in`.filter.JwtAuthenticationFilter
 import com.dox.adapter.`in`.filter.MultiTenantFilter
+import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -21,6 +22,14 @@ class SecurityConfig(
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+
+    @Bean
+    fun jwtFilterRegistration(filter: JwtAuthenticationFilter): FilterRegistrationBean<JwtAuthenticationFilter> =
+        FilterRegistrationBean(filter).apply { isEnabled = false }
+
+    @Bean
+    fun multiTenantFilterRegistration(filter: MultiTenantFilter): FilterRegistrationBean<MultiTenantFilter> =
+        FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {

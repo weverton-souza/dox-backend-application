@@ -12,6 +12,9 @@ spring:
       write-dates-as-timestamps: false
     deserialization:
       fail-on-unknown-properties: false
+  mvc:
+    problemdetails:
+      enabled: true
   profiles:
     active: local
 

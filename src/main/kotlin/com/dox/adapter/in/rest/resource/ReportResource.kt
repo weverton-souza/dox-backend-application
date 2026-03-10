@@ -5,9 +5,11 @@ import com.dox.adapter.`in`.rest.dto.report.ReportResponse
 import com.dox.adapter.`in`.rest.dto.report.ReportVersionRequest
 import com.dox.adapter.`in`.rest.dto.report.ReportVersionResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.Parameters
+import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import java.util.UUID
 
 @Tag(name = "Relatórios", description = "CRUD de relatórios e versionamento")
@@ -23,8 +26,15 @@ import java.util.UUID
 interface ReportResource : BaseResource {
 
     @Operation(summary = "Listar relatórios com paginação")
+    @Parameters(
+        value = [
+            Parameter(name = "pageNumber", `in` = ParameterIn.QUERY, description = "Número da página (iniciando em 0)", example = "0", required = false),
+            Parameter(name = "pageSize", `in` = ParameterIn.QUERY, description = "Quantidade de itens por página", example = "15", required = false),
+            Parameter(name = "parameters", `in` = ParameterIn.QUERY, hidden = true)
+        ]
+    )
     @GetMapping
-    fun findAll(pageable: Pageable): ResponseEntity<Page<ReportResponse>>
+    fun findAll(@Parameter(hidden = true) @RequestParam parameters: Map<String, Any>): ResponseEntity<Page<ReportResponse>>
 
     @Operation(summary = "Criar relatório")
     @PostMapping
