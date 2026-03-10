@@ -14,9 +14,13 @@ import com.dox.application.port.output.TenantPersistencePort
 import com.dox.application.port.output.TenantProvisioningPort
 import com.dox.application.port.output.UserPersistencePort
 import com.dox.domain.enum.TenantType
+import com.dox.domain.exception.AccessDeniedException
 import com.dox.domain.exception.BusinessException
+import com.dox.domain.exception.DuplicateResourceException
+import com.dox.domain.exception.InvalidCredentialsException
+import com.dox.domain.exception.InvalidTokenException
 import com.dox.domain.exception.ResourceNotFoundException
-import com.dox.domain.exception.UnauthorizedException
+import com.dox.domain.exception.TokenExpiredException
 import com.dox.domain.model.RefreshToken
 import com.dox.domain.model.Tenant
 import com.dox.domain.model.User
@@ -40,7 +44,7 @@ class AuthServiceImpl(
     @Transactional
     override fun register(command: RegisterCommand): AuthResult {
         if (userPersistencePort.existsByEmail(command.email)) {
-            throw BusinessException("Email já cadastrado")
+            throw DuplicateResourceException("email", command.email)
         }
 
         val tenantId = UUID.randomUUID()
@@ -74,10 +78,10 @@ class AuthServiceImpl(
     @Transactional(readOnly = true)
     override fun login(command: LoginCommand): AuthResult {
         val user = userPersistencePort.findByEmail(command.email)
-            ?: throw UnauthorizedException("Credenciais inválidas")
+            ?: throw InvalidCredentialsException()
 
         if (!passwordEncoderPort.matches(command.password, user.passwordHash)) {
-            throw UnauthorizedException("Credenciais inválidas")
+            throw InvalidCredentialsException()
         }
 
         val tenantId = user.personalTenantId
@@ -90,14 +94,14 @@ class AuthServiceImpl(
     override fun refresh(refreshToken: String): AuthResult {
         val tokenHash = hashToken(refreshToken)
         val storedToken = refreshTokenPersistencePort.findByTokenHash(tokenHash)
-            ?: throw UnauthorizedException("Refresh token inválido")
+            ?: throw InvalidTokenException("Refresh token inválido")
 
         if (storedToken.expiresAt.isBefore(LocalDateTime.now())) {
-            throw UnauthorizedException("Refresh token expirado")
+            throw TokenExpiredException()
         }
 
         val user = userPersistencePort.findById(storedToken.userId)
-            ?: throw ResourceNotFoundException("Usuário não encontrado")
+            ?: throw ResourceNotFoundException("Usuário")
 
         refreshTokenPersistencePort.deleteByUserId(user.id)
 
@@ -115,10 +119,10 @@ class AuthServiceImpl(
     @Transactional(readOnly = true)
     override fun switchTenant(command: SwitchTenantCommand): AuthResult {
         val user = userPersistencePort.findById(command.userId)
-            ?: throw ResourceNotFoundException("Usuário não encontrado")
+            ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
 
         val tenant = tenantPersistencePort.findById(command.tenantId)
-            ?: throw ResourceNotFoundException("Tenant não encontrado")
+            ?: throw ResourceNotFoundException("Tenant", command.tenantId.toString())
 
         val hasAccess = user.personalTenantId == command.tenantId ||
             organizationPersistencePort.findMembersByUserId(user.id)
@@ -128,7 +132,7 @@ class AuthServiceImpl(
                 }
 
         if (!hasAccess) {
-            throw UnauthorizedException("Sem acesso a este workspace")
+            throw AccessDeniedException("Sem acesso a este workspace")
         }
 
         val accessToken = authTokenPort.generateAccessToken(user.id, user.email, command.tenantId)
@@ -146,7 +150,7 @@ class AuthServiceImpl(
 
     private fun generateAuthResult(user: User, tenantId: UUID): AuthResult {
         val tenant = tenantPersistencePort.findById(tenantId)
-            ?: throw ResourceNotFoundException("Tenant não encontrado")
+            ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
 
         val accessToken = authTokenPort.generateAccessToken(user.id, user.email, tenantId)
         val rawRefreshToken = authTokenPort.generateRefreshToken()

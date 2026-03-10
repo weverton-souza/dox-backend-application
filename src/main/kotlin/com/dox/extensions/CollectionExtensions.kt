@@ -6,12 +6,12 @@ import java.util.UUID
 
 inline fun <reified T> JpaRepository<T, UUID>.findByIdOrThrow(id: UUID): T =
     findById(id).orElseThrow {
-        ResourceNotFoundException("${T::class.simpleName} com id $id não encontrado")
+        ResourceNotFoundException(T::class.simpleName ?: "Recurso", id.toString())
     }
 
 inline fun <reified T> JpaRepository<T, UUID>.existOrThrow(id: UUID): Boolean {
     if (!existsById(id)) {
-        throw ResourceNotFoundException("${T::class.simpleName} com id $id não encontrado")
+        throw ResourceNotFoundException(T::class.simpleName ?: "Recurso", id.toString())
     }
     return true
 }

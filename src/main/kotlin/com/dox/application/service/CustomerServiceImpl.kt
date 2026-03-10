@@ -27,7 +27,7 @@ class CustomerServiceImpl(
 
     override fun findById(id: UUID): Customer =
         customerPersistencePort.findById(id)
-            ?: throw ResourceNotFoundException("Cliente não encontrado")
+            ?: throw ResourceNotFoundException("Cliente", id.toString())
 
     override fun findAll(search: String?, pageable: Pageable): Page<Customer> =
         if (search.isNullOrBlank()) customerPersistencePort.findAll(pageable)
@@ -36,7 +36,7 @@ class CustomerServiceImpl(
     @Transactional
     override fun update(command: UpdateCustomerCommand): Customer {
         customerPersistencePort.findById(command.id)
-            ?: throw ResourceNotFoundException("Cliente não encontrado")
+            ?: throw ResourceNotFoundException("Cliente", command.id.toString())
         return customerPersistencePort.save(Customer(id = command.id, data = command.data))
     }
 

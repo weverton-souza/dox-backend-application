@@ -7,9 +7,11 @@ import com.dox.adapter.`in`.rest.dto.customer.CustomerNoteResponse
 import com.dox.adapter.`in`.rest.dto.customer.CustomerRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.Parameters
+import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,10 +28,17 @@ import java.util.UUID
 interface CustomerResource : BaseResource {
 
     @Operation(summary = "Listar clientes com busca e paginação")
+    @Parameters(
+        value = [
+            Parameter(name = "pageNumber", `in` = ParameterIn.QUERY, description = "Número da página (iniciando em 0)", example = "0", required = false),
+            Parameter(name = "pageSize", `in` = ParameterIn.QUERY, description = "Quantidade de itens por página", example = "15", required = false),
+            Parameter(name = "search", `in` = ParameterIn.QUERY, description = "Busca por nome ou CPF", required = false),
+            Parameter(name = "parameters", `in` = ParameterIn.QUERY, hidden = true)
+        ]
+    )
     @GetMapping
     fun findAll(
-        @RequestParam(required = false) search: String?,
-        pageable: Pageable
+        @Parameter(hidden = true) @RequestParam parameters: Map<String, Any>
     ): ResponseEntity<Page<CustomerResponse>>
 
     @Operation(summary = "Criar cliente")

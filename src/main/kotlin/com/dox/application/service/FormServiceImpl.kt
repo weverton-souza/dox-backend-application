@@ -32,14 +32,14 @@ class FormServiceImpl(
 
     override fun findFormById(id: UUID): Form =
         formPersistencePort.findFormById(id)
-            ?: throw ResourceNotFoundException("Formulário não encontrado")
+            ?: throw ResourceNotFoundException("Formulário", id.toString())
 
     override fun findAllForms(): List<Form> = formPersistencePort.findAllForms()
 
     @Transactional
     override fun updateForm(command: UpdateFormCommand): Form {
         formPersistencePort.findFormById(command.id)
-            ?: throw ResourceNotFoundException("Formulário não encontrado")
+            ?: throw ResourceNotFoundException("Formulário", command.id.toString())
         return formPersistencePort.saveForm(
             Form(
                 id = command.id,
@@ -68,7 +68,7 @@ class FormServiceImpl(
 
     override fun findResponseById(id: UUID): FormResponse =
         formPersistencePort.findResponseById(id)
-            ?: throw ResourceNotFoundException("Resposta não encontrada")
+            ?: throw ResourceNotFoundException("Resposta", id.toString())
 
     override fun findResponsesByFormId(formId: UUID): List<FormResponse> =
         formPersistencePort.findResponsesByFormId(formId)
@@ -76,7 +76,7 @@ class FormServiceImpl(
     @Transactional
     override fun updateResponse(command: UpdateFormResponseCommand): FormResponse {
         val existing = formPersistencePort.findResponseById(command.id)
-            ?: throw ResourceNotFoundException("Resposta não encontrada")
+            ?: throw ResourceNotFoundException("Resposta", command.id.toString())
         return formPersistencePort.saveResponse(
             existing.copy(
                 status = command.status ?: existing.status,

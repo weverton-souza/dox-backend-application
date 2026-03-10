@@ -41,7 +41,7 @@ class CustomerPersistenceAdapter(
 
     override fun softDelete(id: UUID) {
         val entity = customerJpaRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Cliente não encontrado") }
+            .orElseThrow { ResourceNotFoundException("Cliente", id.toString()) }
         entity.deleted = true
         customerJpaRepository.save(entity)
     }

@@ -2,6 +2,7 @@ package com.dox.adapter.`in`.rest.resource
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
@@ -21,4 +22,14 @@ interface BaseResource {
 
     fun noContent(): ResponseEntity<Void> =
         ResponseEntity.noContent().build()
+
+    fun retrievePageableParameter(parameters: Map<String, Any>): PageRequest {
+        val pageNumber = parameters["pageNumber"]
+            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull() ?: 0
+
+        val pageSize = parameters["pageSize"]
+            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull() ?: 15
+
+        return PageRequest.of(pageNumber, pageSize)
+    }
 }
