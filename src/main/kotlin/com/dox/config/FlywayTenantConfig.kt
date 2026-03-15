@@ -22,6 +22,21 @@ class FlywayTenantConfig(
                 .baselineOnMigrate(true)
                 .load()
             publicFlyway.migrate()
+
+            migrateAllTenants()
+        }
+    }
+
+    private fun migrateAllTenants() {
+        dataSource.connection.use { conn ->
+            conn.createStatement().use { stmt ->
+                val rs = stmt.executeQuery("SELECT schema_name FROM public.tenants")
+                while (rs.next()) {
+                    val schemaName = rs.getString("schema_name")
+                    conn.createStatement().use { it.execute("CREATE SCHEMA IF NOT EXISTS \"$schemaName\"") }
+                    migrateForTenant(schemaName)
+                }
+            }
         }
     }
 

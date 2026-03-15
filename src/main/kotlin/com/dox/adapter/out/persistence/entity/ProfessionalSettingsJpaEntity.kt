@@ -21,14 +21,14 @@ class ProfessionalSettingsJpaEntity(
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
 
-    @Column(name = "name")
-    var name: String? = null,
+    @Column(name = "name", nullable = false)
+    var name: String = "",
 
     @Column(name = "crp")
     var crp: String? = null,
 
-    @Column(name = "specialization")
-    var specialization: String? = null,
+    @Column(name = "specialization", nullable = false)
+    var specialization: String = "",
 
     @Column(name = "phone")
     var phone: String? = null,
