@@ -5,9 +5,9 @@ import java.util.UUID
 
 data class ProfessionalSettings(
     val id: UUID = UUID.randomUUID(),
-    val name: String? = null,
+    val name: String = "",
     val crp: String? = null,
-    val specialization: String? = null,
+    val specialization: String = "",
     val phone: String? = null,
     val instagram: String? = null,
     val email: String? = null,

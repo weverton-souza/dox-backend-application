@@ -23,9 +23,9 @@ class ProfessionalServiceImpl(
     override fun update(command: UpdateProfessionalCommand): ProfessionalSettings {
         val entity = repository.findAll().firstOrNull()
             ?: ProfessionalSettingsJpaEntity()
-        entity.name = command.name
+        entity.name = command.name ?: ""
         entity.crp = command.crp
-        entity.specialization = command.specialization
+        entity.specialization = command.specialization ?: ""
         entity.phone = command.phone
         entity.instagram = command.instagram
         entity.email = command.email

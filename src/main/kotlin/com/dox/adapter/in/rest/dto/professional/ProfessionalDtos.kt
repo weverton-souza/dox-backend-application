@@ -15,9 +15,9 @@ data class ProfessionalRequest(
 
 data class ProfessionalResponse(
     val id: UUID?,
-    val name: String?,
+    val name: String,
     val crp: String?,
-    val specialization: String?,
+    val specialization: String,
     val phone: String?,
     val instagram: String?,
     val email: String?,
