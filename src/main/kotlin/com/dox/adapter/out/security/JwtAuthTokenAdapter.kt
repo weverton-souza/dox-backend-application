@@ -1,10 +1,13 @@
 package com.dox.adapter.out.security
 
 import com.dox.application.port.output.AuthTokenPort
+import com.dox.application.port.output.FormLinkTokenData
 import com.dox.config.SecurityProperties
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Date
 import java.util.UUID
 import javax.crypto.SecretKey
@@ -55,5 +58,26 @@ class JwtAuthTokenAdapter(
     override fun extractTenantId(token: String): UUID {
         val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
         return UUID.fromString(claims["tenantId"] as String)
+    }
+
+    override fun generateFormLinkToken(tenantId: UUID, formLinkId: UUID, expiresAt: LocalDateTime): String {
+        val expiry = Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant())
+
+        return Jwts.builder()
+            .claim("type", "form_link")
+            .claim("tenantId", tenantId.toString())
+            .claim("formLinkId", formLinkId.toString())
+            .expiration(expiry)
+            .signWith(key)
+            .compact()
+    }
+
+    override fun extractFormLinkData(token: String): FormLinkTokenData {
+        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
+        require(claims["type"] == "form_link") { "Token type invalid" }
+        return FormLinkTokenData(
+            tenantId = UUID.fromString(claims["tenantId"] as String),
+            formLinkId = UUID.fromString(claims["formLinkId"] as String)
+        )
     }
 }
