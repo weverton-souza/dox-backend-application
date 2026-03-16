@@ -42,6 +42,7 @@ class SecurityConfig(
                     "/auth/register",
                     "/auth/login",
                     "/auth/refresh",
+                    "/public/**",
                     "/v3-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",

@@ -66,180 +66,180 @@ INSERT INTO forms (id, title, description, fields) VALUES
  'Anamnese Psicológica Adulto',
  'Formulário completo de anamnese para pacientes adultos',
  '[
-   {"id": "queixa_principal", "type": "textarea", "label": "Qual a queixa principal?", "required": true},
-   {"id": "historico_sintomas", "type": "textarea", "label": "Há quanto tempo apresenta esses sintomas?", "required": true},
-   {"id": "tratamentos_anteriores", "type": "radio", "label": "Já realizou tratamento psicológico anteriormente?", "options": ["Sim", "Não"], "required": true},
-   {"id": "medicacao", "type": "text", "label": "Faz uso de alguma medicação? Qual?", "required": false},
-   {"id": "historico_familiar", "type": "textarea", "label": "Existe histórico de transtornos mentais na família?", "required": true},
-   {"id": "qualidade_sono", "type": "select", "label": "Como avalia a qualidade do seu sono?", "options": ["Ótimo", "Bom", "Regular", "Ruim", "Péssimo"], "required": true}
+   {"id": "queixa_principal", "type": "long-text", "label": "Qual a queixa principal?", "required": true},
+   {"id": "historico_sintomas", "type": "long-text", "label": "Há quanto tempo apresenta esses sintomas?", "required": true},
+   {"id": "tratamentos_anteriores", "type": "single-choice", "label": "Já realizou tratamento psicológico anteriormente?", "options": [{"id": "f537a31c-35e8-4c71-8ad3-29bfd668b3c7", "label": "Sim"}, {"id": "c0df9689-4807-45a2-9f03-81c92f702cf1", "label": "Não"}], "required": true},
+   {"id": "medicacao", "type": "short-text", "label": "Faz uso de alguma medicação? Qual?", "required": false},
+   {"id": "historico_familiar", "type": "long-text", "label": "Existe histórico de transtornos mentais na família?", "required": true},
+   {"id": "qualidade_sono", "type": "single-choice", "label": "Como avalia a qualidade do seu sono?", "options": [{"id": "24d0fcae-fd2b-4745-8541-a1b2eafb9638", "label": "Ótimo"}, {"id": "351f1d5b-861a-43bb-af2d-5e54e02f1a54", "label": "Bom"}, {"id": "7530470a-ee5b-4d1f-8b93-00f5e12aab78", "label": "Regular"}, {"id": "538d5b69-54b9-4f67-bb3a-1fda3d3ba11f", "label": "Ruim"}, {"id": "987a2a1c-d30b-407a-99fc-98a166da81fd", "label": "Péssimo"}], "required": true}
  ]'),
 
 ('e0000002-0000-0000-0000-000000000002',
  'Avaliação de Ansiedade (BAI Adaptado)',
  'Escala de avaliação de sintomas de ansiedade nas últimas 4 semanas',
  '[
-   {"id": "nervosismo", "type": "select", "label": "Nervosismo ou inquietação", "options": ["Nunca", "Levemente", "Moderadamente", "Severamente"], "required": true},
-   {"id": "tremores", "type": "select", "label": "Tremores nas mãos ou no corpo", "options": ["Nunca", "Levemente", "Moderadamente", "Severamente"], "required": true},
-   {"id": "medo_perder_controle", "type": "select", "label": "Medo de perder o controle", "options": ["Nunca", "Levemente", "Moderadamente", "Severamente"], "required": true},
-   {"id": "dificuldade_respirar", "type": "select", "label": "Dificuldade de respirar", "options": ["Nunca", "Levemente", "Moderadamente", "Severamente"], "required": true},
-   {"id": "taquicardia", "type": "select", "label": "Coração acelerado ou palpitações", "options": ["Nunca", "Levemente", "Moderadamente", "Severamente"], "required": true},
-   {"id": "tontura", "type": "select", "label": "Tontura ou sensação de desmaio", "options": ["Nunca", "Levemente", "Moderadamente", "Severamente"], "required": true},
-   {"id": "suor_excessivo", "type": "select", "label": "Suor excessivo (não causado por calor)", "options": ["Nunca", "Levemente", "Moderadamente", "Severamente"], "required": true}
+   {"id": "nervosismo", "type": "single-choice", "label": "Nervosismo ou inquietação", "options": [{"id": "745c7027-f657-4f10-a693-c80bec89c999", "label": "Nunca"}, {"id": "19942d68-65c2-4967-ad64-dcb647b2ebc6", "label": "Levemente"}, {"id": "dbd476ca-9a3a-46c2-8af2-db37e720638c", "label": "Moderadamente"}, {"id": "0e99d03f-b8d8-4f9b-97ec-3e0e17b36409", "label": "Severamente"}], "required": true},
+   {"id": "tremores", "type": "single-choice", "label": "Tremores nas mãos ou no corpo", "options": [{"id": "ebaf8aff-161f-42f7-a52a-049e1ab16608", "label": "Nunca"}, {"id": "3bec4f27-850b-4bfa-91c0-21999bbbb081", "label": "Levemente"}, {"id": "503ba5ad-bfe3-48b1-be97-fdd28e89cb87", "label": "Moderadamente"}, {"id": "0d1b6e4f-45cf-4051-b994-c82a1f4bb8ca", "label": "Severamente"}], "required": true},
+   {"id": "medo_perder_controle", "type": "single-choice", "label": "Medo de perder o controle", "options": [{"id": "7f8272d6-5cfb-411f-b7bc-6fb37504fe2d", "label": "Nunca"}, {"id": "f1c799cc-79df-47af-8caf-d248c1f9e0c2", "label": "Levemente"}, {"id": "39cd71a4-d062-45fb-8afa-d1587610f2d5", "label": "Moderadamente"}, {"id": "beda7680-caa9-4cff-b1ca-743a21f44c80", "label": "Severamente"}], "required": true},
+   {"id": "dificuldade_respirar", "type": "single-choice", "label": "Dificuldade de respirar", "options": [{"id": "11bd1cc0-c566-4fc8-ba6d-3e22d73931fe", "label": "Nunca"}, {"id": "f706c4f9-2013-4707-b107-d7817ae608cf", "label": "Levemente"}, {"id": "e5857501-33f7-45d3-948b-6e5382eb7171", "label": "Moderadamente"}, {"id": "fffac00d-284e-495b-b90b-3e42dd5f100a", "label": "Severamente"}], "required": true},
+   {"id": "taquicardia", "type": "single-choice", "label": "Coração acelerado ou palpitações", "options": [{"id": "b6b353a7-0ae1-43dd-99c6-a55ec850432a", "label": "Nunca"}, {"id": "24540f06-7f90-4277-9aaf-0af1b6a162f2", "label": "Levemente"}, {"id": "f2863e5a-1a00-4d6e-af2a-3e507d02f883", "label": "Moderadamente"}, {"id": "625ff35b-88a3-4ec7-97e3-a5109e567c5f", "label": "Severamente"}], "required": true},
+   {"id": "tontura", "type": "single-choice", "label": "Tontura ou sensação de desmaio", "options": [{"id": "820c84d3-007b-4e9e-8781-9b98ef997b93", "label": "Nunca"}, {"id": "15b8cea8-039c-4792-abe8-07632f47c1c5", "label": "Levemente"}, {"id": "bb81bdc7-daca-40aa-aaae-4af9455ab729", "label": "Moderadamente"}, {"id": "4ee706cf-88e7-4f77-8b7e-43ece93b1ee1", "label": "Severamente"}], "required": true},
+   {"id": "suor_excessivo", "type": "single-choice", "label": "Suor excessivo (não causado por calor)", "options": [{"id": "7b0c705c-1d2e-4ec7-8158-b001827ce60e", "label": "Nunca"}, {"id": "c2c77ce4-c917-45be-8f00-2cee154e3940", "label": "Levemente"}, {"id": "b2cae423-b70c-448e-87d0-e8c5dd4f1975", "label": "Moderadamente"}, {"id": "ac855256-0690-45ee-8917-1300d770da05", "label": "Severamente"}], "required": true}
  ]'),
 
 ('e0000003-0000-0000-0000-000000000003',
  'Inventário de Depressão (BDI Adaptado)',
  'Escala para rastreamento de sintomas depressivos',
  '[
-   {"id": "tristeza", "type": "select", "label": "Sentimento de tristeza", "options": ["Não me sinto triste", "Sinto-me triste boa parte do tempo", "Estou triste o tempo todo", "Estou tão triste que não consigo suportar"], "required": true},
-   {"id": "pessimismo", "type": "select", "label": "Pessimismo em relação ao futuro", "options": ["Não estou pessimista", "Sou mais pessimista que de costume", "Não espero que as coisas melhorem", "Sinto que o futuro é sem esperança"], "required": true},
-   {"id": "fracasso", "type": "select", "label": "Sentimento de fracasso", "options": ["Não me sinto fracassado", "Fracassei mais do que deveria", "Vejo muitos fracassos", "Me sinto um completo fracasso"], "required": true},
-   {"id": "perda_prazer", "type": "select", "label": "Perda de prazer nas atividades", "options": ["Tenho prazer nas coisas", "Não sinto tanto prazer como antes", "Tenho pouco prazer", "Não tenho prazer em nada"], "required": true},
-   {"id": "culpa", "type": "select", "label": "Sentimento de culpa", "options": ["Não me sinto culpado", "Sinto culpa por muitas coisas", "Me sinto culpado a maior parte do tempo", "Me sinto culpado o tempo todo"], "required": true}
+   {"id": "tristeza", "type": "single-choice", "label": "Sentimento de tristeza", "options": [{"id": "b1c3a66a-8e31-4ea6-bf25-e3c9049cfcc0", "label": "Não me sinto triste"}, {"id": "ed40b71c-dcfa-47b1-8e51-658885e871a2", "label": "Sinto-me triste boa parte do tempo"}, {"id": "28dced0c-ae56-4ddc-9a69-80e6eadaec0f", "label": "Estou triste o tempo todo"}, {"id": "59c8bcd3-6204-47c9-a8ed-609dfaf8cdd7", "label": "Estou tão triste que não consigo suportar"}], "required": true},
+   {"id": "pessimismo", "type": "single-choice", "label": "Pessimismo em relação ao futuro", "options": [{"id": "8745f740-3b89-4d14-bfba-668a86a7972d", "label": "Não estou pessimista"}, {"id": "2621d693-263d-4cc4-a652-a4a1c061f799", "label": "Sou mais pessimista que de costume"}, {"id": "62bd22e0-9a7f-4f68-9591-71f427618850", "label": "Não espero que as coisas melhorem"}, {"id": "d1c60b17-45ef-4d65-b6d8-2533a4d318b2", "label": "Sinto que o futuro é sem esperança"}], "required": true},
+   {"id": "fracasso", "type": "single-choice", "label": "Sentimento de fracasso", "options": [{"id": "82e7982e-93c1-4f91-8376-0716b206323e", "label": "Não me sinto fracassado"}, {"id": "f5b1fcaf-4fc2-43cb-9da5-5dc7ba3fdfc6", "label": "Fracassei mais do que deveria"}, {"id": "9a4f4e31-e4ca-4c9c-89c1-f299ab5346ec", "label": "Vejo muitos fracassos"}, {"id": "d12f5000-6d94-46be-85d4-a2025ddd9b0d", "label": "Me sinto um completo fracasso"}], "required": true},
+   {"id": "perda_prazer", "type": "single-choice", "label": "Perda de prazer nas atividades", "options": [{"id": "2b00ae27-4039-4894-b2aa-53732fd4177b", "label": "Tenho prazer nas coisas"}, {"id": "220d0d3e-d0b8-4791-b72a-072f342faf6b", "label": "Não sinto tanto prazer como antes"}, {"id": "c0f0c0cd-d0c6-4461-aa32-507dbf0654c4", "label": "Tenho pouco prazer"}, {"id": "85fce1b8-f744-4614-ac00-11ace10ad926", "label": "Não tenho prazer em nada"}], "required": true},
+   {"id": "culpa", "type": "single-choice", "label": "Sentimento de culpa", "options": [{"id": "683334be-ebbd-4caa-8e66-95859b1f7fa4", "label": "Não me sinto culpado"}, {"id": "d0ec3e4f-f9ba-48e5-a9fb-f9f50d59f201", "label": "Sinto culpa por muitas coisas"}, {"id": "d50dd70d-5f52-482f-a989-9f6135a35857", "label": "Me sinto culpado a maior parte do tempo"}, {"id": "446cfeed-394b-44d3-a4ac-8405c625fbd2", "label": "Me sinto culpado o tempo todo"}], "required": true}
  ]'),
 
 ('e0000004-0000-0000-0000-000000000004',
  'Anamnese Infantil',
  'Formulário de anamnese para crianças e adolescentes (preenchido pelo responsável)',
  '[
-   {"id": "motivo_encaminhamento", "type": "textarea", "label": "Qual o motivo do encaminhamento?", "required": true},
-   {"id": "desenvolvimento_motor", "type": "textarea", "label": "Como foi o desenvolvimento motor (engatinhar, andar, etc.)?", "required": true},
-   {"id": "desenvolvimento_fala", "type": "textarea", "label": "Como foi o desenvolvimento da fala?", "required": true},
-   {"id": "relacionamento_escola", "type": "select", "label": "Como é o relacionamento da criança na escola?", "options": ["Muito bom", "Bom", "Regular", "Difícil", "Muito difícil"], "required": true},
-   {"id": "sono_crianca", "type": "radio", "label": "A criança tem dificuldades para dormir?", "options": ["Sim", "Não", "Às vezes"], "required": true},
-   {"id": "alimentacao", "type": "select", "label": "Como é a alimentação da criança?", "options": ["Come bem e variado", "Come bem mas seletivo", "Come pouco", "Muito seletivo", "Recusa alimentação frequentemente"], "required": true},
-   {"id": "eventos_traumaticos", "type": "textarea", "label": "Houve algum evento traumático na vida da criança?", "required": false}
+   {"id": "motivo_encaminhamento", "type": "long-text", "label": "Qual o motivo do encaminhamento?", "required": true},
+   {"id": "desenvolvimento_motor", "type": "long-text", "label": "Como foi o desenvolvimento motor (engatinhar, andar, etc.)?", "required": true},
+   {"id": "desenvolvimento_fala", "type": "long-text", "label": "Como foi o desenvolvimento da fala?", "required": true},
+   {"id": "relacionamento_escola", "type": "single-choice", "label": "Como é o relacionamento da criança na escola?", "options": [{"id": "bf65d845-64d7-41f8-80ec-adf08e19a379", "label": "Muito bom"}, {"id": "aaafd65f-5484-45cd-87fa-d33d4341ee1c", "label": "Bom"}, {"id": "89e1208c-76ba-4e44-820b-82255f4d317a", "label": "Regular"}, {"id": "a3be9333-5f24-437f-9c55-007666a75fe8", "label": "Difícil"}, {"id": "d21994f4-a1b1-4f4a-b490-67127d8aafc1", "label": "Muito difícil"}], "required": true},
+   {"id": "sono_crianca", "type": "single-choice", "label": "A criança tem dificuldades para dormir?", "options": [{"id": "4d5941cc-dbe4-4c0f-8743-8c09dbfaeb17", "label": "Sim"}, {"id": "03b94d7b-5266-482b-8845-56a641e3b5c5", "label": "Não"}, {"id": "f08c3f62-2f49-4066-a69a-5ac83f2ec853", "label": "Às vezes"}], "required": true},
+   {"id": "alimentacao", "type": "single-choice", "label": "Como é a alimentação da criança?", "options": [{"id": "d50b562c-1fc2-4c30-8d52-45bb9012909d", "label": "Come bem e variado"}, {"id": "f1151e16-0071-42c6-8c27-c98e9eaaf686", "label": "Come bem mas seletivo"}, {"id": "de96b6b5-aed8-4ed8-bc73-076c78d64f65", "label": "Come pouco"}, {"id": "0a2761e0-999c-40ec-bd2d-2372c8fbc427", "label": "Muito seletivo"}, {"id": "48cbe68b-2704-48be-bb2a-c14bd44c9fb3", "label": "Recusa alimentação frequentemente"}], "required": true},
+   {"id": "eventos_traumaticos", "type": "long-text", "label": "Houve algum evento traumático na vida da criança?", "required": false}
  ]'),
 
 ('e0000005-0000-0000-0000-000000000005',
  'Avaliação de Estresse Ocupacional',
  'Questionário para identificação de fatores de estresse no trabalho',
  '[
-   {"id": "carga_horaria", "type": "text", "label": "Qual sua carga horária semanal de trabalho?", "required": true},
-   {"id": "satisfacao_trabalho", "type": "select", "label": "Qual seu nível de satisfação com o trabalho?", "options": ["Muito satisfeito", "Satisfeito", "Neutro", "Insatisfeito", "Muito insatisfeito"], "required": true},
-   {"id": "relacao_chefia", "type": "select", "label": "Como é sua relação com a chefia?", "options": ["Excelente", "Boa", "Regular", "Ruim", "Muito ruim"], "required": true},
-   {"id": "sintomas_fisicos", "type": "checkbox", "label": "Quais sintomas físicos você apresenta?", "options": ["Dores de cabeça", "Dores musculares", "Problemas gástricos", "Insônia", "Fadiga constante", "Nenhum"], "required": true},
-   {"id": "pensou_sair", "type": "radio", "label": "Já pensou em pedir demissão nos últimos 6 meses?", "options": ["Sim", "Não"], "required": true},
-   {"id": "atividades_lazer", "type": "radio", "label": "Consegue manter atividades de lazer regularmente?", "options": ["Sim", "Não", "Raramente"], "required": true}
+   {"id": "carga_horaria", "type": "short-text", "label": "Qual sua carga horária semanal de trabalho?", "required": true},
+   {"id": "satisfacao_trabalho", "type": "single-choice", "label": "Qual seu nível de satisfação com o trabalho?", "options": [{"id": "bb45d544-f8da-4660-8acf-e26d28911f4e", "label": "Muito satisfeito"}, {"id": "ec243fd1-94ba-4ed6-ae6a-07b69792e2b5", "label": "Satisfeito"}, {"id": "594c8d0a-f5e0-4a93-9118-afe4a5481966", "label": "Neutro"}, {"id": "5bda66f5-982d-42c7-908f-3de1f0838b29", "label": "Insatisfeito"}, {"id": "df5c4a77-49c0-48ba-816f-9b7b48ce6e8b", "label": "Muito insatisfeito"}], "required": true},
+   {"id": "relacao_chefia", "type": "single-choice", "label": "Como é sua relação com a chefia?", "options": [{"id": "89f7e41d-be00-4411-8f63-d1dca251c31b", "label": "Excelente"}, {"id": "bfad346d-0bda-49d5-b896-38babea408a5", "label": "Boa"}, {"id": "e6260864-c858-49de-a749-20a032189c1f", "label": "Regular"}, {"id": "7446688e-582f-4996-a6fa-c8ab36ce21f3", "label": "Ruim"}, {"id": "cd88f26e-1480-47b4-a92a-7a739c91c5f3", "label": "Muito ruim"}], "required": true},
+   {"id": "sintomas_fisicos", "type": "multiple-choice", "label": "Quais sintomas físicos você apresenta?", "options": [{"id": "10265abc-c4c3-4f0d-88ea-ddb2b654291d", "label": "Dores de cabeça"}, {"id": "77920365-efc4-4325-b7d0-208120f5ecb9", "label": "Dores musculares"}, {"id": "505f828b-de33-4189-a444-de2affa71dbd", "label": "Problemas gástricos"}, {"id": "c4d9aa96-e68d-4fb8-942e-d79ba1acc6da", "label": "Insônia"}, {"id": "fd7cc883-e925-453e-a259-05deba08de98", "label": "Fadiga constante"}, {"id": "8972862f-ff83-49fb-9226-f8bd488bf1d4", "label": "Nenhum"}], "required": true},
+   {"id": "pensou_sair", "type": "single-choice", "label": "Já pensou em pedir demissão nos últimos 6 meses?", "options": [{"id": "043121b7-6e79-406b-9c13-2483a9d32dbd", "label": "Sim"}, {"id": "eafa2243-668c-4fa8-b361-0a65e6a015a5", "label": "Não"}], "required": true},
+   {"id": "atividades_lazer", "type": "single-choice", "label": "Consegue manter atividades de lazer regularmente?", "options": [{"id": "07e6e9ec-6037-43f0-b7a0-f413a043988a", "label": "Sim"}, {"id": "1413e22b-e6e7-4c92-98ad-790cb6763d52", "label": "Não"}, {"id": "99704928-98e7-417c-a249-3d6b0f27bdbf", "label": "Raramente"}], "required": true}
  ]'),
 
 ('e0000006-0000-0000-0000-000000000006',
  'Triagem de Transtorno Alimentar',
  'Questionário de triagem para identificação de comportamentos alimentares disfuncionais',
  '[
-   {"id": "preocupacao_peso", "type": "select", "label": "Com que frequência se preocupa com seu peso?", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Sempre"], "required": true},
-   {"id": "restricao_alimentar", "type": "radio", "label": "Você restringe a quantidade de comida intencionalmente?", "options": ["Sim", "Não", "Às vezes"], "required": true},
-   {"id": "episodios_compulsao", "type": "radio", "label": "Tem episódios de comer compulsivamente?", "options": ["Sim", "Não", "Às vezes"], "required": true},
-   {"id": "metodos_compensatorios", "type": "checkbox", "label": "Utiliza algum método compensatório após comer?", "options": ["Vômito autoinduzido", "Laxantes", "Exercício excessivo", "Jejum prolongado", "Nenhum"], "required": true},
-   {"id": "imagem_corporal", "type": "select", "label": "Como se sente em relação ao seu corpo?", "options": ["Muito satisfeito", "Satisfeito", "Neutro", "Insatisfeito", "Muito insatisfeito"], "required": true}
+   {"id": "preocupacao_peso", "type": "single-choice", "label": "Com que frequência se preocupa com seu peso?", "options": [{"id": "7ca2afc3-3a7b-4bd6-8eac-99914533d5db", "label": "Nunca"}, {"id": "fe0c91dd-83da-4a2f-8403-3e235af8dfec", "label": "Raramente"}, {"id": "407157d9-cc7a-4ced-a25c-97b989f503e2", "label": "Às vezes"}, {"id": "003862b9-3843-4c37-ab0d-f5984b17820b", "label": "Frequentemente"}, {"id": "5421a9be-d6ef-4e0a-bb69-6c047491e552", "label": "Sempre"}], "required": true},
+   {"id": "restricao_alimentar", "type": "single-choice", "label": "Você restringe a quantidade de comida intencionalmente?", "options": [{"id": "215ab593-d74d-4a46-9610-3fb44459263c", "label": "Sim"}, {"id": "80ba7235-3fc5-44d2-9094-4af2c3a46a03", "label": "Não"}, {"id": "cecdcb78-39d7-4361-a227-d17e524d4ff6", "label": "Às vezes"}], "required": true},
+   {"id": "episodios_compulsao", "type": "single-choice", "label": "Tem episódios de comer compulsivamente?", "options": [{"id": "7c694ddf-5dd2-4c12-ad52-247dd6f9ecdd", "label": "Sim"}, {"id": "503b4c51-a741-45cd-ba6a-a4d1eb294af8", "label": "Não"}, {"id": "2fccd742-98bf-4e18-8742-22eb3f72c765", "label": "Às vezes"}], "required": true},
+   {"id": "metodos_compensatorios", "type": "multiple-choice", "label": "Utiliza algum método compensatório após comer?", "options": [{"id": "73709f2d-1c54-4046-9e45-579bf389da61", "label": "Vômito autoinduzido"}, {"id": "e9400234-dac2-4c7d-b57a-7ff20a2ffb31", "label": "Laxantes"}, {"id": "1efd06b9-5e7c-4768-8b93-6cfdb662bbe6", "label": "Exercício excessivo"}, {"id": "120ea667-37a6-461e-96d6-a706c459d479", "label": "Jejum prolongado"}, {"id": "956a39e9-4f5a-4a32-82ef-a848d4c83ab1", "label": "Nenhum"}], "required": true},
+   {"id": "imagem_corporal", "type": "single-choice", "label": "Como se sente em relação ao seu corpo?", "options": [{"id": "f4fc7c3a-8414-49fb-a94a-0127b0b45e31", "label": "Muito satisfeito"}, {"id": "377b6af0-0b63-4f92-9af7-dd0632dfa0b2", "label": "Satisfeito"}, {"id": "f9545192-47ca-4070-8651-c96d2270938d", "label": "Neutro"}, {"id": "d4b61d44-795d-438a-8b79-73b0cbbfee13", "label": "Insatisfeito"}, {"id": "1031d3b9-ac06-4494-8751-9536867bb72d", "label": "Muito insatisfeito"}], "required": true}
  ]'),
 
 ('e0000007-0000-0000-0000-000000000007',
  'Avaliação de Casal',
  'Formulário para avaliação do relacionamento conjugal',
  '[
-   {"id": "tempo_relacionamento", "type": "text", "label": "Há quanto tempo estão juntos?", "required": true},
-   {"id": "motivo_busca", "type": "textarea", "label": "O que motivou a busca por terapia de casal?", "required": true},
-   {"id": "comunicacao", "type": "select", "label": "Como avalia a comunicação no relacionamento?", "options": ["Excelente", "Boa", "Regular", "Ruim", "Muito ruim"], "required": true},
-   {"id": "frequencia_conflitos", "type": "select", "label": "Com que frequência ocorrem conflitos?", "options": ["Raramente", "Mensalmente", "Semanalmente", "Diariamente"], "required": true},
-   {"id": "temas_conflito", "type": "checkbox", "label": "Quais são os principais temas de conflito?", "options": ["Finanças", "Filhos", "Família estendida", "Intimidade", "Divisão de tarefas", "Ciúmes", "Projetos de vida"], "required": true},
-   {"id": "tentativas_anteriores", "type": "radio", "label": "Já tentaram terapia de casal antes?", "options": ["Sim", "Não"], "required": true}
+   {"id": "tempo_relacionamento", "type": "short-text", "label": "Há quanto tempo estão juntos?", "required": true},
+   {"id": "motivo_busca", "type": "long-text", "label": "O que motivou a busca por terapia de casal?", "required": true},
+   {"id": "comunicacao", "type": "single-choice", "label": "Como avalia a comunicação no relacionamento?", "options": [{"id": "531ebb2a-a3a9-4e7b-9ce2-98cccd4d93bb", "label": "Excelente"}, {"id": "2af4a819-c56c-4365-a0c4-19c3ebcbabef", "label": "Boa"}, {"id": "16490f5d-c772-4ca2-8aec-c2c1d0f526f6", "label": "Regular"}, {"id": "1633e350-0589-4189-ae29-4a862d38f58a", "label": "Ruim"}, {"id": "059fdcd5-b936-4df2-ad07-57d2fd035e6c", "label": "Muito ruim"}], "required": true},
+   {"id": "frequencia_conflitos", "type": "single-choice", "label": "Com que frequência ocorrem conflitos?", "options": [{"id": "3ad0cd45-33fe-4e90-9e84-18cbe7ec681b", "label": "Raramente"}, {"id": "3602b8e1-621a-4662-b8ba-6e3a7ac0b9ff", "label": "Mensalmente"}, {"id": "40582f6d-274d-4690-a79c-fcae867edcde", "label": "Semanalmente"}, {"id": "8ca271e8-076a-4466-a734-9fd0ce38f40c", "label": "Diariamente"}], "required": true},
+   {"id": "temas_conflito", "type": "multiple-choice", "label": "Quais são os principais temas de conflito?", "options": [{"id": "23c7c77d-3948-4917-9f43-94a51bc91483", "label": "Finanças"}, {"id": "1c5aebf2-6df1-4fe7-b967-90ec93f7980b", "label": "Filhos"}, {"id": "4a6ab581-f7ef-45ae-b6f7-25e15075bd96", "label": "Família estendida"}, {"id": "64eaf3c0-40b7-45fb-bac9-daf2bf945c28", "label": "Intimidade"}, {"id": "5b0974ce-a3fc-434f-ba0a-dfb9ef02a033", "label": "Divisão de tarefas"}, {"id": "56e4ff7e-a7ef-44ee-8a05-58ecc1eff5a2", "label": "Ciúmes"}, {"id": "9df748e5-5a16-4c01-81ca-fbf3d7e419b3", "label": "Projetos de vida"}], "required": true},
+   {"id": "tentativas_anteriores", "type": "single-choice", "label": "Já tentaram terapia de casal antes?", "options": [{"id": "ebeb84f8-f89c-4e25-8e9e-d9f793a281c2", "label": "Sim"}, {"id": "3be5b131-32f2-4ddf-a595-3ec6119e5ad9", "label": "Não"}], "required": true}
  ]'),
 
 ('e0000008-0000-0000-0000-000000000008',
  'Screening de TDAH Adulto',
  'Questionário de rastreamento para Transtorno de Déficit de Atenção e Hiperatividade em adultos',
  '[
-   {"id": "dificuldade_concentracao", "type": "select", "label": "Dificuldade em manter concentração em tarefas longas", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Muito frequentemente"], "required": true},
-   {"id": "esquecimento", "type": "select", "label": "Esquece compromissos ou tarefas do dia a dia", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Muito frequentemente"], "required": true},
-   {"id": "inquietude", "type": "select", "label": "Sente inquietação ou dificuldade em ficar parado", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Muito frequentemente"], "required": true},
-   {"id": "impulsividade", "type": "select", "label": "Age impulsivamente sem pensar nas consequências", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Muito frequentemente"], "required": true},
-   {"id": "organizacao", "type": "select", "label": "Dificuldade em organizar tarefas e atividades", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Muito frequentemente"], "required": true},
-   {"id": "procrastinacao", "type": "select", "label": "Adia tarefas que exigem esforço mental", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Muito frequentemente"], "required": true},
-   {"id": "sintomas_infancia", "type": "radio", "label": "Apresentava esses sintomas na infância?", "options": ["Sim", "Não", "Não sei"], "required": true}
+   {"id": "dificuldade_concentracao", "type": "single-choice", "label": "Dificuldade em manter concentração em tarefas longas", "options": [{"id": "c42a3457-6a4d-432d-867f-d53076a7e4f5", "label": "Nunca"}, {"id": "bd3c69ab-169e-4e46-bea2-6ad75d884267", "label": "Raramente"}, {"id": "02f4da72-fbdf-470a-bff6-46e4d06411be", "label": "Às vezes"}, {"id": "2bf0e0a6-27f1-45b0-b05d-b963a25d6e05", "label": "Frequentemente"}, {"id": "472bd4e2-7c48-4637-aec1-bb218155637f", "label": "Muito frequentemente"}], "required": true},
+   {"id": "esquecimento", "type": "single-choice", "label": "Esquece compromissos ou tarefas do dia a dia", "options": [{"id": "086320ef-d92d-4009-9ac8-1a125265a10b", "label": "Nunca"}, {"id": "b5cc24d4-3ee6-4d24-96f8-f5626a3445fd", "label": "Raramente"}, {"id": "9733bcf3-7968-4371-a249-a6a5d2336ed5", "label": "Às vezes"}, {"id": "467a04e0-f693-49cd-ba37-b5e75e5cf6f8", "label": "Frequentemente"}, {"id": "28d09cd3-f4c8-4c50-bdfd-0bac8940b453", "label": "Muito frequentemente"}], "required": true},
+   {"id": "inquietude", "type": "single-choice", "label": "Sente inquietação ou dificuldade em ficar parado", "options": [{"id": "274e34dc-1af4-4e2b-8ecc-0baf7dcb5f41", "label": "Nunca"}, {"id": "34489ee3-562f-4d3e-a517-202eb1ee1aa8", "label": "Raramente"}, {"id": "b2b4d9bc-9dc7-4651-b63a-81476306ede3", "label": "Às vezes"}, {"id": "ce4ac7eb-e360-42d3-89c4-e667a6a77f85", "label": "Frequentemente"}, {"id": "291d72e7-fd42-4313-bcaf-f8842a0e0358", "label": "Muito frequentemente"}], "required": true},
+   {"id": "impulsividade", "type": "single-choice", "label": "Age impulsivamente sem pensar nas consequências", "options": [{"id": "a1459e7c-1758-4395-875a-3801d2ca7bda", "label": "Nunca"}, {"id": "7ba85703-b1e1-4d51-b41d-d9b69210dca3", "label": "Raramente"}, {"id": "abcb7e0d-e332-41e2-84c6-fe2786850867", "label": "Às vezes"}, {"id": "56cde8aa-66ae-42f7-a68f-c36365ae0782", "label": "Frequentemente"}, {"id": "ec13d1d5-efe1-40b2-9df2-c12da1154e72", "label": "Muito frequentemente"}], "required": true},
+   {"id": "organizacao", "type": "single-choice", "label": "Dificuldade em organizar tarefas e atividades", "options": [{"id": "3e409bdb-f821-4113-9e20-2f87344b67fa", "label": "Nunca"}, {"id": "e946a8d0-cb49-44c0-950f-e89409158279", "label": "Raramente"}, {"id": "e95a032e-25c6-46b8-8dc3-d66a7e47feeb", "label": "Às vezes"}, {"id": "29de47f2-4bc3-4cad-a799-c3f40909461e", "label": "Frequentemente"}, {"id": "265af4ec-42fe-4df1-a722-5a21c391e9e8", "label": "Muito frequentemente"}], "required": true},
+   {"id": "procrastinacao", "type": "single-choice", "label": "Adia tarefas que exigem esforço mental", "options": [{"id": "46f580e8-a251-4a79-9fc1-b2116252cc57", "label": "Nunca"}, {"id": "42a51f7a-b77f-424a-82b6-cbcffedc5952", "label": "Raramente"}, {"id": "3fb2afdf-7d28-45a3-9b65-1598ff7e2eeb", "label": "Às vezes"}, {"id": "4c22e074-11fc-4ce8-93fe-469db60b95c5", "label": "Frequentemente"}, {"id": "2a1bd750-acd4-4085-9ec3-6598ed359b7a", "label": "Muito frequentemente"}], "required": true},
+   {"id": "sintomas_infancia", "type": "single-choice", "label": "Apresentava esses sintomas na infância?", "options": [{"id": "245beb0b-bb40-41b3-9715-53fff811e89a", "label": "Sim"}, {"id": "459d08f9-e84f-4970-9df9-b63d8a34a1c0", "label": "Não"}, {"id": "2cbe3e4f-3566-49fd-a2c0-9cab7a6ae740", "label": "Não sei"}], "required": true}
  ]'),
 
 ('e0000009-0000-0000-0000-000000000009',
  'Avaliação de Luto',
  'Formulário para avaliação do processo de luto',
  '[
-   {"id": "perda", "type": "textarea", "label": "Quem você perdeu e qual era a relação?", "required": true},
-   {"id": "tempo_perda", "type": "text", "label": "Há quanto tempo ocorreu a perda?", "required": true},
-   {"id": "circunstancia", "type": "select", "label": "A perda foi:", "options": ["Esperada (doença prolongada)", "Súbita (acidente, infarto)", "Violenta (homicídio, suicídio)", "Outra"], "required": true},
-   {"id": "sentimentos_atuais", "type": "checkbox", "label": "Quais sentimentos estão mais presentes?", "options": ["Tristeza", "Raiva", "Culpa", "Saudade intensa", "Alívio", "Negação", "Desamparo"], "required": true},
-   {"id": "rotina", "type": "select", "label": "Consegue manter sua rotina diária?", "options": ["Sim, normalmente", "Com alguma dificuldade", "Com muita dificuldade", "Não consigo"], "required": true},
-   {"id": "rede_apoio", "type": "radio", "label": "Tem rede de apoio (família, amigos)?", "options": ["Sim, forte", "Sim, mas fraca", "Não"], "required": true}
+   {"id": "perda", "type": "long-text", "label": "Quem você perdeu e qual era a relação?", "required": true},
+   {"id": "tempo_perda", "type": "short-text", "label": "Há quanto tempo ocorreu a perda?", "required": true},
+   {"id": "circunstancia", "type": "single-choice", "label": "A perda foi:", "options": [{"id": "2e1d43d0-9528-40c7-a05c-4cbc9c9a8e02", "label": "Esperada (doença prolongada)"}, {"id": "ad3a4436-f201-46a2-a5d4-ecce2dc083da", "label": "Súbita (acidente, infarto)"}, {"id": "93f5b8e6-89f9-4426-bf14-f8693f7fde44", "label": "Violenta (homicídio, suicídio)"}, {"id": "8d964436-9565-43fc-aacc-079e21db25d3", "label": "Outra"}], "required": true},
+   {"id": "sentimentos_atuais", "type": "multiple-choice", "label": "Quais sentimentos estão mais presentes?", "options": [{"id": "f6c913c9-948c-4d9e-8bdf-74c794e58f7f", "label": "Tristeza"}, {"id": "1a5989ff-e0a3-466e-b473-ce7b38258192", "label": "Raiva"}, {"id": "f74d80fb-e220-4cf8-bd30-08f2218a1145", "label": "Culpa"}, {"id": "df2000b2-e305-4278-a595-1e1d7e01636d", "label": "Saudade intensa"}, {"id": "d5a6f3b6-6118-4638-8a2d-21699af02333", "label": "Alívio"}, {"id": "4a13eb67-efee-48ee-8e8c-77a25a08bbcb", "label": "Negação"}, {"id": "964472ef-07af-465f-98d9-1fe53e27ed30", "label": "Desamparo"}], "required": true},
+   {"id": "rotina", "type": "single-choice", "label": "Consegue manter sua rotina diária?", "options": [{"id": "3559b516-f6ff-49ae-be6e-202f9b01fb6c", "label": "Sim, normalmente"}, {"id": "38eb0252-f834-4949-a4f4-c90535f2d6d9", "label": "Com alguma dificuldade"}, {"id": "499f5ea8-0f9f-4cbb-936b-94b12a80a6ed", "label": "Com muita dificuldade"}, {"id": "5c3ddabf-5d9b-4498-9b68-3960ac4fd77f", "label": "Não consigo"}], "required": true},
+   {"id": "rede_apoio", "type": "single-choice", "label": "Tem rede de apoio (família, amigos)?", "options": [{"id": "6426f5db-49d0-42d6-89e9-67c975024576", "label": "Sim, forte"}, {"id": "89f3038e-5641-4a90-aede-f37994c024aa", "label": "Sim, mas fraca"}, {"id": "1c4b53f2-e252-4444-9bac-acd54a3e6413", "label": "Não"}], "required": true}
  ]'),
 
 ('e0000010-0000-0000-0000-000000000010',
  'Avaliação Pré-Cirúrgica',
  'Formulário de avaliação psicológica pré-cirúrgica',
  '[
-   {"id": "tipo_cirurgia", "type": "text", "label": "Qual procedimento cirúrgico será realizado?", "required": true},
-   {"id": "motivacao", "type": "textarea", "label": "O que motivou a decisão pela cirurgia?", "required": true},
-   {"id": "expectativas", "type": "textarea", "label": "Quais são suas expectativas com a cirurgia?", "required": true},
-   {"id": "compreensao_riscos", "type": "radio", "label": "Compreende os riscos envolvidos no procedimento?", "options": ["Sim", "Parcialmente", "Não"], "required": true},
-   {"id": "suporte_pos_operatorio", "type": "radio", "label": "Terá suporte familiar no pós-operatório?", "options": ["Sim", "Não"], "required": true},
-   {"id": "historico_psiquiatrico", "type": "radio", "label": "Possui histórico de transtorno psiquiátrico?", "options": ["Sim", "Não"], "required": true},
-   {"id": "uso_substancias", "type": "checkbox", "label": "Faz uso de alguma substância?", "options": ["Álcool", "Tabaco", "Drogas ilícitas", "Nenhuma"], "required": true}
+   {"id": "tipo_cirurgia", "type": "short-text", "label": "Qual procedimento cirúrgico será realizado?", "required": true},
+   {"id": "motivacao", "type": "long-text", "label": "O que motivou a decisão pela cirurgia?", "required": true},
+   {"id": "expectativas", "type": "long-text", "label": "Quais são suas expectativas com a cirurgia?", "required": true},
+   {"id": "compreensao_riscos", "type": "single-choice", "label": "Compreende os riscos envolvidos no procedimento?", "options": [{"id": "916bbcf9-ad8a-4842-ab8d-6dca3cfb5186", "label": "Sim"}, {"id": "d69baf8f-1846-4e78-86e2-16727d0fa151", "label": "Parcialmente"}, {"id": "72d264ec-a6ef-4342-aae7-79ffbd850504", "label": "Não"}], "required": true},
+   {"id": "suporte_pos_operatorio", "type": "single-choice", "label": "Terá suporte familiar no pós-operatório?", "options": [{"id": "bd4dee3e-0edd-4aa3-a98b-e3fee7e9972e", "label": "Sim"}, {"id": "8ebef857-0efe-43e6-b993-2e2d10c6aeff", "label": "Não"}], "required": true},
+   {"id": "historico_psiquiatrico", "type": "single-choice", "label": "Possui histórico de transtorno psiquiátrico?", "options": [{"id": "7cbd777b-d1ad-4ae2-8836-1be8234f513e", "label": "Sim"}, {"id": "dd9ac8e7-43ba-40d8-8dd9-c59c002b0e92", "label": "Não"}], "required": true},
+   {"id": "uso_substancias", "type": "multiple-choice", "label": "Faz uso de alguma substância?", "options": [{"id": "b90889eb-5df9-4113-ad83-e97db8c7aff8", "label": "Álcool"}, {"id": "1635e301-1903-4b90-bd61-3eb93f215d09", "label": "Tabaco"}, {"id": "5379308c-f8dc-44f3-8c5b-4ce293275d1c", "label": "Drogas ilícitas"}, {"id": "1a40229b-86c2-4ed0-b50b-9147e18d770e", "label": "Nenhuma"}], "required": true}
  ]'),
 
 ('e0000011-0000-0000-0000-000000000011',
  'Questionário de Qualidade de Vida',
  'Avaliação da qualidade de vida em diferentes domínios',
  '[
-   {"id": "saude_fisica", "type": "select", "label": "Como avalia sua saúde física?", "options": ["Muito boa", "Boa", "Regular", "Ruim", "Muito ruim"], "required": true},
-   {"id": "saude_mental", "type": "select", "label": "Como avalia sua saúde mental/emocional?", "options": ["Muito boa", "Boa", "Regular", "Ruim", "Muito ruim"], "required": true},
-   {"id": "relacoes_sociais", "type": "select", "label": "Como avalia suas relações sociais?", "options": ["Muito satisfeito", "Satisfeito", "Neutro", "Insatisfeito", "Muito insatisfeito"], "required": true},
-   {"id": "ambiente", "type": "select", "label": "Como avalia as condições do seu ambiente (moradia, trabalho)?", "options": ["Muito boas", "Boas", "Regulares", "Ruins", "Muito ruins"], "required": true},
-   {"id": "energia", "type": "select", "label": "Você tem energia suficiente para o dia a dia?", "options": ["Sempre", "Quase sempre", "Às vezes", "Raramente", "Nunca"], "required": true},
-   {"id": "sentido_vida", "type": "select", "label": "Em que medida sua vida tem sentido?", "options": ["Completamente", "Bastante", "Moderadamente", "Pouco", "Nada"], "required": true}
+   {"id": "saude_fisica", "type": "single-choice", "label": "Como avalia sua saúde física?", "options": [{"id": "d3da049a-d351-4deb-9948-2e0eb49c829f", "label": "Muito boa"}, {"id": "7a528367-cea7-4ef2-a814-a5de60e0caf5", "label": "Boa"}, {"id": "1f1d3751-6b23-4cac-b064-c482dd222bc9", "label": "Regular"}, {"id": "33d73178-f606-447b-9241-65d5f3242dd3", "label": "Ruim"}, {"id": "b8eea3eb-565b-4a27-b3e3-7d9698ca93c5", "label": "Muito ruim"}], "required": true},
+   {"id": "saude_mental", "type": "single-choice", "label": "Como avalia sua saúde mental/emocional?", "options": [{"id": "dd92c8f4-9bd8-46fe-acba-592803efe171", "label": "Muito boa"}, {"id": "a04e6f75-a653-4945-a565-1c759729b6a1", "label": "Boa"}, {"id": "398a18ea-d658-4c77-b885-548223f0780e", "label": "Regular"}, {"id": "334f4837-0a85-4b9e-bfb8-731bdb195a62", "label": "Ruim"}, {"id": "32d94475-e206-4bc1-93c9-a487064b991b", "label": "Muito ruim"}], "required": true},
+   {"id": "relacoes_sociais", "type": "single-choice", "label": "Como avalia suas relações sociais?", "options": [{"id": "794754c8-31f7-4412-9601-a19974ff20f4", "label": "Muito satisfeito"}, {"id": "7ba206cf-fb73-46b8-8658-d3f9fe2e94c5", "label": "Satisfeito"}, {"id": "2727f445-3499-46e1-9ad7-1a24534cccb2", "label": "Neutro"}, {"id": "3e617c69-524b-444b-ad00-b12a40c0c02c", "label": "Insatisfeito"}, {"id": "0e2d589f-baf1-44a8-836d-27adda6855d8", "label": "Muito insatisfeito"}], "required": true},
+   {"id": "ambiente", "type": "single-choice", "label": "Como avalia as condições do seu ambiente (moradia, trabalho)?", "options": [{"id": "25b291f1-af0d-401d-8fbb-e39667414911", "label": "Muito boas"}, {"id": "7838e346-c384-4bdd-9fab-7185d6d04490", "label": "Boas"}, {"id": "26620bc9-3371-4056-a7db-99ff35c5fc1e", "label": "Regulares"}, {"id": "d52f11ea-3383-4a02-b867-82598795e359", "label": "Ruins"}, {"id": "0fdb5166-9ea1-4a8f-ac34-1865c3f46adb", "label": "Muito ruins"}], "required": true},
+   {"id": "energia", "type": "single-choice", "label": "Você tem energia suficiente para o dia a dia?", "options": [{"id": "39bbcbd9-9dfd-4cea-803f-c2bd9dfe8fcf", "label": "Sempre"}, {"id": "447bde6d-a451-45ae-a637-247d378a7025", "label": "Quase sempre"}, {"id": "0503e653-d363-4708-ab0e-5c3e1c1ea92b", "label": "Às vezes"}, {"id": "51b4d234-f59b-45ef-acc2-c677c2b5ae34", "label": "Raramente"}, {"id": "0e6f5e07-803f-4e7d-a58c-d4b2a8da0d50", "label": "Nunca"}], "required": true},
+   {"id": "sentido_vida", "type": "single-choice", "label": "Em que medida sua vida tem sentido?", "options": [{"id": "8032ed6f-ef6d-481f-b0dd-231e1fb8b7ff", "label": "Completamente"}, {"id": "63e2edf8-406e-488f-867e-7d65e84d8e64", "label": "Bastante"}, {"id": "776dc002-3232-44e9-ac2e-a6f98c25c4a5", "label": "Moderadamente"}, {"id": "7bb8f133-e53a-415d-91b4-c014b3ec65c3", "label": "Pouco"}, {"id": "ca2085d0-c530-46a7-962c-f56149ce00f5", "label": "Nada"}], "required": true}
  ]'),
 
 ('e0000012-0000-0000-0000-000000000012',
  'Avaliação de Habilidades Sociais',
  'Inventário para avaliação de competências sociais',
  '[
-   {"id": "conversa_desconhecidos", "type": "select", "label": "Facilidade em iniciar conversa com desconhecidos", "options": ["Muito fácil", "Fácil", "Moderado", "Difícil", "Muito difícil"], "required": true},
-   {"id": "expressar_opiniao", "type": "select", "label": "Facilidade em expressar opinião em grupo", "options": ["Muito fácil", "Fácil", "Moderado", "Difícil", "Muito difícil"], "required": true},
-   {"id": "dizer_nao", "type": "select", "label": "Facilidade em dizer não a pedidos", "options": ["Muito fácil", "Fácil", "Moderado", "Difícil", "Muito difícil"], "required": true},
-   {"id": "receber_criticas", "type": "select", "label": "Como lida com críticas?", "options": ["Muito bem", "Bem", "Razoavelmente", "Mal", "Muito mal"], "required": true},
-   {"id": "fazer_elogios", "type": "select", "label": "Facilidade em elogiar outras pessoas", "options": ["Muito fácil", "Fácil", "Moderado", "Difícil", "Muito difícil"], "required": true},
-   {"id": "resolver_conflitos", "type": "select", "label": "Habilidade em resolver conflitos interpessoais", "options": ["Muito boa", "Boa", "Regular", "Ruim", "Muito ruim"], "required": true}
+   {"id": "conversa_desconhecidos", "type": "single-choice", "label": "Facilidade em iniciar conversa com desconhecidos", "options": [{"id": "ac80979f-9398-47b7-805b-d677d2c5c193", "label": "Muito fácil"}, {"id": "ddf3c80f-cb44-4c29-b412-8e931f46e8a7", "label": "Fácil"}, {"id": "d6f69b09-ee3f-4d4d-9048-714837701180", "label": "Moderado"}, {"id": "a3af87f7-7fbc-40e5-a053-6e061c03bd2a", "label": "Difícil"}, {"id": "f91b1716-e603-4fb2-a148-b7c2ee5fc991", "label": "Muito difícil"}], "required": true},
+   {"id": "expressar_opiniao", "type": "single-choice", "label": "Facilidade em expressar opinião em grupo", "options": [{"id": "5f01ba5a-dc1d-4019-a88c-f6caab411104", "label": "Muito fácil"}, {"id": "ef86e74e-b1e1-44a9-b692-0e7c29b6c7b1", "label": "Fácil"}, {"id": "643552b5-1cc0-47b7-87cd-bb6a734510e9", "label": "Moderado"}, {"id": "f647eb7a-5ef1-4b64-9825-5b7ae1467f41", "label": "Difícil"}, {"id": "cdc66f34-155a-456a-b1ab-261e395717d1", "label": "Muito difícil"}], "required": true},
+   {"id": "dizer_nao", "type": "single-choice", "label": "Facilidade em dizer não a pedidos", "options": [{"id": "4caa69ff-898e-4380-a071-f11bf1b3c52e", "label": "Muito fácil"}, {"id": "1c56efcc-b20a-4b4b-9d4d-30dbd8f5aef0", "label": "Fácil"}, {"id": "9a1bd1a0-df0c-4679-951a-0a3ecbe83ed3", "label": "Moderado"}, {"id": "195990d0-4478-4b4b-8be6-64a491fde839", "label": "Difícil"}, {"id": "ed050ab2-f3e3-482a-913e-bd4ea8dfaac0", "label": "Muito difícil"}], "required": true},
+   {"id": "receber_criticas", "type": "single-choice", "label": "Como lida com críticas?", "options": [{"id": "dadbac37-6def-4ce7-b8c0-21e4c0fab55f", "label": "Muito bem"}, {"id": "cf4d58fd-5552-44dd-b864-d57c8d296445", "label": "Bem"}, {"id": "9df33b6d-6635-416b-9ea8-6a82ba1e468e", "label": "Razoavelmente"}, {"id": "156974cd-143d-4570-93a7-d00576831acb", "label": "Mal"}, {"id": "17123983-5e56-4d00-a23e-e9af188c9386", "label": "Muito mal"}], "required": true},
+   {"id": "fazer_elogios", "type": "single-choice", "label": "Facilidade em elogiar outras pessoas", "options": [{"id": "426abe0d-da93-4483-b47b-34a111d7cc1b", "label": "Muito fácil"}, {"id": "6d389bc1-d9a5-4096-95cf-8915ba165541", "label": "Fácil"}, {"id": "0d98d939-7894-43e4-9ae0-0e16f24f68e9", "label": "Moderado"}, {"id": "06170e00-2dfc-4615-9d71-1043ebb6e08d", "label": "Difícil"}, {"id": "350dd9e7-829a-41e4-b322-1b7071690499", "label": "Muito difícil"}], "required": true},
+   {"id": "resolver_conflitos", "type": "single-choice", "label": "Habilidade em resolver conflitos interpessoais", "options": [{"id": "af0e8c2c-1401-4a1c-b6b5-f25c71f1216a", "label": "Muito boa"}, {"id": "75b25abe-2c4f-446a-a495-29382ecca3ea", "label": "Boa"}, {"id": "09e3d5be-aceb-4057-80e5-c2f879c95e32", "label": "Regular"}, {"id": "02076272-c614-4e60-acdc-7a415d468c8a", "label": "Ruim"}, {"id": "202d5a03-5b43-4244-8dff-c1974b17b767", "label": "Muito ruim"}], "required": true}
  ]'),
 
 ('e0000013-0000-0000-0000-000000000013',
  'Entrevista de Acolhimento',
  'Formulário de primeiro atendimento e acolhimento do paciente',
  '[
-   {"id": "como_chegou", "type": "select", "label": "Como chegou até este serviço?", "options": ["Indicação médica", "Indicação de amigo/familiar", "Plano de saúde", "Busca própria", "Encaminhamento judicial", "Outro"], "required": true},
-   {"id": "expectativa_atendimento", "type": "textarea", "label": "O que espera do acompanhamento psicológico?", "required": true},
-   {"id": "disponibilidade", "type": "checkbox", "label": "Quais horários tem disponibilidade?", "options": ["Manhã", "Tarde", "Noite", "Sábado"], "required": true},
-   {"id": "modalidade", "type": "radio", "label": "Prefere atendimento presencial ou online?", "options": ["Presencial", "Online", "Sem preferência"], "required": true},
-   {"id": "urgencia", "type": "select", "label": "Como classificaria a urgência do seu caso?", "options": ["Baixa", "Moderada", "Alta", "Emergencial"], "required": true}
+   {"id": "como_chegou", "type": "single-choice", "label": "Como chegou até este serviço?", "options": [{"id": "89de3fb0-7031-4186-aaad-ad674a03bb4f", "label": "Indicação médica"}, {"id": "0982153f-e001-4c08-8ebd-1b44bc44a0e8", "label": "Indicação de amigo/familiar"}, {"id": "a6102c98-b7f6-4ecb-8d75-a3eb0d422e3d", "label": "Plano de saúde"}, {"id": "917f8717-e404-40bb-b027-570b039b6a70", "label": "Busca própria"}, {"id": "45b6080d-bca3-46b5-99a3-f1ed5cac38e8", "label": "Encaminhamento judicial"}, {"id": "74800150-d034-4064-8427-820e71d6d9f8", "label": "Outro"}], "required": true},
+   {"id": "expectativa_atendimento", "type": "long-text", "label": "O que espera do acompanhamento psicológico?", "required": true},
+   {"id": "disponibilidade", "type": "multiple-choice", "label": "Quais horários tem disponibilidade?", "options": [{"id": "2d79cfab-4ec3-41cb-9cd0-222b2a82602a", "label": "Manhã"}, {"id": "6ce819f8-4120-4c64-89ac-4a3d398304fe", "label": "Tarde"}, {"id": "c152c521-b581-4469-9862-ace5300f2b70", "label": "Noite"}, {"id": "df023bbe-6981-4fc5-b499-35ccf3cdac50", "label": "Sábado"}], "required": true},
+   {"id": "modalidade", "type": "single-choice", "label": "Prefere atendimento presencial ou online?", "options": [{"id": "cc824f08-e461-4e53-a25d-4832609a76c0", "label": "Presencial"}, {"id": "ec07271a-fc13-4e1f-a97f-3aa7088afcc3", "label": "Online"}, {"id": "8a2b83bf-a835-4d94-9106-5bc228866536", "label": "Sem preferência"}], "required": true},
+   {"id": "urgencia", "type": "single-choice", "label": "Como classificaria a urgência do seu caso?", "options": [{"id": "7fc7ce41-cc6b-4db5-9ecd-3b7ff738b4c5", "label": "Baixa"}, {"id": "b26f8c98-ebb7-4289-817d-964f8477091f", "label": "Moderada"}, {"id": "de80a274-587e-4486-ac21-eaf4bbe7a0fb", "label": "Alta"}, {"id": "9f3a137d-22ad-4060-9b4f-d78711a803c5", "label": "Emergencial"}], "required": true}
  ]'),
 
 ('e0000014-0000-0000-0000-000000000014',
  'Avaliação de Dependência Digital',
  'Questionário para avaliação do uso problemático de tecnologia',
  '[
-   {"id": "tempo_tela", "type": "select", "label": "Quantas horas por dia usa telas (fora do trabalho)?", "options": ["Menos de 2h", "2-4 horas", "4-6 horas", "6-8 horas", "Mais de 8 horas"], "required": true},
-   {"id": "primeira_acao", "type": "radio", "label": "Checar o celular é a primeira coisa que faz ao acordar?", "options": ["Sim", "Não"], "required": true},
-   {"id": "ansiedade_sem_celular", "type": "select", "label": "Sente ansiedade quando está sem o celular?", "options": ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Sempre"], "required": true},
-   {"id": "prejuizo_sono", "type": "radio", "label": "O uso de telas prejudica seu sono?", "options": ["Sim", "Não", "Às vezes"], "required": true},
-   {"id": "prejuizo_relacoes", "type": "radio", "label": "Pessoas próximas já reclamaram do seu uso de tecnologia?", "options": ["Sim", "Não"], "required": true},
-   {"id": "tentou_reduzir", "type": "radio", "label": "Já tentou reduzir o uso e não conseguiu?", "options": ["Sim", "Não", "Nunca tentei"], "required": true}
+   {"id": "tempo_tela", "type": "single-choice", "label": "Quantas horas por dia usa telas (fora do trabalho)?", "options": [{"id": "727ff236-bd53-4c30-b430-ce762ab5e7ef", "label": "Menos de 2h"}, {"id": "064cd571-511b-4af5-a9fd-2fa112fa90bb", "label": "2-4 horas"}, {"id": "f6d303d1-d8e8-4b64-bdc0-35e371b8ecd7", "label": "4-6 horas"}, {"id": "9bef93f9-d154-494e-b0e9-c8492fd00436", "label": "6-8 horas"}, {"id": "a85371ea-79f1-4f5d-813a-c9e30fc51f7c", "label": "Mais de 8 horas"}], "required": true},
+   {"id": "primeira_acao", "type": "single-choice", "label": "Checar o celular é a primeira coisa que faz ao acordar?", "options": [{"id": "b3bd12ff-b76f-40cf-8b20-c8b679d0ec24", "label": "Sim"}, {"id": "fdacc69b-ef19-41a3-902b-1d23307b7379", "label": "Não"}], "required": true},
+   {"id": "ansiedade_sem_celular", "type": "single-choice", "label": "Sente ansiedade quando está sem o celular?", "options": [{"id": "9defa0f3-83bf-4190-8f6c-4ba783b3febb", "label": "Nunca"}, {"id": "97cf1a19-3383-4396-85ae-de884fbe5a51", "label": "Raramente"}, {"id": "4b6860c3-9081-46c7-828e-e55a1646ee3d", "label": "Às vezes"}, {"id": "4d9f5963-fd28-45d3-be6f-0d9c2c9c6df1", "label": "Frequentemente"}, {"id": "2b07b9e7-f2d2-4f20-b096-3a5d197b2aee", "label": "Sempre"}], "required": true},
+   {"id": "prejuizo_sono", "type": "single-choice", "label": "O uso de telas prejudica seu sono?", "options": [{"id": "b10a3e00-4c80-4af2-9800-fbb2403ac03c", "label": "Sim"}, {"id": "0df9676e-d308-4b7d-a3f6-824ffc32dcc0", "label": "Não"}, {"id": "1351aa31-6dfe-40dd-b2c0-261772ca275e", "label": "Às vezes"}], "required": true},
+   {"id": "prejuizo_relacoes", "type": "single-choice", "label": "Pessoas próximas já reclamaram do seu uso de tecnologia?", "options": [{"id": "2f889993-ceb1-431c-a89c-a4d5abf7694b", "label": "Sim"}, {"id": "6f127044-4473-4558-be95-2cb40d04e7f7", "label": "Não"}], "required": true},
+   {"id": "tentou_reduzir", "type": "single-choice", "label": "Já tentou reduzir o uso e não conseguiu?", "options": [{"id": "f2186904-f644-4edc-be76-5853b8b58947", "label": "Sim"}, {"id": "b259e5a5-30c2-4480-bb0a-0d9cfb1068de", "label": "Não"}, {"id": "b29df0a8-21c9-4fd9-8def-5359944540b0", "label": "Nunca tentei"}], "required": true}
  ]'),
 
 ('e0000015-0000-0000-0000-000000000015',
  'Avaliação de Resiliência',
  'Escala para avaliação de fatores de resiliência psicológica',
  '[
-   {"id": "adaptacao_mudancas", "type": "select", "label": "Capacidade de se adaptar a mudanças", "options": ["Muito alta", "Alta", "Moderada", "Baixa", "Muito baixa"], "required": true},
-   {"id": "lidar_adversidade", "type": "select", "label": "Capacidade de lidar com adversidades", "options": ["Muito alta", "Alta", "Moderada", "Baixa", "Muito baixa"], "required": true},
-   {"id": "otimismo", "type": "select", "label": "Tendência ao otimismo diante de dificuldades", "options": ["Muito alta", "Alta", "Moderada", "Baixa", "Muito baixa"], "required": true},
-   {"id": "autoeficacia", "type": "select", "label": "Confiança na própria capacidade de resolver problemas", "options": ["Muito alta", "Alta", "Moderada", "Baixa", "Muito baixa"], "required": true},
-   {"id": "suporte_social", "type": "select", "label": "Sente que pode contar com outras pessoas?", "options": ["Sempre", "Quase sempre", "Às vezes", "Raramente", "Nunca"], "required": true},
-   {"id": "sentido_experiencias", "type": "select", "label": "Consegue encontrar sentido em experiências difíceis?", "options": ["Sempre", "Quase sempre", "Às vezes", "Raramente", "Nunca"], "required": true},
-   {"id": "humor", "type": "radio", "label": "Consegue usar o humor em situações estressantes?", "options": ["Sim", "Às vezes", "Não"], "required": true}
+   {"id": "adaptacao_mudancas", "type": "single-choice", "label": "Capacidade de se adaptar a mudanças", "options": [{"id": "e0742db1-e655-462c-9ad6-eceddf8d2dc7", "label": "Muito alta"}, {"id": "1b9e159c-a3cb-4c25-82e5-64bc5f488e9f", "label": "Alta"}, {"id": "dd78b5e2-c636-4487-a661-7d53d5516bf5", "label": "Moderada"}, {"id": "5022e029-2819-4d1b-8a2f-0b1c984ed3bb", "label": "Baixa"}, {"id": "9810f4a1-0486-43bb-b723-23514cde1920", "label": "Muito baixa"}], "required": true},
+   {"id": "lidar_adversidade", "type": "single-choice", "label": "Capacidade de lidar com adversidades", "options": [{"id": "b769ca11-8b61-4597-93d0-b85b1e49b84f", "label": "Muito alta"}, {"id": "9769958b-bf4b-45e3-a94e-7bba53979015", "label": "Alta"}, {"id": "1a6c7699-c2d2-43d9-a88c-4329e7cc1447", "label": "Moderada"}, {"id": "4c099518-0aa7-4da1-91c5-7ad0cfc582f8", "label": "Baixa"}, {"id": "59d540b2-b804-4b6f-9bc4-c9a506019a39", "label": "Muito baixa"}], "required": true},
+   {"id": "otimismo", "type": "single-choice", "label": "Tendência ao otimismo diante de dificuldades", "options": [{"id": "a3eb9e4d-3f15-4f2d-b2f1-273f0e49d77e", "label": "Muito alta"}, {"id": "ead94739-dbf7-4a9f-a703-2da8f704b0b5", "label": "Alta"}, {"id": "4215f755-4a88-4795-82f4-d2da17340f32", "label": "Moderada"}, {"id": "9d47aaf9-6609-4870-b20d-e682f2762040", "label": "Baixa"}, {"id": "4b889047-e3e8-4a77-8170-98c10cacb290", "label": "Muito baixa"}], "required": true},
+   {"id": "autoeficacia", "type": "single-choice", "label": "Confiança na própria capacidade de resolver problemas", "options": [{"id": "ad9f32b0-fbfb-47f3-922f-abb370c936e4", "label": "Muito alta"}, {"id": "531fb6be-e26c-4023-8a36-292f6d0040bf", "label": "Alta"}, {"id": "f4e22c8a-e710-478c-a3c6-08f609ed1b00", "label": "Moderada"}, {"id": "2442f09f-616e-4c74-9980-020b7bfeed6d", "label": "Baixa"}, {"id": "d6c336c9-abe6-4a82-aa72-db10cbbdc107", "label": "Muito baixa"}], "required": true},
+   {"id": "suporte_social", "type": "single-choice", "label": "Sente que pode contar com outras pessoas?", "options": [{"id": "5194da37-cb3a-4ee7-964f-277d3818b813", "label": "Sempre"}, {"id": "cf8e71de-9975-4488-a1fe-d9cb4ccb830d", "label": "Quase sempre"}, {"id": "306fd35f-ea63-427d-9dc6-be31e7fb301e", "label": "Às vezes"}, {"id": "6743620d-3664-4b3f-9ba7-b006799fdd33", "label": "Raramente"}, {"id": "60bdcc87-a8f0-4445-9713-18f6618e3689", "label": "Nunca"}], "required": true},
+   {"id": "sentido_experiencias", "type": "single-choice", "label": "Consegue encontrar sentido em experiências difíceis?", "options": [{"id": "1317091c-e207-4eb7-a1aa-9e973c3fa401", "label": "Sempre"}, {"id": "843740c4-8818-4acb-86ef-7552ee272f88", "label": "Quase sempre"}, {"id": "0c9cf4f8-fc89-4070-bfc2-c0a09244a6e9", "label": "Às vezes"}, {"id": "4795edc1-b38f-48d8-be37-6b3ab2bdc1f4", "label": "Raramente"}, {"id": "65c1c57b-9c3f-4607-acf1-66ced3894821", "label": "Nunca"}], "required": true},
+   {"id": "humor", "type": "single-choice", "label": "Consegue usar o humor em situações estressantes?", "options": [{"id": "06f8a835-0d95-4dfc-a2c9-1c754ac5715a", "label": "Sim"}, {"id": "f6a53c17-149f-41a6-94ad-8c7b2fba5eaf", "label": "Às vezes"}, {"id": "fd98b0f0-4b69-45bb-9feb-8a740fd301de", "label": "Não"}], "required": true}
  ]');
