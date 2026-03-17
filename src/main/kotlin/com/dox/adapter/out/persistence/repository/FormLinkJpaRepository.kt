@@ -7,4 +7,5 @@ import java.util.UUID
 interface FormLinkJpaRepository : JpaRepository<FormLinkJpaEntity, UUID> {
 
     fun findAllByOrderByCreatedAtDesc(): List<FormLinkJpaEntity>
+    fun findByCustomerIdOrderByCreatedAtDesc(customerId: UUID): List<FormLinkJpaEntity>
 }

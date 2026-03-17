@@ -28,8 +28,14 @@ class FormLinkResourceImpl(
             HttpStatus.CREATED
         )
 
-    override fun findAll(): ResponseEntity<List<FormLinkResponse>> =
-        responseEntity(formLinkUseCase.findFormLinksByTenant().map { it.toResponse() })
+    override fun findAll(customerId: UUID?): ResponseEntity<List<FormLinkResponse>> {
+        val links = if (customerId != null) {
+            formLinkUseCase.findFormLinksByCustomer(customerId)
+        } else {
+            formLinkUseCase.findFormLinksByTenant()
+        }
+        return responseEntity(links.map { it.toResponse() })
+    }
 
     override fun revoke(id: UUID): ResponseEntity<Void> {
         formLinkUseCase.revokeFormLink(id)

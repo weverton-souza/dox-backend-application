@@ -19,25 +19,39 @@ data class FormResponseDto(
     val fields: List<Map<String, Any?>>,
     val linkedTemplateId: UUID?,
     val fieldMappings: Map<String, Any?>,
+    val currentVersion: Int,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
+)
+
+data class FormVersionResponseDto(
+    val id: UUID,
+    val formId: UUID,
+    val version: Int,
+    val title: String,
+    val description: String?,
+    val fields: List<Map<String, Any?>>,
+    val fieldMappings: Map<String, Any?>,
+    val createdAt: LocalDateTime?
 )
 
 data class FormResponseRequest(
     val customerId: UUID? = null,
     val customerName: String? = null,
     val status: FormResponseStatus? = null,
-    val answers: Map<String, Any?> = emptyMap()
+    val answers: List<Map<String, Any?>> = emptyList()
 )
 
 data class FormResponseResponseDto(
     val id: UUID,
     val formId: UUID,
+    val formVersionId: UUID,
     val customerId: UUID?,
     val customerName: String?,
     val status: FormResponseStatus,
-    val answers: Map<String, Any?>,
+    val answers: List<Map<String, Any?>>,
     val generatedReportId: UUID?,
+    val version: Int?,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
 )

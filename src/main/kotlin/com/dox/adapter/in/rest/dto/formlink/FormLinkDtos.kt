@@ -30,7 +30,7 @@ data class PublicFormResponse(
 )
 
 data class PublicFormSubmitRequest(
-    val answers: Map<String, Any?> = emptyMap()
+    val answers: List<Map<String, Any?>> = emptyList()
 )
 
 data class PublicFormSubmitResponse(

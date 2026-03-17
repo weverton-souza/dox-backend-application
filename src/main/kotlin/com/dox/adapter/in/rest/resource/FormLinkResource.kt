@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import java.util.UUID
 
 @Tag(name = "Links de Formulário", description = "Gerenciamento de links públicos para formulários")
@@ -21,9 +22,9 @@ interface FormLinkResource : BaseResource {
     @PostMapping
     fun create(@RequestBody request: CreateFormLinkRequest): ResponseEntity<FormLinkResponse>
 
-    @Operation(summary = "Listar links do tenant")
+    @Operation(summary = "Listar links do tenant, opcionalmente filtrado por cliente")
     @GetMapping
-    fun findAll(): ResponseEntity<List<FormLinkResponse>>
+    fun findAll(@RequestParam(required = false) customerId: UUID?): ResponseEntity<List<FormLinkResponse>>
 
     @Operation(summary = "Revogar link")
     @DeleteMapping("/{id}")

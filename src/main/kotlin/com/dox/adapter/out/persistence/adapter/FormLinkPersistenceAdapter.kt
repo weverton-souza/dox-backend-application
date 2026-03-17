@@ -29,6 +29,9 @@ class FormLinkPersistenceAdapter(
     override fun findAll(): List<FormLink> =
         formLinkJpaRepository.findAllByOrderByCreatedAtDesc().map { it.toDomain() }
 
+    override fun findByCustomerId(customerId: UUID): List<FormLink> =
+        formLinkJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
+
     private fun FormLinkJpaEntity.toDomain() = FormLink(
         id, formId, customerId, createdBy, status, expiresAt, createdAt, updatedAt
     )

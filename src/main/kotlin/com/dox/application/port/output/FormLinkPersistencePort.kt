@@ -10,4 +10,6 @@ interface FormLinkPersistencePort {
     fun findById(id: UUID): FormLink?
 
     fun findAll(): List<FormLink>
+
+    fun findByCustomerId(customerId: UUID): List<FormLink>
 }

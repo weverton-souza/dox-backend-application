@@ -61,8 +61,25 @@ INSERT INTO reports (id, status, customer_name, customer_id, blocks) VALUES
 ('d0000015-0000-0000-0000-000000000015', 'FINALIZADO', 'Adriana Campos Lopes', 'c0000015-0000-0000-0000-000000000015',
  '[{"id":"b0150000-0000-0000-0000-000000000001","type":"identification","order":0,"collapsed":false,"data":{"professional":{"name":"Dra. Ana Silva","crp":"06/12345","specialization":"Psicologia Clínica"},"customer":{"name":"Adriana Campos Lopes","cpf":"555.777.999-11","birthDate":"2003-01-09","age":"22 anos","education":"Ensino Superior Incompleto","profession":"Estudante de Psicologia","motherName":"Beatriz Lopes","fatherName":"Fernando Campos Lopes"},"date":"2025-12-15","location":"São Paulo - SP"}},{"id":"b0150001-0000-0000-0000-000000000001","type":"text","order":1,"collapsed":false,"data":{"title":"HISTÓRICO DO ATENDIMENTO","subtitle":"Relatório de Alta Terapêutica","content":"Paciente do sexo feminino, 22 anos, iniciou processo psicoterapêutico em setembro de 2024 com queixa principal de ansiedade social severa que impactava significativamente sua vida acadêmica e social. Frequência inicial semanal, totalizando 72 sessões ao longo de 18 meses.","labeledItems":[],"useLabeledItems":false}},{"id":"b0150002-0000-0000-0000-000000000001","type":"text","order":2,"collapsed":false,"data":{"title":"EVOLUÇÃO E RESULTADOS","subtitle":"","content":"Objetivos terapêuticos alcançados com remissão completa dos sintomas de ansiedade social. Paciente conseguiu retomar apresentações acadêmicas, participar de eventos sociais e iniciar estágio profissional. Escore na Escala de Ansiedade Social de Liebowitz reduziu de 82 (ansiedade social severa) para 24 (ansiedade social não significativa). Manutenção dos ganhos terapêuticos por período superior a 3 meses.","labeledItems":[],"useLabeledItems":false}},{"id":"b0150003-0000-0000-0000-000000000001","type":"text","order":3,"collapsed":false,"data":{"title":"ALTA","subtitle":"","content":"Alta terapêutica consensual, acordada entre terapeuta e paciente, com base na estabilidade dos resultados obtidos. Orientação para retorno caso haja recorrência dos sintomas ou surgimento de novas demandas. Portas abertas para retomada do processo a qualquer momento.","labeledItems":[],"useLabeledItems":false}}]');
 
-INSERT INTO forms (id, title, description, fields) VALUES
-('e0000001-0000-0000-0000-000000000001',
+INSERT INTO forms (id, current_version) VALUES
+('e0000001-0000-0000-0000-000000000001', 2),
+('e0000002-0000-0000-0000-000000000002', 2),
+('e0000003-0000-0000-0000-000000000003', 2),
+('e0000004-0000-0000-0000-000000000004', 1),
+('e0000005-0000-0000-0000-000000000005', 1),
+('e0000006-0000-0000-0000-000000000006', 1),
+('e0000007-0000-0000-0000-000000000007', 1),
+('e0000008-0000-0000-0000-000000000008', 1),
+('e0000009-0000-0000-0000-000000000009', 1),
+('e0000010-0000-0000-0000-000000000010', 1),
+('e0000011-0000-0000-0000-000000000011', 1),
+('e0000012-0000-0000-0000-000000000012', 1),
+('e0000013-0000-0000-0000-000000000013', 1),
+('e0000014-0000-0000-0000-000000000014', 1),
+('e0000015-0000-0000-0000-000000000015', 1);
+
+INSERT INTO form_versions (id, form_id, version, title, description, fields) VALUES
+('f0000001-0000-0000-0000-000000000001', 'e0000001-0000-0000-0000-000000000001', 1,
  'Anamnese Psicológica Adulto',
  'Formulário completo de anamnese para pacientes adultos',
  '[
@@ -74,7 +91,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "qualidade_sono", "type": "single-choice", "label": "Como avalia a qualidade do seu sono?", "options": [{"id": "24d0fcae-fd2b-4745-8541-a1b2eafb9638", "label": "Ótimo"}, {"id": "351f1d5b-861a-43bb-af2d-5e54e02f1a54", "label": "Bom"}, {"id": "7530470a-ee5b-4d1f-8b93-00f5e12aab78", "label": "Regular"}, {"id": "538d5b69-54b9-4f67-bb3a-1fda3d3ba11f", "label": "Ruim"}, {"id": "987a2a1c-d30b-407a-99fc-98a166da81fd", "label": "Péssimo"}], "required": true}
  ]'),
 
-('e0000002-0000-0000-0000-000000000002',
+('f0000002-0000-0000-0000-000000000001', 'e0000002-0000-0000-0000-000000000002', 1,
  'Avaliação de Ansiedade (BAI Adaptado)',
  'Escala de avaliação de sintomas de ansiedade nas últimas 4 semanas',
  '[
@@ -87,7 +104,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "suor_excessivo", "type": "single-choice", "label": "Suor excessivo (não causado por calor)", "options": [{"id": "7b0c705c-1d2e-4ec7-8158-b001827ce60e", "label": "Nunca"}, {"id": "c2c77ce4-c917-45be-8f00-2cee154e3940", "label": "Levemente"}, {"id": "b2cae423-b70c-448e-87d0-e8c5dd4f1975", "label": "Moderadamente"}, {"id": "ac855256-0690-45ee-8917-1300d770da05", "label": "Severamente"}], "required": true}
  ]'),
 
-('e0000003-0000-0000-0000-000000000003',
+('f0000003-0000-0000-0000-000000000001', 'e0000003-0000-0000-0000-000000000003', 1,
  'Inventário de Depressão (BDI Adaptado)',
  'Escala para rastreamento de sintomas depressivos',
  '[
@@ -98,7 +115,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "culpa", "type": "single-choice", "label": "Sentimento de culpa", "options": [{"id": "683334be-ebbd-4caa-8e66-95859b1f7fa4", "label": "Não me sinto culpado"}, {"id": "d0ec3e4f-f9ba-48e5-a9fb-f9f50d59f201", "label": "Sinto culpa por muitas coisas"}, {"id": "d50dd70d-5f52-482f-a989-9f6135a35857", "label": "Me sinto culpado a maior parte do tempo"}, {"id": "446cfeed-394b-44d3-a4ac-8405c625fbd2", "label": "Me sinto culpado o tempo todo"}], "required": true}
  ]'),
 
-('e0000004-0000-0000-0000-000000000004',
+('f0000004-0000-0000-0000-000000000001', 'e0000004-0000-0000-0000-000000000004', 1,
  'Anamnese Infantil',
  'Formulário de anamnese para crianças e adolescentes (preenchido pelo responsável)',
  '[
@@ -111,7 +128,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "eventos_traumaticos", "type": "long-text", "label": "Houve algum evento traumático na vida da criança?", "required": false}
  ]'),
 
-('e0000005-0000-0000-0000-000000000005',
+('f0000005-0000-0000-0000-000000000001', 'e0000005-0000-0000-0000-000000000005', 1,
  'Avaliação de Estresse Ocupacional',
  'Questionário para identificação de fatores de estresse no trabalho',
  '[
@@ -123,7 +140,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "atividades_lazer", "type": "single-choice", "label": "Consegue manter atividades de lazer regularmente?", "options": [{"id": "07e6e9ec-6037-43f0-b7a0-f413a043988a", "label": "Sim"}, {"id": "1413e22b-e6e7-4c92-98ad-790cb6763d52", "label": "Não"}, {"id": "99704928-98e7-417c-a249-3d6b0f27bdbf", "label": "Raramente"}], "required": true}
  ]'),
 
-('e0000006-0000-0000-0000-000000000006',
+('f0000006-0000-0000-0000-000000000001', 'e0000006-0000-0000-0000-000000000006', 1,
  'Triagem de Transtorno Alimentar',
  'Questionário de triagem para identificação de comportamentos alimentares disfuncionais',
  '[
@@ -134,7 +151,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "imagem_corporal", "type": "single-choice", "label": "Como se sente em relação ao seu corpo?", "options": [{"id": "f4fc7c3a-8414-49fb-a94a-0127b0b45e31", "label": "Muito satisfeito"}, {"id": "377b6af0-0b63-4f92-9af7-dd0632dfa0b2", "label": "Satisfeito"}, {"id": "f9545192-47ca-4070-8651-c96d2270938d", "label": "Neutro"}, {"id": "d4b61d44-795d-438a-8b79-73b0cbbfee13", "label": "Insatisfeito"}, {"id": "1031d3b9-ac06-4494-8751-9536867bb72d", "label": "Muito insatisfeito"}], "required": true}
  ]'),
 
-('e0000007-0000-0000-0000-000000000007',
+('f0000007-0000-0000-0000-000000000001', 'e0000007-0000-0000-0000-000000000007', 1,
  'Avaliação de Casal',
  'Formulário para avaliação do relacionamento conjugal',
  '[
@@ -146,7 +163,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "tentativas_anteriores", "type": "single-choice", "label": "Já tentaram terapia de casal antes?", "options": [{"id": "ebeb84f8-f89c-4e25-8e9e-d9f793a281c2", "label": "Sim"}, {"id": "3be5b131-32f2-4ddf-a595-3ec6119e5ad9", "label": "Não"}], "required": true}
  ]'),
 
-('e0000008-0000-0000-0000-000000000008',
+('f0000008-0000-0000-0000-000000000001', 'e0000008-0000-0000-0000-000000000008', 1,
  'Screening de TDAH Adulto',
  'Questionário de rastreamento para Transtorno de Déficit de Atenção e Hiperatividade em adultos',
  '[
@@ -159,7 +176,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "sintomas_infancia", "type": "single-choice", "label": "Apresentava esses sintomas na infância?", "options": [{"id": "245beb0b-bb40-41b3-9715-53fff811e89a", "label": "Sim"}, {"id": "459d08f9-e84f-4970-9df9-b63d8a34a1c0", "label": "Não"}, {"id": "2cbe3e4f-3566-49fd-a2c0-9cab7a6ae740", "label": "Não sei"}], "required": true}
  ]'),
 
-('e0000009-0000-0000-0000-000000000009',
+('f0000009-0000-0000-0000-000000000001', 'e0000009-0000-0000-0000-000000000009', 1,
  'Avaliação de Luto',
  'Formulário para avaliação do processo de luto',
  '[
@@ -171,7 +188,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "rede_apoio", "type": "single-choice", "label": "Tem rede de apoio (família, amigos)?", "options": [{"id": "6426f5db-49d0-42d6-89e9-67c975024576", "label": "Sim, forte"}, {"id": "89f3038e-5641-4a90-aede-f37994c024aa", "label": "Sim, mas fraca"}, {"id": "1c4b53f2-e252-4444-9bac-acd54a3e6413", "label": "Não"}], "required": true}
  ]'),
 
-('e0000010-0000-0000-0000-000000000010',
+('f0000010-0000-0000-0000-000000000001', 'e0000010-0000-0000-0000-000000000010', 1,
  'Avaliação Pré-Cirúrgica',
  'Formulário de avaliação psicológica pré-cirúrgica',
  '[
@@ -184,7 +201,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "uso_substancias", "type": "multiple-choice", "label": "Faz uso de alguma substância?", "options": [{"id": "b90889eb-5df9-4113-ad83-e97db8c7aff8", "label": "Álcool"}, {"id": "1635e301-1903-4b90-bd61-3eb93f215d09", "label": "Tabaco"}, {"id": "5379308c-f8dc-44f3-8c5b-4ce293275d1c", "label": "Drogas ilícitas"}, {"id": "1a40229b-86c2-4ed0-b50b-9147e18d770e", "label": "Nenhuma"}], "required": true}
  ]'),
 
-('e0000011-0000-0000-0000-000000000011',
+('f0000011-0000-0000-0000-000000000001', 'e0000011-0000-0000-0000-000000000011', 1,
  'Questionário de Qualidade de Vida',
  'Avaliação da qualidade de vida em diferentes domínios',
  '[
@@ -196,7 +213,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "sentido_vida", "type": "single-choice", "label": "Em que medida sua vida tem sentido?", "options": [{"id": "8032ed6f-ef6d-481f-b0dd-231e1fb8b7ff", "label": "Completamente"}, {"id": "63e2edf8-406e-488f-867e-7d65e84d8e64", "label": "Bastante"}, {"id": "776dc002-3232-44e9-ac2e-a6f98c25c4a5", "label": "Moderadamente"}, {"id": "7bb8f133-e53a-415d-91b4-c014b3ec65c3", "label": "Pouco"}, {"id": "ca2085d0-c530-46a7-962c-f56149ce00f5", "label": "Nada"}], "required": true}
  ]'),
 
-('e0000012-0000-0000-0000-000000000012',
+('f0000012-0000-0000-0000-000000000001', 'e0000012-0000-0000-0000-000000000012', 1,
  'Avaliação de Habilidades Sociais',
  'Inventário para avaliação de competências sociais',
  '[
@@ -208,7 +225,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "resolver_conflitos", "type": "single-choice", "label": "Habilidade em resolver conflitos interpessoais", "options": [{"id": "af0e8c2c-1401-4a1c-b6b5-f25c71f1216a", "label": "Muito boa"}, {"id": "75b25abe-2c4f-446a-a495-29382ecca3ea", "label": "Boa"}, {"id": "09e3d5be-aceb-4057-80e5-c2f879c95e32", "label": "Regular"}, {"id": "02076272-c614-4e60-acdc-7a415d468c8a", "label": "Ruim"}, {"id": "202d5a03-5b43-4244-8dff-c1974b17b767", "label": "Muito ruim"}], "required": true}
  ]'),
 
-('e0000013-0000-0000-0000-000000000013',
+('f0000013-0000-0000-0000-000000000001', 'e0000013-0000-0000-0000-000000000013', 1,
  'Entrevista de Acolhimento',
  'Formulário de primeiro atendimento e acolhimento do paciente',
  '[
@@ -219,7 +236,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "urgencia", "type": "single-choice", "label": "Como classificaria a urgência do seu caso?", "options": [{"id": "7fc7ce41-cc6b-4db5-9ecd-3b7ff738b4c5", "label": "Baixa"}, {"id": "b26f8c98-ebb7-4289-817d-964f8477091f", "label": "Moderada"}, {"id": "de80a274-587e-4486-ac21-eaf4bbe7a0fb", "label": "Alta"}, {"id": "9f3a137d-22ad-4060-9b4f-d78711a803c5", "label": "Emergencial"}], "required": true}
  ]'),
 
-('e0000014-0000-0000-0000-000000000014',
+('f0000014-0000-0000-0000-000000000001', 'e0000014-0000-0000-0000-000000000014', 1,
  'Avaliação de Dependência Digital',
  'Questionário para avaliação do uso problemático de tecnologia',
  '[
@@ -231,7 +248,7 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "tentou_reduzir", "type": "single-choice", "label": "Já tentou reduzir o uso e não conseguiu?", "options": [{"id": "f2186904-f644-4edc-be76-5853b8b58947", "label": "Sim"}, {"id": "b259e5a5-30c2-4480-bb0a-0d9cfb1068de", "label": "Não"}, {"id": "b29df0a8-21c9-4fd9-8def-5359944540b0", "label": "Nunca tentei"}], "required": true}
  ]'),
 
-('e0000015-0000-0000-0000-000000000015',
+('f0000015-0000-0000-0000-000000000001', 'e0000015-0000-0000-0000-000000000015', 1,
  'Avaliação de Resiliência',
  'Escala para avaliação de fatores de resiliência psicológica',
  '[
@@ -242,4 +259,79 @@ INSERT INTO forms (id, title, description, fields) VALUES
    {"id": "suporte_social", "type": "single-choice", "label": "Sente que pode contar com outras pessoas?", "options": [{"id": "5194da37-cb3a-4ee7-964f-277d3818b813", "label": "Sempre"}, {"id": "cf8e71de-9975-4488-a1fe-d9cb4ccb830d", "label": "Quase sempre"}, {"id": "306fd35f-ea63-427d-9dc6-be31e7fb301e", "label": "Às vezes"}, {"id": "6743620d-3664-4b3f-9ba7-b006799fdd33", "label": "Raramente"}, {"id": "60bdcc87-a8f0-4445-9713-18f6618e3689", "label": "Nunca"}], "required": true},
    {"id": "sentido_experiencias", "type": "single-choice", "label": "Consegue encontrar sentido em experiências difíceis?", "options": [{"id": "1317091c-e207-4eb7-a1aa-9e973c3fa401", "label": "Sempre"}, {"id": "843740c4-8818-4acb-86ef-7552ee272f88", "label": "Quase sempre"}, {"id": "0c9cf4f8-fc89-4070-bfc2-c0a09244a6e9", "label": "Às vezes"}, {"id": "4795edc1-b38f-48d8-be37-6b3ab2bdc1f4", "label": "Raramente"}, {"id": "65c1c57b-9c3f-4607-acf1-66ced3894821", "label": "Nunca"}], "required": true},
    {"id": "humor", "type": "single-choice", "label": "Consegue usar o humor em situações estressantes?", "options": [{"id": "06f8a835-0d95-4dfc-a2c9-1c754ac5715a", "label": "Sim"}, {"id": "f6a53c17-149f-41a6-94ad-8c7b2fba5eaf", "label": "Às vezes"}, {"id": "fd98b0f0-4b69-45bb-9feb-8a740fd301de", "label": "Não"}], "required": true}
+ ]'),
+
+('f0000016-0000-0000-0000-000000000001', 'e0000001-0000-0000-0000-000000000001', 2,
+ 'Anamnese Psicológica Adulto',
+ 'Formulário completo de anamnese para pacientes adultos',
+ '[
+   {"id": "queixa_principal", "type": "long-text", "label": "Qual a queixa principal?", "required": true},
+   {"id": "historico_sintomas", "type": "long-text", "label": "Há quanto tempo apresenta esses sintomas?", "required": true},
+   {"id": "tratamentos_anteriores", "type": "single-choice", "label": "Já realizou tratamento psicológico anteriormente?", "options": [{"id": "f537a31c-35e8-4c71-8ad3-29bfd668b3c7", "label": "Sim"}, {"id": "c0df9689-4807-45a2-9f03-81c92f702cf1", "label": "Não"}], "required": true},
+   {"id": "medicacao", "type": "short-text", "label": "Faz uso de alguma medicação? Qual?", "required": false},
+   {"id": "historico_familiar", "type": "long-text", "label": "Existe histórico de transtornos mentais na família?", "required": true},
+   {"id": "qualidade_sono", "type": "single-choice", "label": "Como avalia a qualidade do seu sono?", "options": [{"id": "24d0fcae-fd2b-4745-8541-a1b2eafb9638", "label": "Ótimo"}, {"id": "351f1d5b-861a-43bb-af2d-5e54e02f1a54", "label": "Bom"}, {"id": "7530470a-ee5b-4d1f-8b93-00f5e12aab78", "label": "Regular"}, {"id": "538d5b69-54b9-4f67-bb3a-1fda3d3ba11f", "label": "Ruim"}, {"id": "987a2a1c-d30b-407a-99fc-98a166da81fd", "label": "Péssimo"}], "required": true},
+   {"id": "atividade_fisica", "type": "single-choice", "label": "Pratica atividade física regularmente?", "options": [{"id": "a1b2c3d4-0000-0000-0000-000000000001", "label": "Sim, diariamente"}, {"id": "a1b2c3d4-0000-0000-0000-000000000002", "label": "Sim, algumas vezes por semana"}, {"id": "a1b2c3d4-0000-0000-0000-000000000003", "label": "Raramente"}, {"id": "a1b2c3d4-0000-0000-0000-000000000004", "label": "Não pratico"}], "required": true}
+ ]'),
+
+('f0000017-0000-0000-0000-000000000001', 'e0000002-0000-0000-0000-000000000002', 2,
+ 'Avaliação de Ansiedade (BAI Adaptado)',
+ 'Escala de avaliação de sintomas de ansiedade nas últimas 4 semanas',
+ '[
+   {"id": "nervosismo", "type": "single-choice", "label": "Nervosismo ou inquietação", "options": [{"id": "745c7027-f657-4f10-a693-c80bec89c999", "label": "Nunca"}, {"id": "19942d68-65c2-4967-ad64-dcb647b2ebc6", "label": "Levemente"}, {"id": "dbd476ca-9a3a-46c2-8af2-db37e720638c", "label": "Moderadamente"}, {"id": "0e99d03f-b8d8-4f9b-97ec-3e0e17b36409", "label": "Severamente"}], "required": true},
+   {"id": "tremores", "type": "single-choice", "label": "Tremores nas mãos ou no corpo", "options": [{"id": "ebaf8aff-161f-42f7-a52a-049e1ab16608", "label": "Nunca"}, {"id": "3bec4f27-850b-4bfa-91c0-21999bbbb081", "label": "Levemente"}, {"id": "503ba5ad-bfe3-48b1-be97-fdd28e89cb87", "label": "Moderadamente"}, {"id": "0d1b6e4f-45cf-4051-b994-c82a1f4bb8ca", "label": "Severamente"}], "required": true},
+   {"id": "medo_perder_controle", "type": "single-choice", "label": "Medo de perder o controle", "options": [{"id": "7f8272d6-5cfb-411f-b7bc-6fb37504fe2d", "label": "Nunca"}, {"id": "f1c799cc-79df-47af-8caf-d248c1f9e0c2", "label": "Levemente"}, {"id": "39cd71a4-d062-45fb-8afa-d1587610f2d5", "label": "Moderadamente"}, {"id": "beda7680-caa9-4cff-b1ca-743a21f44c80", "label": "Severamente"}], "required": true},
+   {"id": "dificuldade_respirar", "type": "single-choice", "label": "Dificuldade de respirar", "options": [{"id": "11bd1cc0-c566-4fc8-ba6d-3e22d73931fe", "label": "Nunca"}, {"id": "f706c4f9-2013-4707-b107-d7817ae608cf", "label": "Levemente"}, {"id": "e5857501-33f7-45d3-948b-6e5382eb7171", "label": "Moderadamente"}, {"id": "fffac00d-284e-495b-b90b-3e42dd5f100a", "label": "Severamente"}], "required": true},
+   {"id": "taquicardia", "type": "single-choice", "label": "Coração acelerado ou palpitações", "options": [{"id": "b6b353a7-0ae1-43dd-99c6-a55ec850432a", "label": "Nunca"}, {"id": "24540f06-7f90-4277-9aaf-0af1b6a162f2", "label": "Levemente"}, {"id": "f2863e5a-1a00-4d6e-af2a-3e507d02f883", "label": "Moderadamente"}, {"id": "625ff35b-88a3-4ec7-97e3-a5109e567c5f", "label": "Severamente"}], "required": true},
+   {"id": "tontura", "type": "single-choice", "label": "Tontura ou sensação de desmaio", "options": [{"id": "820c84d3-007b-4e9e-8781-9b98ef997b93", "label": "Nunca"}, {"id": "15b8cea8-039c-4792-abe8-07632f47c1c5", "label": "Levemente"}, {"id": "bb81bdc7-daca-40aa-aaae-4af9455ab729", "label": "Moderadamente"}, {"id": "4ee706cf-88e7-4f77-8b7e-43ece93b1ee1", "label": "Severamente"}], "required": true},
+   {"id": "suor_excessivo", "type": "single-choice", "label": "Suor excessivo (não causado por calor)", "options": [{"id": "7b0c705c-1d2e-4ec7-8158-b001827ce60e", "label": "Nunca"}, {"id": "c2c77ce4-c917-45be-8f00-2cee154e3940", "label": "Levemente"}, {"id": "b2cae423-b70c-448e-87d0-e8c5dd4f1975", "label": "Moderadamente"}, {"id": "ac855256-0690-45ee-8917-1300d770da05", "label": "Severamente"}], "required": true},
+   {"id": "dificuldade_relaxar", "type": "single-choice", "label": "Dificuldade para relaxar", "options": [{"id": "b2c3d4e5-0000-0000-0000-000000000001", "label": "Nunca"}, {"id": "b2c3d4e5-0000-0000-0000-000000000002", "label": "Levemente"}, {"id": "b2c3d4e5-0000-0000-0000-000000000003", "label": "Moderadamente"}, {"id": "b2c3d4e5-0000-0000-0000-000000000004", "label": "Severamente"}], "required": true}
+ ]'),
+
+('f0000018-0000-0000-0000-000000000001', 'e0000003-0000-0000-0000-000000000003', 2,
+ 'Inventário de Depressão (BDI-II Adaptado)',
+ 'Escala para rastreamento de sintomas depressivos',
+ '[
+   {"id": "tristeza", "type": "single-choice", "label": "Sentimento de tristeza", "options": [{"id": "b1c3a66a-8e31-4ea6-bf25-e3c9049cfcc0", "label": "Não me sinto triste"}, {"id": "ed40b71c-dcfa-47b1-8e51-658885e871a2", "label": "Sinto-me triste boa parte do tempo"}, {"id": "28dced0c-ae56-4ddc-9a69-80e6eadaec0f", "label": "Estou triste o tempo todo"}, {"id": "59c8bcd3-6204-47c9-a8ed-609dfaf8cdd7", "label": "Estou tão triste que não consigo suportar"}], "required": true},
+   {"id": "pessimismo", "type": "single-choice", "label": "Pessimismo em relação ao futuro", "options": [{"id": "8745f740-3b89-4d14-bfba-668a86a7972d", "label": "Não estou pessimista"}, {"id": "2621d693-263d-4cc4-a652-a4a1c061f799", "label": "Sou mais pessimista que de costume"}, {"id": "62bd22e0-9a7f-4f68-9591-71f427618850", "label": "Não espero que as coisas melhorem"}, {"id": "d1c60b17-45ef-4d65-b6d8-2533a4d318b2", "label": "Sinto que o futuro é sem esperança"}], "required": true},
+   {"id": "fracasso", "type": "single-choice", "label": "Sentimento de fracasso", "options": [{"id": "82e7982e-93c1-4f91-8376-0716b206323e", "label": "Não me sinto fracassado"}, {"id": "f5b1fcaf-4fc2-43cb-9da5-5dc7ba3fdfc6", "label": "Fracassei mais do que deveria"}, {"id": "9a4f4e31-e4ca-4c9c-89c1-f299ab5346ec", "label": "Vejo muitos fracassos"}, {"id": "d12f5000-6d94-46be-85d4-a2025ddd9b0d", "label": "Me sinto um completo fracasso"}], "required": true},
+   {"id": "perda_prazer", "type": "single-choice", "label": "Perda de prazer nas atividades", "options": [{"id": "2b00ae27-4039-4894-b2aa-53732fd4177b", "label": "Tenho prazer nas coisas"}, {"id": "220d0d3e-d0b8-4791-b72a-072f342faf6b", "label": "Não sinto tanto prazer como antes"}, {"id": "c0f0c0cd-d0c6-4461-aa32-507dbf0654c4", "label": "Tenho pouco prazer"}, {"id": "85fce1b8-f744-4614-ac00-11ace10ad926", "label": "Não tenho prazer em nada"}], "required": true},
+   {"id": "culpa", "type": "single-choice", "label": "Sentimento de culpa", "options": [{"id": "683334be-ebbd-4caa-8e66-95859b1f7fa4", "label": "Não me sinto culpado"}, {"id": "d0ec3e4f-f9ba-48e5-a9fb-f9f50d59f201", "label": "Sinto culpa por muitas coisas"}, {"id": "d50dd70d-5f52-482f-a989-9f6135a35857", "label": "Me sinto culpado a maior parte do tempo"}, {"id": "446cfeed-394b-44d3-a4ac-8405c625fbd2", "label": "Me sinto culpado o tempo todo"}], "required": true}
  ]');
+
+INSERT INTO form_responses (id, form_id, form_version_id, customer_id, customer_name, status, answers) VALUES
+('fa000001-0000-0000-0000-000000000001', 'e0000001-0000-0000-0000-000000000001', 'f0000001-0000-0000-0000-000000000001',
+ 'c0000001-0000-0000-0000-000000000001', 'Maria Aparecida Santos', 'CONCLUIDO',
+ '[{"fieldId": "queixa_principal", "value": "Ansiedade intensa e crises de pânico frequentes nos últimos 8 meses"}, {"fieldId": "historico_sintomas", "value": "Aproximadamente 8 meses, com piora após mudança de emprego"}, {"fieldId": "tratamentos_anteriores", "selectedOptionIds": ["f537a31c-35e8-4c71-8ad3-29bfd668b3c7"]}, {"fieldId": "medicacao", "value": "Escitalopram 10mg"}, {"fieldId": "historico_familiar", "value": "Mãe com diagnóstico de depressão, avó materna com transtorno de ansiedade"}, {"fieldId": "qualidade_sono", "selectedOptionIds": ["538d5b69-54b9-4f67-bb3a-1fda3d3ba11f"]}]'),
+
+('fa000002-0000-0000-0000-000000000001', 'e0000001-0000-0000-0000-000000000001', 'f0000001-0000-0000-0000-000000000001',
+ 'c0000002-0000-0000-0000-000000000002', 'José Carlos Oliveira', 'CONCLUIDO',
+ '[{"fieldId": "queixa_principal", "value": "Dificuldades de concentração e memória no trabalho"}, {"fieldId": "historico_sintomas", "value": "Cerca de 1 ano, coincidindo com aumento de responsabilidades"}, {"fieldId": "tratamentos_anteriores", "selectedOptionIds": ["c0df9689-4807-45a2-9f03-81c92f702cf1"]}, {"fieldId": "medicacao", "value": ""}, {"fieldId": "historico_familiar", "value": "Sem histórico relevante"}, {"fieldId": "qualidade_sono", "selectedOptionIds": ["7530470a-ee5b-4d1f-8b93-00f5e12aab78"]}]'),
+
+('fa000003-0000-0000-0000-000000000001', 'e0000001-0000-0000-0000-000000000001', 'f0000016-0000-0000-0000-000000000001',
+ 'c0000003-0000-0000-0000-000000000003', 'Fernanda Rodrigues Lima', 'EM_ANDAMENTO',
+ '[{"fieldId": "queixa_principal", "value": "Episódios de tristeza profunda e falta de motivação"}, {"fieldId": "historico_sintomas", "value": "6 meses"}, {"fieldId": "tratamentos_anteriores", "selectedOptionIds": ["f537a31c-35e8-4c71-8ad3-29bfd668b3c7"]}, {"fieldId": "medicacao", "value": "Sertralina 50mg"}, {"fieldId": "historico_familiar", "value": ""}, {"fieldId": "qualidade_sono", "selectedOptionIds": ["7530470a-ee5b-4d1f-8b93-00f5e12aab78"]}, {"fieldId": "atividade_fisica", "selectedOptionIds": ["a1b2c3d4-0000-0000-0000-000000000003"]}]'),
+
+('fa000004-0000-0000-0000-000000000001', 'e0000002-0000-0000-0000-000000000002', 'f0000002-0000-0000-0000-000000000001',
+ 'c0000004-0000-0000-0000-000000000004', 'Ricardo Alves Barbosa', 'CONCLUIDO',
+ '[{"fieldId": "nervosismo", "selectedOptionIds": ["dbd476ca-9a3a-46c2-8af2-db37e720638c"]}, {"fieldId": "tremores", "selectedOptionIds": ["3bec4f27-850b-4bfa-91c0-21999bbbb081"]}, {"fieldId": "medo_perder_controle", "selectedOptionIds": ["f1c799cc-79df-47af-8caf-d248c1f9e0c2"]}, {"fieldId": "dificuldade_respirar", "selectedOptionIds": ["f706c4f9-2013-4707-b107-d7817ae608cf"]}, {"fieldId": "taquicardia", "selectedOptionIds": ["24540f06-7f90-4277-9aaf-0af1b6a162f2"]}, {"fieldId": "tontura", "selectedOptionIds": ["820c84d3-007b-4e9e-8781-9b98ef997b93"]}, {"fieldId": "suor_excessivo", "selectedOptionIds": ["c2c77ce4-c917-45be-8f00-2cee154e3940"]}]'),
+
+('fa000005-0000-0000-0000-000000000001', 'e0000002-0000-0000-0000-000000000002', 'f0000017-0000-0000-0000-000000000001',
+ 'c0000005-0000-0000-0000-000000000005', 'Patrícia Nunes Costa', 'CONCLUIDO',
+ '[{"fieldId": "nervosismo", "selectedOptionIds": ["0e99d03f-b8d8-4f9b-97ec-3e0e17b36409"]}, {"fieldId": "tremores", "selectedOptionIds": ["503ba5ad-bfe3-48b1-be97-fdd28e89cb87"]}, {"fieldId": "medo_perder_controle", "selectedOptionIds": ["39cd71a4-d062-45fb-8afa-d1587610f2d5"]}, {"fieldId": "dificuldade_respirar", "selectedOptionIds": ["e5857501-33f7-45d3-948b-6e5382eb7171"]}, {"fieldId": "taquicardia", "selectedOptionIds": ["f2863e5a-1a00-4d6e-af2a-3e507d02f883"]}, {"fieldId": "tontura", "selectedOptionIds": ["bb81bdc7-daca-40aa-aaae-4af9455ab729"]}, {"fieldId": "suor_excessivo", "selectedOptionIds": ["b2cae423-b70c-448e-87d0-e8c5dd4f1975"]}, {"fieldId": "dificuldade_relaxar", "selectedOptionIds": ["b2c3d4e5-0000-0000-0000-000000000003"]}]'),
+
+('fa000006-0000-0000-0000-000000000001', 'e0000003-0000-0000-0000-000000000003', 'f0000003-0000-0000-0000-000000000001',
+ 'c0000006-0000-0000-0000-000000000006', 'Antônio Marcos Vieira', 'EM_ANDAMENTO',
+ '[{"fieldId": "tristeza", "selectedOptionIds": ["ed40b71c-dcfa-47b1-8e51-658885e871a2"]}, {"fieldId": "pessimismo", "selectedOptionIds": ["2621d693-263d-4cc4-a652-a4a1c061f799"]}, {"fieldId": "fracasso", "selectedOptionIds": ["82e7982e-93c1-4f91-8376-0716b206323e"]}, {"fieldId": "perda_prazer", "selectedOptionIds": ["220d0d3e-d0b8-4791-b72a-072f342faf6b"]}, {"fieldId": "culpa", "selectedOptionIds": ["683334be-ebbd-4caa-8e66-95859b1f7fa4"]}]'),
+
+('fa000007-0000-0000-0000-000000000001', 'e0000004-0000-0000-0000-000000000004', 'f0000004-0000-0000-0000-000000000001',
+ 'c0000007-0000-0000-0000-000000000007', 'Claudia Regina Souza', 'CONCLUIDO',
+ '[{"fieldId": "motivo_encaminhamento", "value": "Dificuldades de aprendizagem e comportamento agressivo na escola"}, {"fieldId": "desenvolvimento_motor", "value": "Normal, andou com 11 meses"}, {"fieldId": "desenvolvimento_fala", "value": "Atraso leve, primeiras palavras com 2 anos"}, {"fieldId": "relacionamento_escola", "selectedOptionIds": ["89e1208c-76ba-4e44-820b-82255f4d317a"]}, {"fieldId": "sono_crianca", "selectedOptionIds": ["f08c3f62-2f49-4066-a69a-5ac83f2ec853"]}, {"fieldId": "alimentacao", "selectedOptionIds": ["f1151e16-0071-42c6-8c27-c98e9eaaf686"]}, {"fieldId": "eventos_traumaticos", "value": "Separação dos pais há 2 anos"}]'),
+
+('fa000008-0000-0000-0000-000000000001', 'e0000004-0000-0000-0000-000000000004', 'f0000004-0000-0000-0000-000000000001',
+ 'c0000008-0000-0000-0000-000000000008', 'Eduardo Henrique Dias', 'EM_ANDAMENTO',
+ '[{"fieldId": "motivo_encaminhamento", "value": "Hiperatividade e dificuldade de atenção relatadas pela professora"}, {"fieldId": "desenvolvimento_motor", "value": "Engatinhou com 7 meses, andou com 10 meses"}, {"fieldId": "desenvolvimento_fala", "value": "Normal, primeiras palavras com 1 ano"}, {"fieldId": "relacionamento_escola", "selectedOptionIds": ["a3be9333-5f24-437f-9c55-007666a75fe8"]}, {"fieldId": "sono_crianca", "selectedOptionIds": ["4d5941cc-dbe4-4c0f-8743-8c09dbfaeb17"]}, {"fieldId": "alimentacao", "selectedOptionIds": ["d50b562c-1fc2-4c30-8d52-45bb9012909d"]}]'),
+
+('fa000009-0000-0000-0000-000000000001', 'e0000005-0000-0000-0000-000000000005', 'f0000005-0000-0000-0000-000000000001',
+ 'c0000009-0000-0000-0000-000000000009', 'Luciana Ferreira Melo', 'CONCLUIDO',
+ '[{"fieldId": "carga_horaria", "value": "60 horas"}, {"fieldId": "satisfacao_trabalho", "selectedOptionIds": ["5bda66f5-982d-42c7-908f-3de1f0838b29"]}, {"fieldId": "relacao_chefia", "selectedOptionIds": ["7446688e-582f-4996-a6fa-c8ab36ce21f3"]}, {"fieldId": "sintomas_fisicos", "selectedOptionIds": ["10265abc-c4c3-4f0d-88ea-ddb2b654291d", "c4d9aa96-e68d-4fb8-942e-d79ba1acc6da", "fd7cc883-e925-453e-a259-05deba08de98"]}, {"fieldId": "pensou_sair", "selectedOptionIds": ["043121b7-6e79-406b-9c13-2483a9d32dbd"]}, {"fieldId": "atividades_lazer", "selectedOptionIds": ["1413e22b-e6e7-4c92-98ad-790cb6763d52"]}]');

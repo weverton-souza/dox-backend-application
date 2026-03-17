@@ -62,6 +62,14 @@ class FormLinkServiceImpl(
         }
     }
 
+    override fun findFormLinksByCustomer(customerId: UUID): List<FormLinkWithToken> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        return formLinkPersistencePort.findByCustomerId(customerId).map { formLink ->
+            val token = authTokenPort.generateFormLinkToken(tenantId, formLink.id, formLink.expiresAt)
+            FormLinkWithToken(formLink, token)
+        }
+    }
+
     @Transactional
     override fun revokeFormLink(id: UUID) {
         val formLink = formLinkPersistencePort.findById(id)
@@ -74,14 +82,14 @@ class FormLinkServiceImpl(
 
         return TenantContext.withTenantContext(tokenData.tenantId) {
             val formLink = findAndValidateFormLink(tokenData.formLinkId)
-            val form = formUseCase.findFormById(formLink.formId)
+            val formWithVersion = formUseCase.findFormById(formLink.formId)
             val customer = customerPersistencePort.findById(formLink.customerId)
             val customerName = customer?.data?.get("name") as? String
 
             PublicFormData(
-                formTitle = form.title,
-                formDescription = form.description,
-                fields = form.fields,
+                formTitle = formWithVersion.version.title,
+                formDescription = formWithVersion.version.description,
+                fields = formWithVersion.version.fields,
                 customerName = customerName,
                 expiresAt = formLink.expiresAt
             )

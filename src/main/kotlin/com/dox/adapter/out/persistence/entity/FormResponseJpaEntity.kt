@@ -27,6 +27,9 @@ class FormResponseJpaEntity(
     @Column(name = "form_id", nullable = false)
     var formId: UUID = UUID.randomUUID(),
 
+    @Column(name = "form_version_id", nullable = false)
+    var formVersionId: UUID = UUID.randomUUID(),
+
     @Column(name = "customer_id")
     var customerId: UUID? = null,
 
@@ -39,7 +42,7 @@ class FormResponseJpaEntity(
 
     @Type(JsonType::class)
     @Column(name = "answers", columnDefinition = "jsonb")
-    var answers: Map<String, Any?> = emptyMap(),
+    var answers: List<Map<String, Any?>> = emptyList(),
 
     @Column(name = "generated_report_id")
     var generatedReportId: UUID? = null,

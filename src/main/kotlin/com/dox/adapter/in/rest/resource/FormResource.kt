@@ -4,6 +4,7 @@ import com.dox.adapter.`in`.rest.dto.form.FormRequest
 import com.dox.adapter.`in`.rest.dto.form.FormResponseDto
 import com.dox.adapter.`in`.rest.dto.form.FormResponseRequest
 import com.dox.adapter.`in`.rest.dto.form.FormResponseResponseDto
+import com.dox.adapter.`in`.rest.dto.form.FormVersionResponseDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import java.util.UUID
 
 @Tag(name = "Formulários", description = "CRUD de formulários e respostas")
@@ -39,6 +41,14 @@ interface FormResource : BaseResource {
     @Operation(summary = "Excluir formulário")
     @DeleteMapping("/{id}")
     fun deleteForm(@PathVariable id: UUID): ResponseEntity<Void>
+
+    @Operation(summary = "Listar versões de um formulário")
+    @GetMapping("/{id}/versions")
+    fun getVersions(@PathVariable id: UUID): ResponseEntity<List<FormVersionResponseDto>>
+
+    @Operation(summary = "Buscar versão específica")
+    @GetMapping("/{id}/versions/{version}")
+    fun getVersion(@PathVariable id: UUID, @PathVariable version: Int): ResponseEntity<FormVersionResponseDto>
 
     @Operation(summary = "Listar respostas de um formulário")
     @GetMapping("/{id}/responses")
@@ -69,4 +79,8 @@ interface FormResource : BaseResource {
     @Operation(summary = "Excluir resposta")
     @DeleteMapping("/{id}/responses/{responseId}")
     fun deleteResponse(@PathVariable id: UUID, @PathVariable responseId: UUID): ResponseEntity<Void>
+
+    @Operation(summary = "Listar respostas por cliente")
+    @GetMapping("/by-customer/{customerId}/responses")
+    fun getResponsesByCustomer(@PathVariable customerId: UUID): ResponseEntity<List<FormResponseResponseDto>>
 }

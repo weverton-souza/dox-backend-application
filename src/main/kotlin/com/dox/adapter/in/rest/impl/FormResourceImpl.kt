@@ -4,14 +4,16 @@ import com.dox.adapter.`in`.rest.dto.form.FormRequest
 import com.dox.adapter.`in`.rest.dto.form.FormResponseDto
 import com.dox.adapter.`in`.rest.dto.form.FormResponseRequest
 import com.dox.adapter.`in`.rest.dto.form.FormResponseResponseDto
+import com.dox.adapter.`in`.rest.dto.form.FormVersionResponseDto
 import com.dox.adapter.`in`.rest.resource.FormResource
 import com.dox.application.port.input.CreateFormCommand
 import com.dox.application.port.input.CreateFormResponseCommand
 import com.dox.application.port.input.FormUseCase
+import com.dox.application.port.input.FormWithCurrentVersion
 import com.dox.application.port.input.UpdateFormCommand
 import com.dox.application.port.input.UpdateFormResponseCommand
-import com.dox.domain.model.Form
 import com.dox.domain.model.FormResponse
+import com.dox.domain.model.FormVersion
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -56,8 +58,18 @@ class FormResourceImpl(
         return noContent()
     }
 
-    override fun getResponses(id: UUID): ResponseEntity<List<FormResponseResponseDto>> =
-        responseEntity(formUseCase.findResponsesByFormId(id).map { it.toResponse() })
+    override fun getVersions(id: UUID): ResponseEntity<List<FormVersionResponseDto>> =
+        responseEntity(formUseCase.findVersionsByFormId(id).map { it.toResponse() })
+
+    override fun getVersion(id: UUID, version: Int): ResponseEntity<FormVersionResponseDto> =
+        responseEntity(formUseCase.findVersion(id, version).toResponse())
+
+    override fun getResponses(id: UUID): ResponseEntity<List<FormResponseResponseDto>> {
+        val versions = formUseCase.findVersionsByFormId(id).associateBy { it.id }
+        return responseEntity(
+            formUseCase.findResponsesByFormId(id).map { it.toResponse(versions[it.formVersionId]?.version) }
+        )
+    }
 
     override fun createResponse(id: UUID, request: FormResponseRequest): ResponseEntity<FormResponseResponseDto> =
         responseEntity(
@@ -66,12 +78,12 @@ class FormResourceImpl(
                     formId = id, customerId = request.customerId,
                     customerName = request.customerName, answers = request.answers
                 )
-            ).toResponse(),
+            ).toResponse(null),
             HttpStatus.CREATED
         )
 
     override fun getResponse(id: UUID, responseId: UUID): ResponseEntity<FormResponseResponseDto> =
-        responseEntity(formUseCase.findResponseById(responseId).toResponse())
+        responseEntity(formUseCase.findResponseById(responseId).toResponse(null))
 
     override fun updateResponse(
         id: UUID,
@@ -83,7 +95,7 @@ class FormResourceImpl(
                 UpdateFormResponseCommand(
                     id = responseId, status = request.status, answers = request.answers
                 )
-            ).toResponse()
+            ).toResponse(null)
         )
 
     override fun deleteResponse(id: UUID, responseId: UUID): ResponseEntity<Void> {
@@ -91,11 +103,33 @@ class FormResourceImpl(
         return noContent()
     }
 
-    private fun Form.toResponse() = FormResponseDto(
-        id, title, description, fields, linkedTemplateId, fieldMappings, createdAt, updatedAt
+    override fun getResponsesByCustomer(customerId: UUID): ResponseEntity<List<FormResponseResponseDto>> {
+        val responses = formUseCase.findResponsesByCustomerId(customerId)
+        val formIds = responses.map { it.formId }.toSet()
+        val versionsByFormId = formIds.flatMap { formUseCase.findVersionsByFormId(it) }
+            .associateBy { it.id }
+        return responseEntity(
+            responses.map { it.toResponse(versionsByFormId[it.formVersionId]?.version) }
+        )
+    }
+
+    private fun FormWithCurrentVersion.toResponse() = FormResponseDto(
+        id = form.id,
+        title = version.title,
+        description = version.description,
+        fields = version.fields,
+        linkedTemplateId = form.linkedTemplateId,
+        fieldMappings = version.fieldMappings,
+        currentVersion = form.currentVersion,
+        createdAt = form.createdAt,
+        updatedAt = form.updatedAt
     )
 
-    private fun FormResponse.toResponse() = FormResponseResponseDto(
-        id, formId, customerId, customerName, status, answers, generatedReportId, createdAt, updatedAt
+    private fun FormVersion.toResponse() = FormVersionResponseDto(
+        id, formId, version, title, description, fields, fieldMappings, createdAt
+    )
+
+    private fun FormResponse.toResponse(versionNumber: Int?) = FormResponseResponseDto(
+        id, formId, formVersionId, customerId, customerName, status, answers, generatedReportId, versionNumber, createdAt, updatedAt
     )
 }

@@ -6,4 +6,6 @@ import java.util.UUID
 
 interface FormResponseJpaRepository : JpaRepository<FormResponseJpaEntity, UUID> {
     fun findByFormId(formId: UUID): List<FormResponseJpaEntity>
+    fun findByCustomerIdOrderByUpdatedAtDesc(customerId: UUID): List<FormResponseJpaEntity>
+    fun countByFormVersionId(formVersionId: UUID): Long
 }

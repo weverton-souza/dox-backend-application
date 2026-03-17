@@ -3,6 +3,7 @@ package com.dox.application.port.input
 import com.dox.domain.enum.FormResponseStatus
 import com.dox.domain.model.Form
 import com.dox.domain.model.FormResponse
+import com.dox.domain.model.FormVersion
 import java.util.UUID
 
 data class CreateFormCommand(
@@ -26,25 +27,34 @@ data class CreateFormResponseCommand(
     val formId: UUID,
     val customerId: UUID? = null,
     val customerName: String? = null,
-    val answers: Map<String, Any?> = emptyMap()
+    val answers: List<Map<String, Any?>> = emptyList()
 )
 
 data class UpdateFormResponseCommand(
     val id: UUID,
     val status: FormResponseStatus? = null,
-    val answers: Map<String, Any?>? = null
+    val answers: List<Map<String, Any?>>? = null
+)
+
+data class FormWithCurrentVersion(
+    val form: Form,
+    val version: FormVersion
 )
 
 interface FormUseCase {
-    fun createForm(command: CreateFormCommand): Form
-    fun findFormById(id: UUID): Form
-    fun findAllForms(): List<Form>
-    fun updateForm(command: UpdateFormCommand): Form
+    fun createForm(command: CreateFormCommand): FormWithCurrentVersion
+    fun findFormById(id: UUID): FormWithCurrentVersion
+    fun findAllForms(): List<FormWithCurrentVersion>
+    fun updateForm(command: UpdateFormCommand): FormWithCurrentVersion
     fun deleteForm(id: UUID)
+
+    fun findVersionsByFormId(formId: UUID): List<FormVersion>
+    fun findVersion(formId: UUID, version: Int): FormVersion
 
     fun createResponse(command: CreateFormResponseCommand): FormResponse
     fun findResponseById(id: UUID): FormResponse
     fun findResponsesByFormId(formId: UUID): List<FormResponse>
+    fun findResponsesByCustomerId(customerId: UUID): List<FormResponse>
     fun updateResponse(command: UpdateFormResponseCommand): FormResponse
     fun deleteResponse(id: UUID)
 }
