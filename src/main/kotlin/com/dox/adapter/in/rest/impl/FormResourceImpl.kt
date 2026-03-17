@@ -23,7 +23,7 @@ class FormResourceImpl(
 ) : FormResource {
 
     override fun findAll(): ResponseEntity<List<FormResponseDto>> =
-        responseEntity(formUseCase.findAllForms().map { it.toDto() })
+        responseEntity(formUseCase.findAllForms().map { it.toResponse() })
 
     override fun create(request: FormRequest): ResponseEntity<FormResponseDto> =
         responseEntity(
@@ -33,12 +33,12 @@ class FormResourceImpl(
                     fields = request.fields, linkedTemplateId = request.linkedTemplateId,
                     fieldMappings = request.fieldMappings
                 )
-            ).toDto(),
+            ).toResponse(),
             HttpStatus.CREATED
         )
 
     override fun findById(id: UUID): ResponseEntity<FormResponseDto> =
-        responseEntity(formUseCase.findFormById(id).toDto())
+        responseEntity(formUseCase.findFormById(id).toResponse())
 
     override fun update(id: UUID, request: FormRequest): ResponseEntity<FormResponseDto> =
         responseEntity(
@@ -48,7 +48,7 @@ class FormResourceImpl(
                     fields = request.fields, linkedTemplateId = request.linkedTemplateId,
                     fieldMappings = request.fieldMappings
                 )
-            ).toDto()
+            ).toResponse()
         )
 
     override fun deleteForm(id: UUID): ResponseEntity<Void> {
@@ -57,7 +57,7 @@ class FormResourceImpl(
     }
 
     override fun getResponses(id: UUID): ResponseEntity<List<FormResponseResponseDto>> =
-        responseEntity(formUseCase.findResponsesByFormId(id).map { it.toDto() })
+        responseEntity(formUseCase.findResponsesByFormId(id).map { it.toResponse() })
 
     override fun createResponse(id: UUID, request: FormResponseRequest): ResponseEntity<FormResponseResponseDto> =
         responseEntity(
@@ -66,12 +66,12 @@ class FormResourceImpl(
                     formId = id, customerId = request.customerId,
                     customerName = request.customerName, answers = request.answers
                 )
-            ).toDto(),
+            ).toResponse(),
             HttpStatus.CREATED
         )
 
     override fun getResponse(id: UUID, responseId: UUID): ResponseEntity<FormResponseResponseDto> =
-        responseEntity(formUseCase.findResponseById(responseId).toDto())
+        responseEntity(formUseCase.findResponseById(responseId).toResponse())
 
     override fun updateResponse(
         id: UUID,
@@ -83,7 +83,7 @@ class FormResourceImpl(
                 UpdateFormResponseCommand(
                     id = responseId, status = request.status, answers = request.answers
                 )
-            ).toDto()
+            ).toResponse()
         )
 
     override fun deleteResponse(id: UUID, responseId: UUID): ResponseEntity<Void> {
@@ -91,11 +91,11 @@ class FormResourceImpl(
         return noContent()
     }
 
-    private fun Form.toDto() = FormResponseDto(
+    private fun Form.toResponse() = FormResponseDto(
         id, title, description, fields, linkedTemplateId, fieldMappings, createdAt, updatedAt
     )
 
-    private fun FormResponse.toDto() = FormResponseResponseDto(
+    private fun FormResponse.toResponse() = FormResponseResponseDto(
         id, formId, customerId, customerName, status, answers, generatedReportId, createdAt, updatedAt
     )
 }

@@ -5,8 +5,8 @@ import com.dox.adapter.out.persistence.entity.ReportVersionJpaEntity
 import com.dox.adapter.out.persistence.repository.ReportJpaRepository
 import com.dox.adapter.out.persistence.repository.ReportVersionJpaRepository
 import com.dox.application.port.output.ReportPersistencePort
-import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Report
+import com.dox.extensions.softDeleteById
 import com.dox.domain.model.ReportVersion
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -39,12 +39,8 @@ class ReportPersistenceAdapter(
     override fun findByCustomerId(customerId: UUID): List<Report> =
         reportJpaRepository.findByCustomerId(customerId).map { it.toDomain() }
 
-    override fun softDelete(id: UUID) {
-        val entity = reportJpaRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Relatório", id.toString()) }
-        entity.deleted = true
-        reportJpaRepository.save(entity)
-    }
+    override fun softDelete(id: UUID) =
+        reportJpaRepository.softDeleteById(id, "Relatório")
 
     override fun saveVersion(version: ReportVersion): ReportVersion {
         val entity = ReportVersionJpaEntity().apply {

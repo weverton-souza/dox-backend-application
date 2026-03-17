@@ -1,6 +1,7 @@
 package com.dox.domain.model
 
 import com.dox.domain.enum.FormLinkStatus
+import com.dox.extensions.isExpired
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -14,5 +15,5 @@ data class FormLink(
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null
 ) {
-    fun isExpired(): Boolean = LocalDateTime.now().isAfter(expiresAt)
+    fun isExpired(): Boolean = expiresAt.isExpired()
 }

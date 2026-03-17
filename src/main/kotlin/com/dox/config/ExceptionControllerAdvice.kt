@@ -24,6 +24,20 @@ import java.net.URI
 import java.time.Instant
 import java.util.UUID
 
+private fun buildProblemDetail(
+    status: HttpStatusCode,
+    title: String,
+    detail: String,
+    errorCode: String
+): ProblemDetail {
+    val pd = ProblemDetail.forStatusAndDetail(status, detail)
+    pd.title = title
+    pd.type = URI.create("urn:dox:error:$errorCode")
+    pd.setProperty("errorCode", errorCode)
+    pd.setProperty("timestamp", Instant.now())
+    return pd
+}
+
 @RestControllerAdvice
 @Order(1)
 class DomainExceptionHandler {
@@ -34,11 +48,7 @@ class DomainExceptionHandler {
     fun handle(ex: DomainException, request: WebRequest): ProblemDetail {
         logger.warn("[{}] {}", ex.errorCode.code, ex.message)
 
-        val pd = ProblemDetail.forStatusAndDetail(ex.httpStatus, ex.message!!)
-        pd.title = ex.errorCode.title
-        pd.type = URI.create("urn:dox:error:${ex.errorCode.code}")
-        pd.setProperty("errorCode", ex.errorCode.code)
-        pd.setProperty("timestamp", Instant.now())
+        val pd = buildProblemDetail(ex.httpStatus, ex.errorCode.title, ex.message!!, ex.errorCode.code)
 
         when (ex) {
             is ResourceNotFoundException -> {
@@ -72,11 +82,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        val pd = ProblemDetail.forStatusAndDetail(status, "Erro de validação")
-        pd.title = ErrorCode.VALIDATION_ERROR.title
-        pd.type = URI.create("urn:dox:error:${ErrorCode.VALIDATION_ERROR.code}")
-        pd.setProperty("errorCode", ErrorCode.VALIDATION_ERROR.code)
-        pd.setProperty("timestamp", Instant.now())
+        val pd = buildProblemDetail(status, ErrorCode.VALIDATION_ERROR.title, "Erro de validação", ErrorCode.VALIDATION_ERROR.code)
 
         val fieldErrors = ex.bindingResult.fieldErrors.map { fieldError ->
             mapOf(
@@ -93,16 +99,12 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(IllegalStateException::class)
     fun handleIllegalState(ex: IllegalStateException): ProblemDetail {
         log.warn("IllegalStateException: {}", ex.message)
-
-        val pd = ProblemDetail.forStatusAndDetail(
+        return buildProblemDetail(
             org.springframework.http.HttpStatus.BAD_REQUEST,
-            ex.message ?: "Estado inválido"
+            "Estado inválido",
+            ex.message ?: "Estado inválido",
+            "ILLEGAL_STATE"
         )
-        pd.title = "Estado inválido"
-        pd.type = URI.create("urn:dox:error:ILLEGAL_STATE")
-        pd.setProperty("errorCode", "ILLEGAL_STATE")
-        pd.setProperty("timestamp", Instant.now())
-        return pd
     }
 
     @ExceptionHandler(Exception::class)
@@ -110,15 +112,13 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         val traceId = UUID.randomUUID().toString()
         log.error("Erro inesperado [traceId={}]", traceId, ex)
 
-        val pd = ProblemDetail.forStatusAndDetail(
+        val pd = buildProblemDetail(
             org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-            "Erro inesperado. Referência: $traceId"
+            ErrorCode.INTERNAL_ERROR.title,
+            "Erro inesperado. Referência: $traceId",
+            ErrorCode.INTERNAL_ERROR.code
         )
-        pd.title = ErrorCode.INTERNAL_ERROR.title
-        pd.type = URI.create("urn:dox:error:${ErrorCode.INTERNAL_ERROR.code}")
-        pd.setProperty("errorCode", ErrorCode.INTERNAL_ERROR.code)
         pd.setProperty("traceId", traceId)
-        pd.setProperty("timestamp", Instant.now())
         return pd
     }
 }

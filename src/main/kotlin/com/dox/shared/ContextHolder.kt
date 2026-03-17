@@ -1,5 +1,6 @@
 package com.dox.shared
 
+import com.dox.domain.exception.BusinessException
 import java.util.UUID
 
 data class Context(
@@ -16,5 +17,11 @@ class ContextHolder {
             set(value) = contextThreadLocal.set(value)
 
         fun clear() = contextThreadLocal.remove()
+
+        fun getUserIdOrThrow(): UUID =
+            context.userId ?: throw IllegalStateException("Usuário não autenticado")
+
+        fun getTenantIdOrThrow(): UUID =
+            context.tenantId ?: throw BusinessException("Tenant não identificado")
     }
 }

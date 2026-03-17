@@ -24,19 +24,19 @@ class FormLinkResourceImpl(
                     customerId = request.customerId,
                     expiresInHours = request.expiresInHours
                 )
-            ).toDto(),
+            ).toResponse(),
             HttpStatus.CREATED
         )
 
     override fun findAll(): ResponseEntity<List<FormLinkResponse>> =
-        responseEntity(formLinkUseCase.findFormLinksByTenant().map { it.toDto() })
+        responseEntity(formLinkUseCase.findFormLinksByTenant().map { it.toResponse() })
 
     override fun revoke(id: UUID): ResponseEntity<Void> {
         formLinkUseCase.revokeFormLink(id)
         return noContent()
     }
 
-    private fun FormLinkWithToken.toDto() = FormLinkResponse(
+    private fun FormLinkWithToken.toResponse() = FormLinkResponse(
         formLink.id, token, formLink.formId, formLink.customerId,
         formLink.status, formLink.expiresAt, formLink.createdAt, formLink.updatedAt
     )

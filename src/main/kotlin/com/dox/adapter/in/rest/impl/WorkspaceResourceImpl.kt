@@ -19,8 +19,7 @@ class WorkspaceResourceImpl(
 ) : WorkspaceResource {
 
     override fun listWorkspaces(): ResponseEntity<List<WorkspaceResponse>> {
-        val userId = ContextHolder.context.userId
-            ?: throw IllegalStateException("Usuário não autenticado")
+        val userId = ContextHolder.getUserIdOrThrow()
         val workspaces = workspaceUseCase.listWorkspaces(userId).map {
             WorkspaceResponse(
                 tenantId = it.tenantId,
@@ -34,8 +33,7 @@ class WorkspaceResourceImpl(
     }
 
     override fun createOrganization(request: CreateOrganizationRequest): ResponseEntity<WorkspaceResponse> {
-        val userId = ContextHolder.context.userId
-            ?: throw IllegalStateException("Usuário não autenticado")
+        val userId = ContextHolder.getUserIdOrThrow()
         val result = workspaceUseCase.createOrganization(
             CreateOrganizationCommand(
                 userId = userId,

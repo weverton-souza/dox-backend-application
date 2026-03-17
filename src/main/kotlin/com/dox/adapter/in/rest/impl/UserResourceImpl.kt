@@ -16,14 +16,12 @@ class UserResourceImpl(
 ) : UserResource {
 
     override fun getMe(): ResponseEntity<UserResponse> {
-        val userId = ContextHolder.context.userId
-            ?: throw IllegalStateException("Usuário não autenticado")
+        val userId = ContextHolder.getUserIdOrThrow()
         return responseEntity(userUseCase.getMe(userId).toResponse())
     }
 
     override fun updateMe(request: UpdateUserRequest): ResponseEntity<UserResponse> {
-        val userId = ContextHolder.context.userId
-            ?: throw IllegalStateException("Usuário não autenticado")
+        val userId = ContextHolder.getUserIdOrThrow()
         val result = userUseCase.updateMe(
             UpdateUserCommand(userId = userId, name = request.name)
         )

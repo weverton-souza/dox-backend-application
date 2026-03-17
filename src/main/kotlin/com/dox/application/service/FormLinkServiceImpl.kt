@@ -32,9 +32,8 @@ class FormLinkServiceImpl(
 
     @Transactional
     override fun createFormLink(command: CreateFormLinkCommand): FormLinkWithToken {
-        val context = ContextHolder.context
-        val tenantId = context.tenantId ?: throw BusinessException("Tenant não identificado")
-        val userId = context.userId ?: throw BusinessException("Usuário não identificado")
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        val userId = ContextHolder.getUserIdOrThrow()
 
         formUseCase.findFormById(command.formId)
         customerPersistencePort.findById(command.customerId)
@@ -56,7 +55,7 @@ class FormLinkServiceImpl(
     }
 
     override fun findFormLinksByTenant(): List<FormLinkWithToken> {
-        val tenantId = ContextHolder.context.tenantId ?: throw BusinessException("Tenant não identificado")
+        val tenantId = ContextHolder.getTenantIdOrThrow()
         return formLinkPersistencePort.findAll().map { formLink ->
             val token = authTokenPort.generateFormLinkToken(tenantId, formLink.id, formLink.expiresAt)
             FormLinkWithToken(formLink, token)
@@ -73,7 +72,7 @@ class FormLinkServiceImpl(
     override fun resolvePublicForm(token: String): PublicFormData {
         val tokenData = extractAndValidateToken(token)
 
-        return withTenantContext(tokenData.tenantId) {
+        return TenantContext.withTenantContext(tokenData.tenantId) {
             val formLink = findAndValidateFormLink(tokenData.formLinkId)
             val form = formUseCase.findFormById(formLink.formId)
             val customer = customerPersistencePort.findById(formLink.customerId)
@@ -93,7 +92,7 @@ class FormLinkServiceImpl(
     override fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse {
         val tokenData = extractAndValidateToken(command.token)
 
-        return withTenantContext(tokenData.tenantId) {
+        return TenantContext.withTenantContext(tokenData.tenantId) {
             val formLink = findAndValidateFormLink(tokenData.formLinkId)
             val customer = customerPersistencePort.findById(formLink.customerId)
             val customerName = customer?.data?.get("name") as? String
@@ -140,12 +139,4 @@ class FormLinkServiceImpl(
         return formLink
     }
 
-    private fun <T> withTenantContext(tenantId: UUID, block: () -> T): T {
-        TenantContext.setTenantId(TenantContext.convertToSchemaName(tenantId.toString()))
-        return try {
-            block()
-        } finally {
-            TenantContext.clear()
-        }
-    }
 }

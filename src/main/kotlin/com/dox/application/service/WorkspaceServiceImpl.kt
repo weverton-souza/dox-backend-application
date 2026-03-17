@@ -1,13 +1,11 @@
 package com.dox.application.service
 
-import com.dox.adapter.out.tenant.TenantContext
 import com.dox.application.port.input.CreateOrganizationCommand
 import com.dox.application.port.input.InviteMemberCommand
 import com.dox.application.port.input.WorkspaceInfo
 import com.dox.application.port.input.WorkspaceUseCase
 import com.dox.application.port.output.OrganizationPersistencePort
 import com.dox.application.port.output.TenantPersistencePort
-import com.dox.application.port.output.TenantProvisioningPort
 import com.dox.application.port.output.UserPersistencePort
 import com.dox.domain.enum.MemberRole
 import com.dox.domain.enum.TenantType
@@ -15,7 +13,6 @@ import com.dox.domain.exception.DuplicateResourceException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Organization
 import com.dox.domain.model.OrganizationMember
-import com.dox.domain.model.Tenant
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -24,7 +21,7 @@ import java.util.UUID
 class WorkspaceServiceImpl(
     private val userPersistencePort: UserPersistencePort,
     private val tenantPersistencePort: TenantPersistencePort,
-    private val tenantProvisioningPort: TenantProvisioningPort,
+    private val tenantProvisioningService: TenantProvisioningService,
     private val organizationPersistencePort: OrganizationPersistencePort
 ) : WorkspaceUseCase {
 
@@ -69,21 +66,11 @@ class WorkspaceServiceImpl(
 
     @Transactional
     override fun createOrganization(command: CreateOrganizationCommand): WorkspaceInfo {
-        val tenantId = UUID.randomUUID()
-        val schemaName = TenantContext.convertToSchemaName(tenantId.toString())
-
-        val tenant = tenantPersistencePort.save(
-            Tenant(
-                id = tenantId,
-                schemaName = schemaName,
-                type = TenantType.ORGANIZATION,
-                name = command.name,
-                vertical = command.vertical
-            )
+        val tenant = tenantProvisioningService.provisionTenant(
+            name = command.name,
+            type = TenantType.ORGANIZATION,
+            vertical = command.vertical
         )
-
-        tenantProvisioningPort.createSchema(schemaName)
-        tenantProvisioningPort.runMigrations(schemaName)
 
         val org = organizationPersistencePort.save(
             Organization(

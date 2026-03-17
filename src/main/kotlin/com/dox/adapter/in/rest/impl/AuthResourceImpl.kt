@@ -45,15 +45,13 @@ class AuthResourceImpl(
     }
 
     override fun logout(): ResponseEntity<Void> {
-        val userId = ContextHolder.context.userId
-            ?: throw IllegalStateException("Usuário não autenticado")
+        val userId = ContextHolder.getUserIdOrThrow()
         authUseCase.logout(userId)
         return noContent()
     }
 
     override fun switchTenant(request: SwitchTenantRequest): ResponseEntity<AuthResponse> {
-        val userId = ContextHolder.context.userId
-            ?: throw IllegalStateException("Usuário não autenticado")
+        val userId = ContextHolder.getUserIdOrThrow()
         val result = authUseCase.switchTenant(
             SwitchTenantCommand(userId = userId, tenantId = request.tenantId)
         )

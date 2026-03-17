@@ -1,6 +1,5 @@
 package com.dox.application.service
 
-import com.dox.adapter.out.tenant.TenantContext
 import com.dox.application.port.input.AuthResult
 import com.dox.application.port.input.AuthUseCase
 import com.dox.application.port.input.LoginCommand
@@ -11,9 +10,9 @@ import com.dox.application.port.output.OrganizationPersistencePort
 import com.dox.application.port.output.PasswordEncoderPort
 import com.dox.application.port.output.RefreshTokenPersistencePort
 import com.dox.application.port.output.TenantPersistencePort
-import com.dox.application.port.output.TenantProvisioningPort
 import com.dox.application.port.output.UserPersistencePort
 import com.dox.domain.enum.TenantType
+import com.dox.extensions.isExpired
 import com.dox.domain.exception.AccessDeniedException
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.DuplicateResourceException
@@ -22,7 +21,6 @@ import com.dox.domain.exception.InvalidTokenException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.exception.TokenExpiredException
 import com.dox.domain.model.RefreshToken
-import com.dox.domain.model.Tenant
 import com.dox.domain.model.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -34,7 +32,7 @@ import java.util.UUID
 class AuthServiceImpl(
     private val userPersistencePort: UserPersistencePort,
     private val tenantPersistencePort: TenantPersistencePort,
-    private val tenantProvisioningPort: TenantProvisioningPort,
+    private val tenantProvisioningService: TenantProvisioningService,
     private val refreshTokenPersistencePort: RefreshTokenPersistencePort,
     private val organizationPersistencePort: OrganizationPersistencePort,
     private val authTokenPort: AuthTokenPort,
@@ -47,21 +45,11 @@ class AuthServiceImpl(
             throw DuplicateResourceException("email", command.email)
         }
 
-        val tenantId = UUID.randomUUID()
-        val schemaName = TenantContext.convertToSchemaName(tenantId.toString())
-
-        val tenant = tenantPersistencePort.save(
-            Tenant(
-                id = tenantId,
-                schemaName = schemaName,
-                type = TenantType.PERSONAL,
-                name = command.name,
-                vertical = command.vertical
-            )
+        val tenant = tenantProvisioningService.provisionTenant(
+            name = command.name,
+            type = TenantType.PERSONAL,
+            vertical = command.vertical
         )
-
-        tenantProvisioningPort.createSchema(schemaName)
-        tenantProvisioningPort.runMigrations(schemaName)
 
         val user = userPersistencePort.save(
             User(
@@ -96,7 +84,7 @@ class AuthServiceImpl(
         val storedToken = refreshTokenPersistencePort.findByTokenHash(tokenHash)
             ?: throw InvalidTokenException("Refresh token inválido")
 
-        if (storedToken.expiresAt.isBefore(LocalDateTime.now())) {
+        if (storedToken.expiresAt.isExpired()) {
             throw TokenExpiredException()
         }
 

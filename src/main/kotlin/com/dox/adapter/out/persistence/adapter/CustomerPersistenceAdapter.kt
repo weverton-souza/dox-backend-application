@@ -7,8 +7,8 @@ import com.dox.adapter.out.persistence.repository.CustomerEventJpaRepository
 import com.dox.adapter.out.persistence.repository.CustomerJpaRepository
 import com.dox.adapter.out.persistence.repository.CustomerNoteJpaRepository
 import com.dox.application.port.output.CustomerPersistencePort
-import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Customer
+import com.dox.extensions.softDeleteById
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import org.springframework.data.domain.Page
@@ -39,12 +39,8 @@ class CustomerPersistenceAdapter(
     override fun search(query: String, pageable: Pageable): Page<Customer> =
         customerJpaRepository.searchByNameOrCpf(query, pageable).map { it.toDomain() }
 
-    override fun softDelete(id: UUID) {
-        val entity = customerJpaRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Cliente", id.toString()) }
-        entity.deleted = true
-        customerJpaRepository.save(entity)
-    }
+    override fun softDelete(id: UUID) =
+        customerJpaRepository.softDeleteById(id, "Cliente")
 
     override fun saveNote(note: CustomerNote): CustomerNote {
         val entity = CustomerNoteJpaEntity().apply {
