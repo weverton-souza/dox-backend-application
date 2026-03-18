@@ -5,6 +5,7 @@ import com.dox.application.port.input.CreateCustomerEventCommand
 import com.dox.application.port.input.CreateCustomerNoteCommand
 import com.dox.application.port.input.CustomerUseCase
 import com.dox.application.port.input.UpdateCustomerCommand
+import com.dox.application.port.input.UpdateCustomerEventCommand
 import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Customer
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
@@ -75,7 +77,38 @@ class CustomerServiceImpl(
         )
 
     @Transactional
+    override fun updateEvent(command: UpdateCustomerEventCommand): CustomerEvent {
+        customerPersistencePort.findEventById(command.id)
+            ?: throw ResourceNotFoundException("Evento", command.id.toString())
+        return customerPersistencePort.saveEvent(
+            CustomerEvent(
+                id = command.id,
+                customerId = command.customerId,
+                type = command.type,
+                title = command.title,
+                description = command.description,
+                date = command.date
+            )
+        )
+    }
+
+    @Transactional
     override fun deleteEvent(eventId: UUID) {
         customerPersistencePort.deleteEvent(eventId)
+    }
+
+    override fun findAllEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<Pair<CustomerEvent, String>> {
+        val events = customerPersistencePort.findEventsByDateRange(from, to)
+        if (events.isEmpty()) return emptyList()
+
+        val customerIds = events.map { it.customerId }.toSet()
+        val customerMap = customerPersistencePort.findByIds(customerIds)
+            .associateBy { it.id }
+
+        return events.map { event ->
+            val customerName = customerMap[event.customerId]
+                ?.data?.get("name")?.toString() ?: ""
+            event to customerName
+        }
     }
 }

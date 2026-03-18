@@ -12,6 +12,7 @@ import com.dox.application.port.input.CreateCustomerEventCommand
 import com.dox.application.port.input.CreateCustomerNoteCommand
 import com.dox.application.port.input.CustomerUseCase
 import com.dox.application.port.input.UpdateCustomerCommand
+import com.dox.application.port.input.UpdateCustomerEventCommand
 import com.dox.domain.model.Customer
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
@@ -69,6 +70,13 @@ class CustomerResourceImpl(
                 CreateCustomerEventCommand(id, request.type, request.title, request.description, request.date)
             ).toResponse(),
             HttpStatus.CREATED
+        )
+
+    override fun updateEvent(id: UUID, eventId: UUID, request: CustomerEventRequest): ResponseEntity<CustomerEventResponse> =
+        responseEntity(
+            customerUseCase.updateEvent(
+                UpdateCustomerEventCommand(eventId, id, request.type, request.title, request.description, request.date)
+            ).toResponse()
         )
 
     override fun deleteEvent(id: UUID, eventId: UUID): ResponseEntity<Void> {

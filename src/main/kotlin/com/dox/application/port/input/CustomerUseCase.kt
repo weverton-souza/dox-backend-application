@@ -18,6 +18,14 @@ data class CreateCustomerEventCommand(
     val description: String?,
     val date: LocalDateTime
 )
+data class UpdateCustomerEventCommand(
+    val id: UUID,
+    val customerId: UUID,
+    val type: String,
+    val title: String,
+    val description: String?,
+    val date: LocalDateTime
+)
 
 interface CustomerUseCase {
     fun create(command: CreateCustomerCommand): Customer
@@ -32,5 +40,8 @@ interface CustomerUseCase {
 
     fun getEvents(customerId: UUID): List<CustomerEvent>
     fun addEvent(command: CreateCustomerEventCommand): CustomerEvent
+    fun updateEvent(command: UpdateCustomerEventCommand): CustomerEvent
     fun deleteEvent(eventId: UUID)
+
+    fun findAllEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<Pair<CustomerEvent, String>>
 }

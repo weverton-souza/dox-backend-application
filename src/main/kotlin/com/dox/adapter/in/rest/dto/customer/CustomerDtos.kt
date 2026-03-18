@@ -42,3 +42,14 @@ data class CustomerEventResponse(
     val date: LocalDateTime,
     val createdAt: LocalDateTime?
 )
+
+data class CustomerCalendarEventResponse(
+    val id: UUID,
+    val customerId: UUID,
+    val customerName: String,
+    val type: String,
+    val title: String,
+    val description: String?,
+    val date: LocalDateTime,
+    val createdAt: LocalDateTime?
+)

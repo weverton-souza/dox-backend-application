@@ -5,6 +5,7 @@ import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import java.time.LocalDateTime
 import java.util.UUID
 
 interface CustomerPersistencePort {
@@ -19,6 +20,11 @@ interface CustomerPersistencePort {
     fun deleteNote(noteId: UUID)
 
     fun saveEvent(event: CustomerEvent): CustomerEvent
+    fun findEventById(eventId: UUID): CustomerEvent?
     fun findEventsByCustomerId(customerId: UUID): List<CustomerEvent>
     fun deleteEvent(eventId: UUID)
+
+    fun findByIds(ids: Set<UUID>): List<Customer>
+
+    fun findEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<CustomerEvent>
 }

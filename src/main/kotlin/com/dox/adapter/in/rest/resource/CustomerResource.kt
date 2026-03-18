@@ -77,6 +77,10 @@ interface CustomerResource : BaseResource {
     @PostMapping("/{id}/events")
     fun addEvent(@PathVariable id: UUID, @RequestBody request: CustomerEventRequest): ResponseEntity<CustomerEventResponse>
 
+    @Operation(summary = "Atualizar evento do cliente")
+    @PutMapping("/{id}/events/{eventId}")
+    fun updateEvent(@PathVariable id: UUID, @PathVariable eventId: UUID, @RequestBody request: CustomerEventRequest): ResponseEntity<CustomerEventResponse>
+
     @Operation(summary = "Excluir evento")
     @DeleteMapping("/{id}/events/{eventId}")
     fun deleteEvent(@PathVariable id: UUID, @PathVariable eventId: UUID): ResponseEntity<Void>

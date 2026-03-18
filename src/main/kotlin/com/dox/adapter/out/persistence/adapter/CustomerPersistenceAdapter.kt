@@ -14,6 +14,7 @@ import com.dox.domain.model.CustomerNote
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
@@ -59,16 +60,18 @@ class CustomerPersistenceAdapter(
     }
 
     override fun saveEvent(event: CustomerEvent): CustomerEvent {
-        val entity = CustomerEventJpaEntity().apply {
-            id = event.id
-            customerId = event.customerId
-            type = event.type
-            title = event.title
-            description = event.description
-            date = event.date
-        }
+        val entity = eventJpaRepository.findById(event.id).orElse(null)
+            ?: CustomerEventJpaEntity().apply { id = event.id }
+        entity.customerId = event.customerId
+        entity.type = event.type
+        entity.title = event.title
+        entity.description = event.description
+        entity.date = event.date
         return eventJpaRepository.save(entity).toDomain()
     }
+
+    override fun findEventById(eventId: UUID): CustomerEvent? =
+        eventJpaRepository.findById(eventId).orElse(null)?.toDomain()
 
     override fun findEventsByCustomerId(customerId: UUID): List<CustomerEvent> =
         eventJpaRepository.findByCustomerIdOrderByDateDesc(customerId).map { it.toDomain() }
@@ -76,6 +79,12 @@ class CustomerPersistenceAdapter(
     override fun deleteEvent(eventId: UUID) {
         eventJpaRepository.deleteById(eventId)
     }
+
+    override fun findByIds(ids: Set<UUID>): List<Customer> =
+        customerJpaRepository.findAllById(ids).map { it.toDomain() }
+
+    override fun findEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<CustomerEvent> =
+        eventJpaRepository.findByDateBetweenOrderByDateAsc(from, to).map { it.toDomain() }
 
     private fun CustomerJpaEntity.toDomain() = Customer(
         id = id,
