@@ -2,6 +2,8 @@ package com.dox.config
 
 import com.dox.adapter.`in`.filter.JwtAuthenticationFilter
 import com.dox.adapter.`in`.filter.MultiTenantFilter
+import com.dox.adapter.`in`.filter.RateLimitFilter
+import com.dox.adapter.`in`.filter.RequestSizeLimitFilter
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,7 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val multiTenantFilter: MultiTenantFilter
+    private val multiTenantFilter: MultiTenantFilter,
+    private val rateLimitFilter: RateLimitFilter,
+    private val requestSizeLimitFilter: RequestSizeLimitFilter,
+    private val corsConfig: CorsConfig
 ) {
 
     @Bean
@@ -32,9 +37,17 @@ class SecurityConfig(
         FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
+    fun rateLimitFilterRegistration(filter: RateLimitFilter): FilterRegistrationBean<RateLimitFilter> =
+        FilterRegistrationBean(filter).apply { isEnabled = false }
+
+    @Bean
+    fun requestSizeLimitFilterRegistration(filter: RequestSizeLimitFilter): FilterRegistrationBean<RequestSizeLimitFilter> =
+        FilterRegistrationBean(filter).apply { isEnabled = false }
+
+    @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
-            .cors { it.configurationSource(CorsConfig().corsConfigurationSource()) }
+            .cors { it.configurationSource(corsConfig.corsConfigurationSource()) }
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
@@ -50,6 +63,8 @@ class SecurityConfig(
                 ).permitAll()
                 it.anyRequest().authenticated()
             }
+            .addFilterBefore(requestSizeLimitFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterAfter(multiTenantFilter, JwtAuthenticationFilter::class.java)
             .build()

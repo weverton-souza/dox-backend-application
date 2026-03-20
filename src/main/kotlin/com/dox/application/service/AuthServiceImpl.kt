@@ -15,7 +15,6 @@ import com.dox.domain.enum.TenantType
 import com.dox.extensions.isExpired
 import com.dox.domain.exception.AccessDeniedException
 import com.dox.domain.exception.BusinessException
-import com.dox.domain.exception.DuplicateResourceException
 import com.dox.domain.exception.InvalidCredentialsException
 import com.dox.domain.exception.InvalidTokenException
 import com.dox.domain.exception.ResourceNotFoundException
@@ -41,8 +40,10 @@ class AuthServiceImpl(
 
     @Transactional
     override fun register(command: RegisterCommand): AuthResult {
+        validatePassword(command.password)
+
         if (userPersistencePort.existsByEmail(command.email)) {
-            throw DuplicateResourceException("email", command.email)
+            throw BusinessException("Não foi possível completar o registro")
         }
 
         val tenant = tenantProvisioningService.provisionTenant(
@@ -63,7 +64,7 @@ class AuthServiceImpl(
         return generateAuthResult(user, tenant.id)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     override fun login(command: LoginCommand): AuthResult {
         val user = userPersistencePort.findByEmail(command.email)
             ?: throw InvalidCredentialsException()
@@ -137,6 +138,8 @@ class AuthServiceImpl(
     }
 
     private fun generateAuthResult(user: User, tenantId: UUID): AuthResult {
+        refreshTokenPersistencePort.deleteByUserId(user.id)
+
         val tenant = tenantPersistencePort.findById(tenantId)
             ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
 
@@ -161,6 +164,21 @@ class AuthServiceImpl(
             tenantId = tenantId,
             vertical = tenant.vertical
         )
+    }
+
+    private fun validatePassword(password: String) {
+        if (password.length < 8) {
+            throw BusinessException("A senha deve ter no mínimo 8 caracteres")
+        }
+        if (password.length > 72) {
+            throw BusinessException("A senha deve ter no máximo 72 caracteres")
+        }
+        if (!password.any { it.isDigit() }) {
+            throw BusinessException("A senha deve conter pelo menos um número")
+        }
+        if (!password.any { it.isLetter() }) {
+            throw BusinessException("A senha deve conter pelo menos uma letra")
+        }
     }
 
     private fun hashToken(token: String): String {

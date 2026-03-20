@@ -18,13 +18,14 @@ class TenantConnectionProvider(
     override fun releaseAnyConnection(connection: Connection) = connection.close()
 
     override fun getConnection(tenantIdentifier: String): Connection {
+        val sanitized = TenancyConstant.validateSchemaName(tenantIdentifier)
         val connection = anyConnection
-        connection.createStatement().execute("SET search_path TO $tenantIdentifier")
+        connection.createStatement().use { it.execute("SET search_path TO \"$sanitized\"") }
         return connection
     }
 
     override fun releaseConnection(tenantIdentifier: String, connection: Connection) {
-        connection.createStatement().execute("SET search_path TO ${TenancyConstant.PUBLIC_SCHEMA}")
+        connection.createStatement().use { it.execute("SET search_path TO \"${TenancyConstant.PUBLIC_SCHEMA}\"") }
         connection.close()
     }
 

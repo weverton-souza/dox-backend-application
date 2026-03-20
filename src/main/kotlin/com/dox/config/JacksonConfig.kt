@@ -23,10 +23,15 @@ class JacksonConfig {
             addSerializer(Enum::class.java, LowercaseEnumSerializer())
         }
 
+        val sanitizingModule = SimpleModule().apply {
+            addDeserializer(String::class.java, HtmlSanitizingDeserializer())
+        }
+
         return JsonMapper.builder()
             .addModule(JavaTimeModule())
             .addModule(kotlinModule())
             .addModule(enumModule)
+            .addModule(sanitizingModule)
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)

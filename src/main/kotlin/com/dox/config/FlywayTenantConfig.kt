@@ -33,8 +33,9 @@ class FlywayTenantConfig(
                 val rs = stmt.executeQuery("SELECT schema_name FROM public.tenants")
                 while (rs.next()) {
                     val schemaName = rs.getString("schema_name")
-                    conn.createStatement().use { it.execute("CREATE SCHEMA IF NOT EXISTS \"$schemaName\"") }
-                    migrateForTenant(schemaName)
+                    val sanitized = TenancyConstant.validateSchemaName(schemaName)
+                    conn.createStatement().use { it.execute("CREATE SCHEMA IF NOT EXISTS \"$sanitized\"") }
+                    migrateForTenant(sanitized)
                 }
             }
         }

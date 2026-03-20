@@ -8,7 +8,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "public")
 class UserJpaEntity(
     @Column(name = "email", unique = true, nullable = false)
     var email: String = "",

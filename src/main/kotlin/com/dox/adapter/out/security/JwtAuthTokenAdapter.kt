@@ -21,6 +21,12 @@ class JwtAuthTokenAdapter(
         Keys.hmacShaKeyFor(securityProperties.jwtSigningKey.toByteArray())
     }
 
+    private val parser by lazy {
+        Jwts.parser().verifyWith(key).build()
+    }
+
+    private fun parseClaims(token: String) = parser.parseSignedClaims(token).payload
+
     override fun generateAccessToken(userId: UUID, email: String, tenantId: UUID): String {
         val now = Date()
         val expiry = Date(now.time + securityProperties.accessTokenExpiration)
@@ -39,26 +45,20 @@ class JwtAuthTokenAdapter(
 
     override fun validateAccessToken(token: String): Boolean =
         try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
-            true
+            val claims = parseClaims(token)
+            claims.subject != null && claims["type"] == null
         } catch (_: Exception) {
             false
         }
 
-    override fun extractUserId(token: String): UUID {
-        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
-        return UUID.fromString(claims.subject)
-    }
+    override fun extractUserId(token: String): UUID =
+        UUID.fromString(parseClaims(token).subject)
 
-    override fun extractEmail(token: String): String {
-        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
-        return claims["email"] as String
-    }
+    override fun extractEmail(token: String): String =
+        parseClaims(token)["email"] as String
 
-    override fun extractTenantId(token: String): UUID {
-        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
-        return UUID.fromString(claims["tenantId"] as String)
-    }
+    override fun extractTenantId(token: String): UUID =
+        UUID.fromString(parseClaims(token)["tenantId"] as String)
 
     override fun generateFormLinkToken(tenantId: UUID, formLinkId: UUID, expiresAt: LocalDateTime): String {
         val expiry = Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant())
@@ -73,7 +73,7 @@ class JwtAuthTokenAdapter(
     }
 
     override fun extractFormLinkData(token: String): FormLinkTokenData {
-        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
+        val claims = parseClaims(token)
         require(claims["type"] == "form_link") { "Token type invalid" }
         return FormLinkTokenData(
             tenantId = UUID.fromString(claims["tenantId"] as String),

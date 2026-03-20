@@ -1,3 +1,10 @@
+-- Professional Settings seed
+INSERT INTO professional_settings (name, crp, specialization, phone, email, contact_items)
+SELECT 'Dra. Ana Silva', '06/12345', 'Psicologia Clinica', '(11) 98765-4321', 'ana.silva@clinica.com.br', '[]'::JSONB
+WHERE NOT EXISTS (SELECT 1 FROM professional_settings);
+
+
+-- Customers, Reports, Templates, Forms seed
 INSERT INTO customers (id, data, deleted) VALUES
 ('c0000001-0000-0000-0000-000000000001', '{"name": "Maria Aparecida Santos", "cpf": "111.222.333-44", "email": "maria.santos@email.com", "phone": "(11) 99999-0001", "birthDate": "1985-03-15", "address": "Rua das Flores, 100 - São Paulo/SP"}', false),
 ('c0000002-0000-0000-0000-000000000002', '{"name": "José Carlos Oliveira", "cpf": "222.333.444-55", "email": "jose.oliveira@email.com", "phone": "(11) 99999-0002", "birthDate": "1978-07-22", "address": "Av. Paulista, 1500 - São Paulo/SP"}', false),
@@ -335,3 +342,78 @@ INSERT INTO form_responses (id, form_id, form_version_id, customer_id, customer_
 ('fa000009-0000-0000-0000-000000000001', 'e0000005-0000-0000-0000-000000000005', 'f0000005-0000-0000-0000-000000000001',
  'c0000009-0000-0000-0000-000000000009', 'Luciana Ferreira Melo', 'CONCLUIDO',
  '[{"fieldId": "carga_horaria", "value": "60 horas"}, {"fieldId": "satisfacao_trabalho", "selectedOptionIds": ["5bda66f5-982d-42c7-908f-3de1f0838b29"]}, {"fieldId": "relacao_chefia", "selectedOptionIds": ["7446688e-582f-4996-a6fa-c8ab36ce21f3"]}, {"fieldId": "sintomas_fisicos", "selectedOptionIds": ["10265abc-c4c3-4f0d-88ea-ddb2b654291d", "c4d9aa96-e68d-4fb8-942e-d79ba1acc6da", "fd7cc883-e925-453e-a259-05deba08de98"]}, {"fieldId": "pensou_sair", "selectedOptionIds": ["043121b7-6e79-406b-9c13-2483a9d32dbd"]}, {"fieldId": "atividades_lazer", "selectedOptionIds": ["1413e22b-e6e7-4c92-98ad-790cb6763d52"]}]');
+
+
+
+-- Maria detailed data seed
+UPDATE customers SET data = '{"name":"Maria Aparecida Santos","cpf":"111.222.333-44","birthDate":"1985-03-15","age":"40 anos","education":"Ensino Superior Completo","profession":"Professora","motherName":"Helena Maria dos Santos","fatherName":"Roberto Carlos Santos","phone":"(11) 99999-0001","email":"maria.santos@email.com","addressStreet":"Rua das Flores, 100","addressCity":"São Paulo","addressState":"SP","addressZipCode":"01234-567","chiefComplaint":"Ansiedade generalizada com episódios de insônia há aproximadamente 8 meses. Piora dos sintomas após mudança de emprego.","diagnosis":"Transtorno de Ansiedade Generalizada (F41.1)","medications":"Escitalopram 10mg (manhã), Melatonina 3mg (noite)","referralDoctor":"Dr. Paulo Henrique Mendes - CRM/SP 123456"}'::JSONB
+WHERE id = 'c0000001-0000-0000-0000-000000000001';
+
+INSERT INTO customer_notes (id, customer_id, content, created_at, updated_at) VALUES
+('ca000001-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'Paciente relata melhora significativa na qualidade do sono após início do uso de melatonina. Mantém queixa de ansiedade em situações de avaliação no trabalho. Sugiro trabalhar técnicas de respiração e reestruturação cognitiva nas próximas sessões.', date_trunc('month', now()) - interval '30 days' + time '10:30', date_trunc('month', now()) - interval '30 days' + time '10:30'),
+('ca000002-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'Maria compareceu acompanhada da irmã. Relata que tem conseguido aplicar as técnicas de respiração diafragmática nos momentos de crise. Episódios de insônia reduziram de 4-5 para 1-2 vezes por semana. Humor estável.', date_trunc('month', now()) - interval '16 days' + time '14:00', date_trunc('month', now()) - interval '16 days' + time '14:00'),
+('ca000003-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'Sessão focada em reestruturação cognitiva sobre crenças de desempenho profissional. Paciente identificou padrão de pensamento catastrófico em relação a avaliações de desempenho. Trabalhou-se registro de pensamentos automáticos.', date_trunc('month', now()) + interval '2 days' + time '09:15', date_trunc('month', now()) + interval '2 days' + time '09:15'),
+('ca000004-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'Paciente relata episódio de crise de ansiedade no trabalho na semana anterior, mas conseguiu manejar utilizando técnicas aprendidas em sessão. Demonstra progresso no autoconhecimento e autorregulação emocional.', date_trunc('month', now()) + interval '8 days' + time '10:00', date_trunc('month', now()) + interval '8 days' + time '10:00'),
+('ca000005-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'Reavaliação com BAI: escore reduziu de 28 (moderado) para 16 (leve). BDI-II manteve-se estável em 12 (leve). Evolução positiva. Discutido com paciente possibilidade de redução para frequência quinzenal.', date_trunc('month', now()) + interval '15 days' + time '14:30', date_trunc('month', now()) + interval '15 days' + time '14:30'),
+('ca000006-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'Paciente concordou com a transição para sessões quinzenais. Relatou que se sente mais confiante no ambiente de trabalho e que o relacionamento com colegas melhorou. Sono normalizado na maior parte dos dias.', date_trunc('month', now()) + interval '22 days' + time '10:00', date_trunc('month', now()) + interval '22 days' + time '10:00');
+
+INSERT INTO customer_events (id, customer_id, type, title, description, date, created_at) VALUES
+('cb000001-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'avaliacao', 'Avaliação psicológica inicial', 'Primeira sessão de avaliação. Aplicados BAI (escore 28 - moderado) e BDI-II (escore 14 - leve). Entrevista clínica semiestruturada realizada.', date_trunc('month', now()) - interval '30 days' + time '09:00', date_trunc('month', now()) - interval '30 days' + time '09:00'),
+('cb000002-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'laudo', 'Entrega do laudo psicológico', 'Devolutiva dos resultados da avaliação e entrega do laudo. Paciente ciente do diagnóstico e das recomendações de tratamento.', date_trunc('month', now()) - interval '16 days' + time '10:00', date_trunc('month', now()) - interval '16 days' + time '10:00'),
+('cb000003-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'consulta', 'Início do acompanhamento psicoterapêutico', 'Primeira sessão de psicoterapia (TCC). Estabelecimento do contrato terapêutico e definição dos objetivos iniciais.', date_trunc('month', now()) + interval '1 day' + time '10:30', date_trunc('month', now()) + interval '1 day' + time '10:30'),
+('cb000004-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'consulta', 'Sessão de psicoterapia', 'Trabalho com técnicas de respiração diafragmática e relaxamento muscular progressivo.', date_trunc('month', now()) + interval '3 days' + time '10:30', date_trunc('month', now()) + interval '3 days' + time '10:30'),
+('cb000005-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'retorno', 'Retorno com acompanhante', 'Maria compareceu acompanhada da irmã. Evolução positiva nos sintomas de insônia.', date_trunc('month', now()) + interval '6 days' + time '14:00', date_trunc('month', now()) + interval '6 days' + time '14:00'),
+('cb000006-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'consulta', 'Sessão de reestruturação cognitiva', 'Foco em crenças disfuncionais sobre desempenho profissional. Registro de pensamentos automáticos.', date_trunc('month', now()) + interval '9 days' + time '09:15', date_trunc('month', now()) + interval '9 days' + time '09:15'),
+('cb000007-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'observacao', 'Contato telefônico', 'Maria ligou para informar que está se sentindo bem e que não houve episódios de crise desde a última sessão.', date_trunc('month', now()) + interval '11 days' + time '16:00', date_trunc('month', now()) + interval '11 days' + time '16:00'),
+('cb000008-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'consulta', 'Sessão de psicoterapia', 'Paciente relatou manejo adequado de crise de ansiedade no trabalho. Reforço positivo das estratégias de enfrentamento.', date_trunc('month', now()) + interval '14 days' + time '10:00', date_trunc('month', now()) + interval '14 days' + time '10:00'),
+('cb000009-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'avaliacao', 'Reavaliação psicométrica', 'Reaplicação do BAI (escore 16 - leve) e BDI-II (escore 12 - leve). Melhora significativa nos índices de ansiedade.', date_trunc('month', now()) + interval '17 days' + time '14:30', date_trunc('month', now()) + interval '17 days' + time '14:30'),
+('cb000010-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'consulta', 'Sessão de psicoterapia - transição quinzenal', 'Acordada redução da frequência para sessões quinzenais. Paciente demonstra autonomia na aplicação das técnicas.', date_trunc('month', now()) + interval '20 days' + time '10:00', date_trunc('month', now()) + interval '20 days' + time '10:00'),
+('cb000011-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'retorno', 'Retorno quinzenal', 'Acompanhamento de evolução. Paciente relata boa adaptação ao novo ritmo de sessões quinzenais.', date_trunc('month', now()) + interval '23 days' + time '14:00', date_trunc('month', now()) + interval '23 days' + time '14:00'),
+('cb000012-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', 'consulta', 'Sessão quinzenal de psicoterapia', 'Sessão de manutenção. Paciente estável, sem episódios de crise. Revisão das estratégias de enfrentamento.', date_trunc('month', now()) + interval '26 days' + time '10:30', date_trunc('month', now()) + interval '26 days' + time '10:30');
+
+
+
+-- Calendar seed
+INSERT INTO event_tags (id, name, color) VALUES
+('e1a00001-0000-4000-8000-000000000001', 'Consulta', '#007AFF'),
+('e1a00002-0000-4000-8000-000000000002', 'Retorno', '#34C759'),
+('e1a00003-0000-4000-8000-000000000003', 'Avaliação', '#AF52DE'),
+('e1a00004-0000-4000-8000-000000000004', 'Supervisão', '#FF9500'),
+('e1a00005-0000-4000-8000-000000000005', 'Devolutiva', '#FF2D55'),
+('e1a00006-0000-4000-8000-000000000006', 'Atendimento', '#5856D6'),
+('e1a00007-0000-4000-8000-000000000007', 'Observação', '#8E8E93'),
+('e1a00008-0000-4000-8000-000000000008', 'Relatório Técnico', '#FF6B35'),
+('e1a00009-0000-4000-8000-000000000009', 'Laudo', '#30B0C7'),
+('e1a0000a-0000-4000-8000-00000000000a', 'Reunião', '#FFD60A'),
+('e1a0000b-0000-4000-8000-00000000000b', 'Encaminhamento', '#AC8E68');
+
+INSERT INTO calendar_events (id, summary, tag_id, customer_id, start_date_time, start_time_zone, end_date_time, end_time_zone, all_day, status) VALUES
+('c1e00001-0000-4000-8000-000000000001', 'Sessão com Maria', 'e1a00001-0000-4000-8000-000000000001', 'c0000001-0000-0000-0000-000000000001',
+  (date_trunc('month', now()) + interval '2 days' + time '09:00')::timestamptz, 'America/Sao_Paulo',
+  (date_trunc('month', now()) + interval '2 days' + time '10:00')::timestamptz, 'America/Sao_Paulo', false, 'confirmed'),
+
+('c1e00002-0000-4000-8000-000000000002', 'Retorno Maria', 'e1a00002-0000-4000-8000-000000000002', 'c0000001-0000-0000-0000-000000000001',
+  (date_trunc('month', now()) + interval '9 days' + time '14:00')::timestamptz, 'America/Sao_Paulo',
+  (date_trunc('month', now()) + interval '9 days' + time '15:00')::timestamptz, 'America/Sao_Paulo', false, 'confirmed'),
+
+('c1e00003-0000-4000-8000-000000000003', 'Avaliação psicométrica', 'e1a00003-0000-4000-8000-000000000003', 'c0000001-0000-0000-0000-000000000001',
+  (date_trunc('month', now()) + interval '15 days' + time '10:00')::timestamptz, 'America/Sao_Paulo',
+  (date_trunc('month', now()) + interval '15 days' + time '11:30')::timestamptz, 'America/Sao_Paulo', false, 'confirmed'),
+
+('c1e00004-0000-4000-8000-000000000004', 'Supervisão clínica', 'e1a00004-0000-4000-8000-000000000004', NULL,
+  (date_trunc('month', now()) + interval '12 days' + time '16:00')::timestamptz, 'America/Sao_Paulo',
+  (date_trunc('month', now()) + interval '12 days' + time '17:30')::timestamptz, 'America/Sao_Paulo', false, 'confirmed'),
+
+('c1e00005-0000-4000-8000-000000000005', 'Devolutiva Maria', 'e1a00005-0000-4000-8000-000000000005', 'c0000001-0000-0000-0000-000000000001',
+  (date_trunc('month', now()) + interval '22 days' + time '09:00')::timestamptz, 'America/Sao_Paulo',
+  (date_trunc('month', now()) + interval '22 days' + time '10:00')::timestamptz, 'America/Sao_Paulo', false, 'confirmed'),
+
+('c1e00006-0000-4000-8000-000000000006', 'Sessão com Maria', 'e1a00001-0000-4000-8000-000000000001', 'c0000001-0000-0000-0000-000000000001',
+  (date_trunc('month', now()) + interval '16 days' + time '09:00')::timestamptz, 'America/Sao_Paulo',
+  (date_trunc('month', now()) + interval '16 days' + time '10:00')::timestamptz, 'America/Sao_Paulo', false, 'confirmed'),
+
+('c1e00007-0000-4000-8000-000000000007', 'Reunião de equipe', 'e1a00004-0000-4000-8000-000000000004', NULL,
+  (date_trunc('month', now()) + interval '25 days' + time '14:00')::timestamptz, 'America/Sao_Paulo',
+  (date_trunc('month', now()) + interval '25 days' + time '15:30')::timestamptz, 'America/Sao_Paulo', false, 'confirmed');
+
+

@@ -59,6 +59,8 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
+    implementation("org.jsoup:jsoup:1.18.3")
+
     implementation("org.springframework.ai:spring-ai-anthropic-spring-boot-starter")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

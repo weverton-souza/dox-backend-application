@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
-@Table(name = "tenants")
+@Table(name = "tenants", schema = "public")
 @EntityListeners(AuditingEntityListener::class)
 class TenantJpaEntity(
     @Id
