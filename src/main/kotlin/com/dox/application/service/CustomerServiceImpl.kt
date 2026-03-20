@@ -7,8 +7,11 @@ import com.dox.application.port.input.CustomerUseCase
 import com.dox.application.port.input.UpdateCustomerCommand
 import com.dox.application.port.input.UpdateCustomerEventCommand
 import com.dox.application.port.output.CustomerPersistencePort
+import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Customer
+import com.dox.domain.validation.CnpjValidator
+import com.dox.domain.validation.CpfValidator
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import org.springframework.data.domain.Page
@@ -24,8 +27,10 @@ class CustomerServiceImpl(
 ) : CustomerUseCase {
 
     @Transactional
-    override fun create(command: CreateCustomerCommand): Customer =
-        customerPersistencePort.save(Customer(data = command.data))
+    override fun create(command: CreateCustomerCommand): Customer {
+        validateDocuments(command.data)
+        return customerPersistencePort.save(Customer(data = command.data))
+    }
 
     override fun findById(id: UUID): Customer =
         customerPersistencePort.findById(id)
@@ -39,6 +44,7 @@ class CustomerServiceImpl(
     override fun update(command: UpdateCustomerCommand): Customer {
         customerPersistencePort.findById(command.id)
             ?: throw ResourceNotFoundException("Cliente", command.id.toString())
+        validateDocuments(command.data)
         return customerPersistencePort.save(Customer(id = command.id, data = command.data))
     }
 
@@ -95,6 +101,18 @@ class CustomerServiceImpl(
     @Transactional
     override fun deleteEvent(eventId: UUID) {
         customerPersistencePort.deleteEvent(eventId)
+    }
+
+    private fun validateDocuments(data: Map<String, Any?>) {
+        val cpf = data["cpf"]?.toString()
+        if (!cpf.isNullOrBlank() && !CpfValidator.isValidCpf(cpf)) {
+            throw BusinessException("CPF inválido")
+        }
+
+        val cnpj = data["cnpj"]?.toString()
+        if (!cnpj.isNullOrBlank() && !CnpjValidator.isValidCnpj(cnpj)) {
+            throw BusinessException("CNPJ inválido")
+        }
     }
 
     override fun findAllEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<Pair<CustomerEvent, String>> {
