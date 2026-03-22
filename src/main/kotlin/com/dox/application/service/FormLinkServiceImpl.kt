@@ -100,7 +100,7 @@ class FormLinkServiceImpl(
         }
     }
 
-    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED)
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     override fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse {
         val tokenData = extractAndValidateToken(command.token)
 
