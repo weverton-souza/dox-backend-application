@@ -12,6 +12,7 @@ import com.dox.domain.exception.TokenExpiredException
 import org.slf4j.LoggerFactory
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
@@ -48,7 +49,8 @@ class DomainExceptionHandler {
     fun handle(ex: DomainException, request: WebRequest): ProblemDetail {
         logger.warn("[{}] {}", ex.errorCode.code, ex.message)
 
-        val pd = buildProblemDetail(ex.httpStatus, ex.errorCode.title, ex.message!!, ex.errorCode.code)
+        val httpStatus = resolveHttpStatus(ex)
+        val pd = buildProblemDetail(httpStatus, ex.errorCode.title, ex.message!!, ex.errorCode.code)
 
         when (ex) {
             is ResourceNotFoundException -> {
@@ -67,6 +69,16 @@ class DomainExceptionHandler {
         }
 
         return pd
+    }
+
+    private fun resolveHttpStatus(ex: DomainException): HttpStatus = when (ex) {
+        is ResourceNotFoundException -> HttpStatus.NOT_FOUND
+        is DuplicateResourceException -> HttpStatus.CONFLICT
+        is InvalidCredentialsException -> HttpStatus.UNAUTHORIZED
+        is InvalidTokenException -> HttpStatus.UNAUTHORIZED
+        is TokenExpiredException -> HttpStatus.UNAUTHORIZED
+        is AccessDeniedException -> HttpStatus.FORBIDDEN
+        is BusinessException -> HttpStatus.UNPROCESSABLE_ENTITY
     }
 }
 

@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.UUID
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
 
@@ -60,6 +62,45 @@ class ReportGenerationServiceImpl(
         val userId = ContextHolder.getUserIdOrThrow()
         val tenantId = ContextHolder.getTenantIdOrThrow()
 
+        val (quota, semaphore) = validateAndAcquireQuota(tenantId, command.reportId)
+
+        try {
+            val (systemPrompt, userPrompt) = buildGenerationContext(command.reportId, command)
+
+            val result = executeAiGeneration(systemPrompt, userPrompt, quota.model)
+
+            val sanitizedText = sanitizeOutput(result.text)
+            val costBrl = calculateCost(result)
+
+            recordUsage(
+                reportId = command.reportId,
+                userId = userId,
+                sectionType = command.sectionType,
+                result = result,
+                costBrl = costBrl
+            )
+
+            return result.copy(text = sanitizedText)
+        } catch (e: Exception) {
+            if (e is BusinessException || e is ResourceNotFoundException) throw e
+
+            log.error("AI generation failed for report {}: {}", command.reportId, e.message)
+
+            recordFailure(
+                reportId = command.reportId,
+                userId = userId,
+                sectionType = command.sectionType,
+                model = quota.model,
+                errorMessage = e.message?.take(500)
+            )
+
+            throw BusinessException("Erro ao gerar seção com IA. Tente novamente.")
+        } finally {
+            semaphore.release()
+        }
+    }
+
+    private fun validateAndAcquireQuota(tenantId: UUID, reportId: UUID): Pair<AiQuota, Semaphore> {
         val quota = aiQuotaPort.findQuota()
             ?: throw BusinessException("IA não habilitada para este workspace")
 
@@ -67,8 +108,8 @@ class ReportGenerationServiceImpl(
             throw BusinessException("Plano de IA não ativo")
         }
 
-        val report = reportPersistencePort.findById(command.reportId)
-            ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
+        reportPersistencePort.findById(reportId)
+            ?: throw ResourceNotFoundException("Relatório", reportId.toString())
 
         val semaphore = tenantSemaphores.computeIfAbsent(tenantId.toString()) {
             Semaphore(aiConfig.maxConcurrentPerTenant)
@@ -87,69 +128,79 @@ class ReportGenerationServiceImpl(
             throw BusinessException("Limite de gerações simultâneas atingido. Tente novamente em instantes.")
         }
 
-        try {
-            val tenant = tenantPersistencePort.findById(tenantId)
-                ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
+        return Pair(quota, semaphore)
+    }
 
-            val formResponseId = command.formResponseId ?: report.formResponseId
+    private fun buildGenerationContext(reportId: UUID, command: GenerateSectionCommand): Pair<String, String> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        val tenant = tenantPersistencePort.findById(tenantId)
+            ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
 
-            val formResponse = formResponseId?.let { formPersistencePort.findResponseById(it) }
+        val report = reportPersistencePort.findById(reportId)
+            ?: throw ResourceNotFoundException("Relatório", reportId.toString())
 
-            if (formResponse == null) {
-                throw BusinessException("Nenhum questionário respondido vinculado a este relatório. Vincule um questionário antes de gerar com IA.")
-            }
+        val formResponseId = command.formResponseId ?: report.formResponseId
 
-            log.info("AI generation context: formResponseId={}, answersCount={}", formResponseId, formResponse.answers.size)
+        val formResponse = formResponseId?.let { formPersistencePort.findResponseById(it) }
+            ?: throw BusinessException("Nenhum questionário respondido vinculado a este relatório. Vincule um questionário antes de gerar com IA.")
 
-            val customer = report.customerId?.let { customerPersistencePort.findById(it) }
+        log.info("AI generation context: formResponseId={}, answersCount={}", formResponseId, formResponse.answers.size)
 
-            val systemPrompt = systemPromptBuilder.build(tenant.vertical)
-            val contextPrompt = sectionPromptBuilder.buildContext(customer, formResponse, null, null)
-            val userPrompt = contextPrompt + "\n\n" + sectionPromptBuilder.buildUserPrompt(command.sectionType)
+        val customer = report.customerId?.let { customerPersistencePort.findById(it) }
 
-            val result = executeWithRetry(systemPrompt, userPrompt, quota.model)
+        val systemPrompt = systemPromptBuilder.build(tenant.vertical)
+        val contextPrompt = sectionPromptBuilder.buildContext(customer, formResponse, null, null)
+        val userPrompt = contextPrompt + "\n\n" + sectionPromptBuilder.buildUserPrompt(command.sectionType)
 
-            val sanitizedText = sanitizeOutput(result.text)
-            val costBrl = calculateCost(result)
+        return Pair(systemPrompt, userPrompt)
+    }
 
-            val usage = AiUsage(
-                reportId = command.reportId,
-                generationId = result.generationId,
-                professionalId = userId,
-                sectionType = command.sectionType,
-                model = result.model,
-                inputTokens = result.inputTokens,
-                outputTokens = result.outputTokens,
-                cacheReadTokens = result.cacheReadTokens,
-                cacheWriteTokens = result.cacheWriteTokens,
-                estimatedCostBrl = costBrl,
-                status = AiGenerationStatus.SUCCESS,
-                durationMs = result.durationMs,
-                isRegeneration = false,
-                regenerationCount = 0
-            )
-            aiUsagePort.save(usage)
+    private fun executeAiGeneration(systemPrompt: String, userPrompt: String, model: String): AiGenerationResult {
+        return executeWithRetry(systemPrompt, userPrompt, model)
+    }
 
-            return result.copy(text = sanitizedText)
-        } catch (e: Exception) {
-            if (e is BusinessException || e is ResourceNotFoundException) throw e
+    private fun recordUsage(
+        reportId: UUID,
+        userId: UUID,
+        sectionType: String,
+        result: AiGenerationResult,
+        costBrl: BigDecimal
+    ) {
+        val usage = AiUsage(
+            reportId = reportId,
+            generationId = result.generationId,
+            professionalId = userId,
+            sectionType = sectionType,
+            model = result.model,
+            inputTokens = result.inputTokens,
+            outputTokens = result.outputTokens,
+            cacheReadTokens = result.cacheReadTokens,
+            cacheWriteTokens = result.cacheWriteTokens,
+            estimatedCostBrl = costBrl,
+            status = AiGenerationStatus.SUCCESS,
+            durationMs = result.durationMs,
+            isRegeneration = false,
+            regenerationCount = 0
+        )
+        aiUsagePort.save(usage)
+    }
 
-            log.error("AI generation failed for report {}: {}", command.reportId, e.message)
-
-            val usage = AiUsage(
-                reportId = command.reportId,
-                professionalId = userId,
-                sectionType = command.sectionType,
-                model = quota.model,
-                status = AiGenerationStatus.ERROR,
-                errorMessage = e.message?.take(500)
-            )
-            aiUsagePort.save(usage)
-
-            throw BusinessException("Erro ao gerar seção com IA. Tente novamente.")
-        } finally {
-            semaphore.release()
-        }
+    private fun recordFailure(
+        reportId: UUID,
+        userId: UUID,
+        sectionType: String,
+        model: String,
+        errorMessage: String?
+    ) {
+        val usage = AiUsage(
+            reportId = reportId,
+            professionalId = userId,
+            sectionType = sectionType,
+            model = model,
+            status = AiGenerationStatus.ERROR,
+            errorMessage = errorMessage
+        )
+        aiUsagePort.save(usage)
     }
 
     @Transactional
@@ -246,11 +297,10 @@ class ReportGenerationServiceImpl(
     }
 
     private fun sanitizeOutput(text: String): String {
-        var cleaned = text.trim()
-        cleaned = cleaned.replace(Regex("<[^>]+>"), "")
+        var cleaned = Jsoup.clean(text.trim(), Safelist.none())
 
         if (!cleaned.contains("\n")) {
-            cleaned = cleaned.replace(Regex("([.!?])\\s*([A-ZÀ-Ú])")) {
+            cleaned = cleaned.replace(Regex("([.!?])\\s{2,}([A-ZÀ-Ú])")) {
                 "${it.groupValues[1]}\n\n${it.groupValues[2]}"
             }
         }
