@@ -36,14 +36,25 @@ dox:
     jwt-signing-key: ${JWT_SECRET:change-me-in-production-this-is-a-long-enough-key-for-hmac-sha256-algorithm}
     access-token-expiration: ${ACCESS_TOKEN_EXPIRATION:900000}
     refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION:604800000}
+  ai:
+    enabled: ${AI_ENABLED:true}
+    default-model: ${AI_DEFAULT_MODEL:claude-sonnet-4-6}
+    max-concurrent-per-tenant: ${AI_MAX_CONCURRENT:5}
+    max-regenerations-per-report: ${AI_MAX_REGENERATIONS:3}
+    cost:
+      sonnet-input-per-million: ${AI_COST_SONNET_INPUT:3.00}
+      sonnet-output-per-million: ${AI_COST_SONNET_OUTPUT:15.00}
+      sonnet-cache-read-per-million: ${AI_COST_SONNET_CACHE_READ:0.30}
+      sonnet-cache-write-per-million: ${AI_COST_SONNET_CACHE_WRITE:3.75}
+      brl-usd-rate: ${AI_BRL_USD_RATE:5.80}
 
 spring.ai:
   anthropic:
     api-key: ${ANTHROPIC_API_KEY:}
     chat:
       options:
-        model: ${AI_MODEL:claude-sonnet-4-20250514}
-        max-tokens: ${AI_MAX_TOKENS:4096}
+        model: ${AI_MODEL:claude-sonnet-4-6}
+        max-tokens: ${AI_MAX_TOKENS:8000}
 
 management:
   endpoints:

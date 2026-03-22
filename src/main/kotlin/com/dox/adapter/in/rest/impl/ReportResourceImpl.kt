@@ -31,6 +31,7 @@ class ReportResourceImpl(
                 CreateReportCommand(
                     customerName = request.customerName,
                     customerId = request.customerId,
+                    formResponseId = request.formResponseId,
                     blocks = request.blocks
                 )
             ).toResponse(),

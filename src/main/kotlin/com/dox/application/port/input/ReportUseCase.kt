@@ -10,6 +10,7 @@ import java.util.UUID
 data class CreateReportCommand(
     val customerName: String? = null,
     val customerId: UUID? = null,
+    val formResponseId: UUID? = null,
     val blocks: List<Map<String, Any?>> = emptyList()
 )
 

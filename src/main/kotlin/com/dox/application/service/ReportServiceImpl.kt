@@ -29,6 +29,7 @@ class ReportServiceImpl(
             Report(
                 customerName = command.customerName,
                 customerId = command.customerId,
+                formResponseId = command.formResponseId,
                 blocks = command.blocks
             )
         )

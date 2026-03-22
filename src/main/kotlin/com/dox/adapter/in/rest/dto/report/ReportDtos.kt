@@ -8,6 +8,7 @@ data class ReportRequest(
     val status: ReportStatus? = null,
     val customerName: String? = null,
     val customerId: UUID? = null,
+    val formResponseId: UUID? = null,
     val blocks: List<Map<String, Any?>> = emptyList()
 )
 
