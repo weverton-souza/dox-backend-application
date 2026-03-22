@@ -1,5 +1,7 @@
 package com.dox.adapter.out.ai.prompt
 
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
 import org.springframework.stereotype.Component
 
 @Component
@@ -17,8 +19,7 @@ class PromptSanitizer {
     fun sanitize(input: String): String {
         if (input.isBlank()) return input
 
-        var sanitized = input
-            .replace(Regex("<[^>]*>"), "")
+        var sanitized = Jsoup.clean(input, Safelist.none())
             .replace("\u0000", "")
 
         instructionPatterns.forEach { pattern ->

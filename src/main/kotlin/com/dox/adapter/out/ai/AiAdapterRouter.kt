@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component
 @Primary
 @Component
 class AiAdapterRouter(
-    @Qualifier("anthropicAiAdapter") private val anthropicAdapter: AiGenerationPort,
-    @Qualifier("fallbackAiAdapter") private val fallbackAdapter: AiGenerationPort
+    @Qualifier("anthropicAiAdapter") private val anthropicAdapter: AiGenerationPort
 ) : AiGenerationPort {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -21,21 +20,8 @@ class AiAdapterRouter(
             log.info("Attempting generation with Anthropic provider")
             anthropicAdapter.generateSection(systemPrompt, userPrompt, model)
         } catch (e: Exception) {
-            if (isApiError(e)) {
-                log.warn("Anthropic API error, attempting fallback: {}", e.message)
-                try {
-                    fallbackAdapter.generateSection(systemPrompt, userPrompt, model)
-                } catch (fallbackEx: Exception) {
-                    log.error("Fallback provider also failed: {}", fallbackEx.message)
-                    throw e
-                }
-            } else {
-                throw e
-            }
+            log.error("Anthropic generation failed: {}", e.message)
+            throw e
         }
     }
-
-    private fun isApiError(e: Exception): Boolean =
-        e !is java.util.concurrent.TimeoutException &&
-                e.message?.contains("timeout", ignoreCase = true) != true
 }

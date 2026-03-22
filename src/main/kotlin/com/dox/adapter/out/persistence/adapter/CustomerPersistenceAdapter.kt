@@ -59,7 +59,7 @@ class CustomerPersistenceAdapter(
         noteJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
 
     override fun deleteNote(noteId: UUID) {
-        noteJpaRepository.deleteById(noteId)
+        noteJpaRepository.softDeleteById(noteId, "Nota")
     }
 
     override fun saveEvent(event: CustomerEvent): CustomerEvent {
@@ -80,7 +80,7 @@ class CustomerPersistenceAdapter(
         eventJpaRepository.findByCustomerIdOrderByDateDesc(customerId).map { it.toDomain() }
 
     override fun deleteEvent(eventId: UUID) {
-        eventJpaRepository.deleteById(eventId)
+        eventJpaRepository.softDeleteById(eventId, "Evento")
     }
 
     override fun findByIds(ids: Set<UUID>): List<Customer> =
