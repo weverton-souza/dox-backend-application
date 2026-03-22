@@ -3,6 +3,7 @@ package com.dox.adapter.`in`.rest.resource
 import com.dox.adapter.`in`.rest.dto.formlink.PublicFormResponse
 import com.dox.adapter.`in`.rest.dto.formlink.PublicFormSubmitRequest
 import com.dox.adapter.`in`.rest.dto.formlink.PublicFormSubmitResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -24,6 +25,6 @@ interface PublicFormResource : BaseResource {
     @PostMapping("/{token}/submit")
     fun submitForm(
         @PathVariable token: String,
-        @RequestBody request: PublicFormSubmitRequest
+        @Valid @RequestBody request: PublicFormSubmitRequest
     ): ResponseEntity<PublicFormSubmitResponse>
 }

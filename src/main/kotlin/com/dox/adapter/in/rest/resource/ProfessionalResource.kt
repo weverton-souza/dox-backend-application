@@ -2,6 +2,7 @@ package com.dox.adapter.`in`.rest.resource
 
 import com.dox.adapter.`in`.rest.dto.professional.ProfessionalRequest
 import com.dox.adapter.`in`.rest.dto.professional.ProfessionalResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -20,5 +21,5 @@ interface ProfessionalResource : BaseResource {
 
     @Operation(summary = "Atualizar configurações profissionais")
     @PutMapping
-    fun update(@RequestBody request: ProfessionalRequest): ResponseEntity<ProfessionalResponse>
+    fun update(@Valid @RequestBody request: ProfessionalRequest): ResponseEntity<ProfessionalResponse>
 }

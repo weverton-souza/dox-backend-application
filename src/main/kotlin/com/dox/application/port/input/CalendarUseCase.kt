@@ -42,6 +42,12 @@ data class UpdateCalendarEventCommand(
     val status: String
 )
 
+data class EnrichedCalendarEvent(
+    val event: CalendarEvent,
+    val tag: EventTag? = null,
+    val customerName: String? = null
+)
+
 interface CalendarUseCase {
     fun createTag(command: CreateTagCommand): EventTag
     fun findAllTags(): List<EventTag>
@@ -51,6 +57,8 @@ interface CalendarUseCase {
     fun createEvent(command: CreateCalendarEventCommand): CalendarEvent
     fun findEventById(id: UUID): CalendarEvent
     fun findEventsByDateRange(from: OffsetDateTime, to: OffsetDateTime): List<CalendarEvent>
+    fun findEnrichedEventsByDateRange(from: OffsetDateTime, to: OffsetDateTime): List<EnrichedCalendarEvent>
+    fun enrichEvent(event: CalendarEvent): EnrichedCalendarEvent
     fun updateEvent(command: UpdateCalendarEventCommand): CalendarEvent
     fun deleteEvent(id: UUID)
 }

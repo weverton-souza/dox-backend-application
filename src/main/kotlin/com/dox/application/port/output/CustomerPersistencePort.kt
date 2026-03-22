@@ -16,6 +16,7 @@ interface CustomerPersistencePort {
     fun softDelete(id: UUID)
 
     fun saveNote(note: CustomerNote): CustomerNote
+    fun findNoteById(noteId: UUID): CustomerNote?
     fun findNotesByCustomerId(customerId: UUID): List<CustomerNote>
     fun deleteNote(noteId: UUID)
 

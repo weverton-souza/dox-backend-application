@@ -50,6 +50,8 @@ class CustomerServiceImpl(
 
     @Transactional
     override fun delete(id: UUID) {
+        customerPersistencePort.findById(id)
+            ?: throw ResourceNotFoundException("Cliente", id.toString())
         customerPersistencePort.softDelete(id)
     }
 
@@ -64,6 +66,8 @@ class CustomerServiceImpl(
 
     @Transactional
     override fun deleteNote(noteId: UUID) {
+        customerPersistencePort.findNoteById(noteId)
+            ?: throw ResourceNotFoundException("Nota", noteId.toString())
         customerPersistencePort.deleteNote(noteId)
     }
 
@@ -100,6 +104,8 @@ class CustomerServiceImpl(
 
     @Transactional
     override fun deleteEvent(eventId: UUID) {
+        customerPersistencePort.findEventById(eventId)
+            ?: throw ResourceNotFoundException("Evento", eventId.toString())
         customerPersistencePort.deleteEvent(eventId)
     }
 

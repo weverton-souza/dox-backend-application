@@ -14,6 +14,7 @@ interface FormPersistencePort {
     fun saveVersion(version: FormVersion): FormVersion
     fun findVersionById(id: UUID): FormVersion?
     fun findVersionsByFormId(formId: UUID): List<FormVersion>
+    fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion>
     fun findVersionByFormIdAndVersion(formId: UUID, version: Int): FormVersion?
 
     fun saveResponse(response: FormResponse): FormResponse

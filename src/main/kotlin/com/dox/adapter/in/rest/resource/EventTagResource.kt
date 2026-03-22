@@ -2,6 +2,7 @@ package com.dox.adapter.`in`.rest.resource
 
 import com.dox.adapter.`in`.rest.dto.calendar.EventTagRequest
 import com.dox.adapter.`in`.rest.dto.calendar.EventTagResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -18,11 +19,11 @@ interface EventTagResource : BaseResource {
 
     @Operation(summary = "Criar tag")
     @PostMapping
-    fun create(@RequestBody request: EventTagRequest): ResponseEntity<EventTagResponse>
+    fun create(@Valid @RequestBody request: EventTagRequest): ResponseEntity<EventTagResponse>
 
     @Operation(summary = "Atualizar tag")
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody request: EventTagRequest): ResponseEntity<EventTagResponse>
+    fun update(@PathVariable id: UUID, @Valid @RequestBody request: EventTagRequest): ResponseEntity<EventTagResponse>
 
     @Operation(summary = "Excluir tag")
     @DeleteMapping("/{id}")

@@ -1,12 +1,19 @@
 package com.dox.adapter.`in`.rest.dto.form
 
 import com.dox.domain.enum.FormResponseStatus
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 import java.util.UUID
 
 data class FormRequest(
+    @field:NotBlank(message = "Título é obrigatório")
+    @field:Size(max = 255, message = "Título deve ter no máximo 255 caracteres")
     val title: String,
+
+    @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
+
     val fields: List<Map<String, Any?>> = emptyList(),
     val linkedTemplateId: UUID? = null,
     val fieldMappings: Map<String, Any?> = emptyMap()
@@ -37,7 +44,10 @@ data class FormVersionResponseDto(
 
 data class FormResponseRequest(
     val customerId: UUID? = null,
+
+    @field:Size(max = 255, message = "Nome do cliente deve ter no máximo 255 caracteres")
     val customerName: String? = null,
+
     val status: FormResponseStatus? = null,
     val answers: List<Map<String, Any?>> = emptyList()
 )

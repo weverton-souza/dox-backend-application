@@ -21,10 +21,9 @@ class AnthropicAiAdapter(
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun generateSection(systemPrompt: String, userPrompt: String, model: String): AiGenerationResult {
-        log.info("=== AI GENERATION REQUEST ===")
-        log.info("Model: {}", model)
-        log.info("System prompt ({} chars): {}", systemPrompt.length, systemPrompt.take(200))
-        log.info("User prompt ({} chars): {}", userPrompt.length, userPrompt.take(300))
+        log.info("=== AI GENERATION REQUEST === Model: {}, systemPromptChars={}, userPromptChars={}", model, systemPrompt.length, userPrompt.length)
+        log.debug("System prompt preview: {}", systemPrompt.take(200))
+        log.debug("User prompt preview: {}", userPrompt.take(300))
 
         val options = AnthropicChatOptions.builder()
             .model(model)
@@ -43,7 +42,7 @@ class AnthropicAiAdapter(
             val durationMs = (System.currentTimeMillis() - startTime).toInt()
 
         val text = response.result?.output?.text ?: ""
-        log.info("Raw AI response (first 500 chars): {}", text.take(500))
+        log.debug("Raw AI response (first 500 chars): {}", text.take(500))
         val usage = response.metadata?.usage
 
         val inputTokens = usage?.promptTokens ?: 0

@@ -8,6 +8,7 @@ import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
 import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -26,14 +27,14 @@ interface AiResource : BaseResource {
     @PostMapping("/reports/{id}/generate-section")
     fun generateSection(
         @PathVariable id: UUID,
-        @RequestBody request: GenerateSectionRequest
+        @Valid @RequestBody request: GenerateSectionRequest
     ): ResponseEntity<GenerateSectionResponse>
 
     @Operation(summary = "Regerar seção do laudo com IA")
     @PostMapping("/reports/{id}/regenerate-section")
     fun regenerateSection(
         @PathVariable id: UUID,
-        @RequestBody request: RegenerateSectionRequest
+        @Valid @RequestBody request: RegenerateSectionRequest
     ): ResponseEntity<GenerateSectionResponse>
 
     @Operation(summary = "Resumo de consumo de IA do mês")
@@ -63,7 +64,7 @@ interface AiResource : BaseResource {
     @Operation(summary = "Atualizar quota de IA do workspace")
     @PutMapping("/ai/quota")
     fun updateQuota(
-        @RequestBody request: UpdateAiQuotaRequest
+        @Valid @RequestBody request: UpdateAiQuotaRequest
     ): ResponseEntity<AiQuotaResponse>
 
     @Operation(summary = "Status do serviço de IA")

@@ -20,20 +20,20 @@ spring:
   jpa:
     properties:
       hibernate:
-        format_sql: ${HIBERNATE_FORMAT_SQL:true}
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
         multiTenancy: SCHEMA
         tenant_identifier_resolver: com.dox.adapter.out.tenant.TenantIdentifierResolver
         multi_tenant_connection_provider: com.dox.adapter.out.tenant.TenantConnectionProvider
         generate_statistics: false
     generate-ddl: false
-    show-sql: ${SHOW_SQL:true}
+    show-sql: ${SHOW_SQL:false}
     open-in-view: false
   flyway:
     enabled: true
 
 dox:
   security:
-    jwt-signing-key: ${JWT_SECRET:change-me-in-production-this-is-a-long-enough-key-for-hmac-sha256-algorithm}
+    jwt-signing-key: ${JWT_SECRET:intSz26ioFppLXCsH7tta3HicyHtkJRTIuiC4M8jVRaP6wQNs3CNvG3mNjICqQ1M}
     access-token-expiration: ${ACCESS_TOKEN_EXPIRATION:900000}
     refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION:604800000}
   ai:

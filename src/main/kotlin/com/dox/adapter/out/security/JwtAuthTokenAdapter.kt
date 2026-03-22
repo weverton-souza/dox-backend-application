@@ -5,6 +5,7 @@ import com.dox.application.port.output.FormLinkTokenData
 import com.dox.config.SecurityProperties
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -16,6 +17,8 @@ import javax.crypto.SecretKey
 class JwtAuthTokenAdapter(
     private val securityProperties: SecurityProperties
 ) : AuthTokenPort {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val key: SecretKey by lazy {
         Keys.hmacShaKeyFor(securityProperties.jwtSigningKey.toByteArray())
@@ -47,7 +50,17 @@ class JwtAuthTokenAdapter(
         try {
             val claims = parseClaims(token)
             claims.subject != null && claims["type"] == null
-        } catch (_: Exception) {
+        } catch (e: io.jsonwebtoken.ExpiredJwtException) {
+            log.debug("JWT token expired: {}", e.message)
+            false
+        } catch (e: io.jsonwebtoken.security.SecurityException) {
+            log.warn("JWT signature validation failed: {}", e.message)
+            false
+        } catch (e: io.jsonwebtoken.MalformedJwtException) {
+            log.warn("Malformed JWT token: {}", e.message)
+            false
+        } catch (e: Exception) {
+            log.warn("JWT validation failed: {}", e.message)
             false
         }
 

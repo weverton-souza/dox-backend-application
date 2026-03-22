@@ -38,6 +38,12 @@ class AuthServiceImpl(
     private val passwordEncoderPort: PasswordEncoderPort
 ) : AuthUseCase {
 
+    companion object {
+        private const val REFRESH_TOKEN_DURATION_DAYS = 7L
+        private const val MIN_PASSWORD_LENGTH = 8
+        private const val MAX_PASSWORD_LENGTH = 72
+    }
+
     @Transactional
     override fun register(command: RegisterCommand): AuthResult {
         validatePassword(command.password)
@@ -151,7 +157,7 @@ class AuthServiceImpl(
             RefreshToken(
                 userId = user.id,
                 tokenHash = tokenHash,
-                expiresAt = LocalDateTime.now().plusDays(7)
+                expiresAt = LocalDateTime.now().plusDays(REFRESH_TOKEN_DURATION_DAYS)
             )
         )
 
@@ -167,11 +173,11 @@ class AuthServiceImpl(
     }
 
     private fun validatePassword(password: String) {
-        if (password.length < 8) {
-            throw BusinessException("A senha deve ter no mínimo 8 caracteres")
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            throw BusinessException("A senha deve ter no mínimo $MIN_PASSWORD_LENGTH caracteres")
         }
-        if (password.length > 72) {
-            throw BusinessException("A senha deve ter no máximo 72 caracteres")
+        if (password.length > MAX_PASSWORD_LENGTH) {
+            throw BusinessException("A senha deve ter no máximo $MAX_PASSWORD_LENGTH caracteres")
         }
         if (!password.any { it.isDigit() }) {
             throw BusinessException("A senha deve conter pelo menos um número")

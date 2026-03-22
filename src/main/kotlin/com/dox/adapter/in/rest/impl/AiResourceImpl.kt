@@ -32,8 +32,7 @@ class AiResourceImpl(
                 GenerateSectionCommand(
                     reportId = id,
                     sectionType = request.sectionType,
-                    formResponseId = request.formResponseId,
-                    customerId = request.customerId
+                    formResponseId = request.formResponseId
                 )
             ).toResponse()
         )
@@ -43,8 +42,7 @@ class AiResourceImpl(
             reportGenerationUseCase.regenerateSection(
                 RegenerateSectionCommand(
                     reportId = id,
-                    sectionType = request.sectionType,
-                    generationId = request.generationId
+                    sectionType = request.sectionType
                 )
             ).toResponse()
         )

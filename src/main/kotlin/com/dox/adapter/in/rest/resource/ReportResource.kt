@@ -4,6 +4,7 @@ import com.dox.adapter.`in`.rest.dto.report.ReportRequest
 import com.dox.adapter.`in`.rest.dto.report.ReportResponse
 import com.dox.adapter.`in`.rest.dto.report.ReportVersionRequest
 import com.dox.adapter.`in`.rest.dto.report.ReportVersionResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Parameters
@@ -38,7 +39,7 @@ interface ReportResource : BaseResource {
 
     @Operation(summary = "Criar relatório")
     @PostMapping
-    fun create(@RequestBody request: ReportRequest): ResponseEntity<ReportResponse>
+    fun create(@Valid @RequestBody request: ReportRequest): ResponseEntity<ReportResponse>
 
     @Operation(summary = "Buscar relatório por ID")
     @GetMapping("/{id}")
@@ -46,7 +47,7 @@ interface ReportResource : BaseResource {
 
     @Operation(summary = "Atualizar relatório")
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody request: ReportRequest): ResponseEntity<ReportResponse>
+    fun update(@PathVariable id: UUID, @Valid @RequestBody request: ReportRequest): ResponseEntity<ReportResponse>
 
     @Operation(summary = "Excluir relatório (soft delete)")
     @DeleteMapping("/{id}")
@@ -62,5 +63,5 @@ interface ReportResource : BaseResource {
 
     @Operation(summary = "Criar versão (snapshot) de um relatório")
     @PostMapping("/{id}/versions")
-    fun createVersion(@PathVariable id: UUID, @RequestBody request: ReportVersionRequest): ResponseEntity<ReportVersionResponse>
+    fun createVersion(@PathVariable id: UUID, @Valid @RequestBody request: ReportVersionRequest): ResponseEntity<ReportVersionResponse>
 }

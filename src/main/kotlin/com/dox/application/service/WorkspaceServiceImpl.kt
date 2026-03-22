@@ -25,6 +25,10 @@ class WorkspaceServiceImpl(
     private val organizationPersistencePort: OrganizationPersistencePort
 ) : WorkspaceUseCase {
 
+    companion object {
+        private const val PERSONAL_WORKSPACE_NAME = "Pessoal"
+    }
+
     override fun listWorkspaces(userId: UUID): List<WorkspaceInfo> {
         val user = userPersistencePort.findById(userId)
             ?: throw ResourceNotFoundException("Usuário", userId.toString())
@@ -37,7 +41,7 @@ class WorkspaceServiceImpl(
                 workspaces.add(
                     WorkspaceInfo(
                         tenantId = tenant.id,
-                        name = "Pessoal",
+                        name = PERSONAL_WORKSPACE_NAME,
                         type = TenantType.PERSONAL,
                         vertical = tenant.vertical,
                         role = null

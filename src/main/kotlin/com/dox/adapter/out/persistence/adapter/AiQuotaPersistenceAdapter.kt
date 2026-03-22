@@ -12,7 +12,7 @@ class AiQuotaPersistenceAdapter(
 ) : AiQuotaPort {
 
     override fun findQuota(): AiQuota? =
-        aiQuotaJpaRepository.findAll().firstOrNull()?.toDomain()
+        aiQuotaJpaRepository.findFirstByOrderByCreatedAtAsc()?.toDomain()
 
     override fun save(quota: AiQuota): AiQuota {
         val entity = aiQuotaJpaRepository.findById(quota.id).orElse(null)

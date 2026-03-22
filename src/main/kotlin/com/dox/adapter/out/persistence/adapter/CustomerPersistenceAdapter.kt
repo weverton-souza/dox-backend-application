@@ -52,6 +52,9 @@ class CustomerPersistenceAdapter(
         return noteJpaRepository.save(entity).toDomain()
     }
 
+    override fun findNoteById(noteId: UUID): CustomerNote? =
+        noteJpaRepository.findById(noteId).orElse(null)?.toDomain()
+
     override fun findNotesByCustomerId(customerId: UUID): List<CustomerNote> =
         noteJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
 

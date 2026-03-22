@@ -2,6 +2,7 @@ package com.dox.adapter.`in`.rest.resource
 
 import com.dox.adapter.`in`.rest.dto.formlink.CreateFormLinkRequest
 import com.dox.adapter.`in`.rest.dto.formlink.FormLinkResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -20,7 +21,7 @@ interface FormLinkResource : BaseResource {
 
     @Operation(summary = "Criar link público para formulário")
     @PostMapping
-    fun create(@RequestBody request: CreateFormLinkRequest): ResponseEntity<FormLinkResponse>
+    fun create(@Valid @RequestBody request: CreateFormLinkRequest): ResponseEntity<FormLinkResponse>
 
     @Operation(summary = "Listar links do tenant, opcionalmente filtrado por cliente")
     @GetMapping

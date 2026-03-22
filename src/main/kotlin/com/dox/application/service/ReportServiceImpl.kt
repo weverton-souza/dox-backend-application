@@ -60,6 +60,8 @@ class ReportServiceImpl(
 
     @Transactional
     override fun delete(id: UUID) {
+        reportPersistencePort.findById(id)
+            ?: throw ResourceNotFoundException("Relatório", id.toString())
         reportPersistencePort.softDelete(id)
     }
 

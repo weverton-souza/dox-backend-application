@@ -6,6 +6,7 @@ import com.dox.adapter.`in`.rest.dto.customer.CustomerNoteRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerNoteResponse
 import com.dox.adapter.`in`.rest.dto.customer.CustomerRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Parameters
@@ -43,7 +44,7 @@ interface CustomerResource : BaseResource {
 
     @Operation(summary = "Criar cliente")
     @PostMapping
-    fun create(@RequestBody request: CustomerRequest): ResponseEntity<CustomerResponse>
+    fun create(@Valid @RequestBody request: CustomerRequest): ResponseEntity<CustomerResponse>
 
     @Operation(summary = "Buscar cliente por ID")
     @GetMapping("/{id}")
@@ -51,7 +52,7 @@ interface CustomerResource : BaseResource {
 
     @Operation(summary = "Atualizar cliente")
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody request: CustomerRequest): ResponseEntity<CustomerResponse>
+    fun update(@PathVariable id: UUID, @Valid @RequestBody request: CustomerRequest): ResponseEntity<CustomerResponse>
 
     @Operation(summary = "Excluir cliente (soft delete)")
     @DeleteMapping("/{id}")
@@ -63,7 +64,7 @@ interface CustomerResource : BaseResource {
 
     @Operation(summary = "Adicionar nota ao cliente")
     @PostMapping("/{id}/notes")
-    fun addNote(@PathVariable id: UUID, @RequestBody request: CustomerNoteRequest): ResponseEntity<CustomerNoteResponse>
+    fun addNote(@PathVariable id: UUID, @Valid @RequestBody request: CustomerNoteRequest): ResponseEntity<CustomerNoteResponse>
 
     @Operation(summary = "Excluir nota")
     @DeleteMapping("/{id}/notes/{noteId}")
@@ -75,11 +76,11 @@ interface CustomerResource : BaseResource {
 
     @Operation(summary = "Adicionar evento ao cliente")
     @PostMapping("/{id}/events")
-    fun addEvent(@PathVariable id: UUID, @RequestBody request: CustomerEventRequest): ResponseEntity<CustomerEventResponse>
+    fun addEvent(@PathVariable id: UUID, @Valid @RequestBody request: CustomerEventRequest): ResponseEntity<CustomerEventResponse>
 
     @Operation(summary = "Atualizar evento do cliente")
     @PutMapping("/{id}/events/{eventId}")
-    fun updateEvent(@PathVariable id: UUID, @PathVariable eventId: UUID, @RequestBody request: CustomerEventRequest): ResponseEntity<CustomerEventResponse>
+    fun updateEvent(@PathVariable id: UUID, @PathVariable eventId: UUID, @Valid @RequestBody request: CustomerEventRequest): ResponseEntity<CustomerEventResponse>
 
     @Operation(summary = "Excluir evento")
     @DeleteMapping("/{id}/events/{eventId}")

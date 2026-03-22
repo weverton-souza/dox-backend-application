@@ -2,6 +2,7 @@ package com.dox.adapter.`in`.rest.resource
 
 import com.dox.adapter.`in`.rest.dto.auth.UpdateUserRequest
 import com.dox.adapter.`in`.rest.dto.auth.UserResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -20,5 +21,5 @@ interface UserResource : BaseResource {
 
     @Operation(summary = "Atualizar dados do usuário autenticado")
     @PutMapping("/me")
-    fun updateMe(@RequestBody request: UpdateUserRequest): ResponseEntity<UserResponse>
+    fun updateMe(@Valid @RequestBody request: UpdateUserRequest): ResponseEntity<UserResponse>
 }

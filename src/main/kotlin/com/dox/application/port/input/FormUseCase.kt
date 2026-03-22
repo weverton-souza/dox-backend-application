@@ -49,6 +49,7 @@ interface FormUseCase {
     fun deleteForm(id: UUID)
 
     fun findVersionsByFormId(formId: UUID): List<FormVersion>
+    fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion>
     fun findVersion(formId: UUID, version: Int): FormVersion
 
     fun createResponse(command: CreateFormResponseCommand): FormResponse
