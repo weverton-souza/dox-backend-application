@@ -4,6 +4,4 @@ import com.dox.adapter.out.persistence.entity.OrganizationJpaEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-interface OrganizationJpaRepository : JpaRepository<OrganizationJpaEntity, UUID> {
-    fun findByTenantId(tenantId: UUID): OrganizationJpaEntity?
-}
+interface OrganizationJpaRepository : JpaRepository<OrganizationJpaEntity, UUID>

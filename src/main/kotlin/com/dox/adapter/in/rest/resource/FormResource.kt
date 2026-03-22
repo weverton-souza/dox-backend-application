@@ -5,6 +5,7 @@ import com.dox.adapter.`in`.rest.dto.form.FormResponseDto
 import com.dox.adapter.`in`.rest.dto.form.FormResponseRequest
 import com.dox.adapter.`in`.rest.dto.form.FormResponseResponseDto
 import com.dox.adapter.`in`.rest.dto.form.FormVersionResponseDto
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -28,7 +29,7 @@ interface FormResource : BaseResource {
 
     @Operation(summary = "Criar formulário")
     @PostMapping
-    fun create(@RequestBody request: FormRequest): ResponseEntity<FormResponseDto>
+    fun create(@Valid @RequestBody request: FormRequest): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Buscar formulário por ID")
     @GetMapping("/{id}")
@@ -36,7 +37,7 @@ interface FormResource : BaseResource {
 
     @Operation(summary = "Atualizar formulário")
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody request: FormRequest): ResponseEntity<FormResponseDto>
+    fun update(@PathVariable id: UUID, @Valid @RequestBody request: FormRequest): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Excluir formulário")
     @DeleteMapping("/{id}")
@@ -58,7 +59,7 @@ interface FormResource : BaseResource {
     @PostMapping("/{id}/responses")
     fun createResponse(
         @PathVariable id: UUID,
-        @RequestBody request: FormResponseRequest
+        @Valid @RequestBody request: FormResponseRequest
     ): ResponseEntity<FormResponseResponseDto>
 
     @Operation(summary = "Buscar resposta por ID")
@@ -73,7 +74,7 @@ interface FormResource : BaseResource {
     fun updateResponse(
         @PathVariable id: UUID,
         @PathVariable responseId: UUID,
-        @RequestBody request: FormResponseRequest
+        @Valid @RequestBody request: FormResponseRequest
     ): ResponseEntity<FormResponseResponseDto>
 
     @Operation(summary = "Excluir resposta")

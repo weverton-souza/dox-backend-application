@@ -1,5 +1,8 @@
 package com.dox.adapter.`in`.rest.dto.customer
 
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -15,6 +18,8 @@ data class CustomerResponse(
 )
 
 data class CustomerNoteRequest(
+    @field:NotBlank(message = "Conteúdo é obrigatório")
+    @field:Size(max = 10000, message = "Conteúdo deve ter no máximo 10000 caracteres")
     val content: String
 )
 
@@ -27,9 +32,18 @@ data class CustomerNoteResponse(
 )
 
 data class CustomerEventRequest(
+    @field:NotBlank(message = "Tipo é obrigatório")
+    @field:Size(max = 100, message = "Tipo deve ter no máximo 100 caracteres")
     val type: String,
+
+    @field:NotBlank(message = "Título é obrigatório")
+    @field:Size(max = 255, message = "Título deve ter no máximo 255 caracteres")
     val title: String,
+
+    @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
+
+    @field:NotNull(message = "Data é obrigatória")
     val date: LocalDateTime
 )
 

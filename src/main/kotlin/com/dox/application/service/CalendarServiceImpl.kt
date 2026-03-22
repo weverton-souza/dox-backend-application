@@ -2,6 +2,7 @@ package com.dox.application.service
 
 import com.dox.application.port.input.*
 import com.dox.application.port.output.CalendarPersistencePort
+import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.CalendarEvent
 import com.dox.domain.model.EventTag
@@ -12,7 +13,8 @@ import java.util.UUID
 
 @Service
 class CalendarServiceImpl(
-    private val calendarPersistencePort: CalendarPersistencePort
+    private val calendarPersistencePort: CalendarPersistencePort,
+    private val customerPersistencePort: CustomerPersistencePort
 ) : CalendarUseCase {
 
     @Transactional
@@ -62,6 +64,30 @@ class CalendarServiceImpl(
 
     override fun findEventsByDateRange(from: OffsetDateTime, to: OffsetDateTime): List<CalendarEvent> =
         calendarPersistencePort.findEventsByDateRange(from, to)
+
+    override fun findEnrichedEventsByDateRange(from: OffsetDateTime, to: OffsetDateTime): List<EnrichedCalendarEvent> {
+        val events = calendarPersistencePort.findEventsByDateRange(from, to)
+        val tags = calendarPersistencePort.findAllTags().associateBy { it.id }
+        val customerIds = events.mapNotNull { it.customerId }.toSet()
+        val customerNames = if (customerIds.isNotEmpty())
+            customerPersistencePort.findByIds(customerIds).associate { it.id to (it.data["name"] as? String) }
+        else emptyMap()
+        return events.map { event ->
+            EnrichedCalendarEvent(
+                event = event,
+                tag = event.tagId?.let { tags[it] },
+                customerName = event.customerId?.let { customerNames[it] }
+            )
+        }
+    }
+
+    override fun enrichEvent(event: CalendarEvent): EnrichedCalendarEvent {
+        val tag = event.tagId?.let { calendarPersistencePort.findTagById(it) }
+        val customerName = event.customerId?.let { cid ->
+            customerPersistencePort.findById(cid)?.data?.get("name") as? String
+        }
+        return EnrichedCalendarEvent(event = event, tag = tag, customerName = customerName)
+    }
 
     @Transactional
     override fun updateEvent(command: UpdateCalendarEventCommand): CalendarEvent {

@@ -51,6 +51,9 @@ class ReportGenerationServiceImpl(
 
     private val log = LoggerFactory.getLogger(javaClass)
     private val tenantSemaphores = ConcurrentHashMap<String, Semaphore>()
+    private companion object {
+        private const val MAX_SEMAPHORE_CACHE_SIZE = 1000
+    }
 
     @Transactional
     override fun generateSection(command: GenerateSectionCommand): AiGenerationResult {
@@ -69,6 +72,15 @@ class ReportGenerationServiceImpl(
 
         val semaphore = tenantSemaphores.computeIfAbsent(tenantId.toString()) {
             Semaphore(aiConfig.maxConcurrentPerTenant)
+        }
+
+        if (tenantSemaphores.size > MAX_SEMAPHORE_CACHE_SIZE) {
+            val keysToRemove = tenantSemaphores.keys()
+                .asSequence()
+                .filter { it != tenantId.toString() }
+                .take(tenantSemaphores.size - MAX_SEMAPHORE_CACHE_SIZE)
+                .toList()
+            keysToRemove.forEach { tenantSemaphores.remove(it) }
         }
 
         if (!semaphore.tryAcquire()) {
@@ -142,8 +154,6 @@ class ReportGenerationServiceImpl(
 
     @Transactional
     override fun regenerateSection(command: RegenerateSectionCommand): AiGenerationResult {
-        val userId = ContextHolder.getUserIdOrThrow()
-
         val regenCount = aiUsagePort.countByReportId(command.reportId)
         if (regenCount >= aiConfig.maxRegenerationsPerReport) {
             throw BusinessException(

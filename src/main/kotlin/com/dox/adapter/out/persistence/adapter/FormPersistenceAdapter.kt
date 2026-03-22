@@ -54,6 +54,9 @@ class FormPersistenceAdapter(
     override fun findVersionsByFormId(formId: UUID): List<FormVersion> =
         formVersionJpaRepository.findByFormId(formId).map { it.toDomain() }
 
+    override fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion> =
+        formVersionJpaRepository.findByFormIdIn(formIds).map { it.toDomain() }
+
     override fun findVersionByFormIdAndVersion(formId: UUID, version: Int): FormVersion? =
         formVersionJpaRepository.findByFormIdAndVersion(formId, version)?.toDomain()
 

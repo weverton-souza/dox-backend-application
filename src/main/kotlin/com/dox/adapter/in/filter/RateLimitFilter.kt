@@ -24,8 +24,16 @@ class RateLimitFilter(
     @param:Value("\${RATE_LIMIT_REGISTER_MAX:3}")
     private val registerMaxAttempts: Int,
     @param:Value("\${RATE_LIMIT_REGISTER_WINDOW:60}")
-    private val registerWindowSeconds: Long
+    private val registerWindowSeconds: Long,
+    @param:Value("\${TRUSTED_PROXIES:}")
+    trustedProxiesConfig: String
 ) : OncePerRequestFilter() {
+
+    private val trustedProxies: Set<String> = trustedProxiesConfig
+        .split(",")
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .toSet()
 
     private val attempts = ConcurrentHashMap<String, ConcurrentLinkedDeque<Instant>>()
     private val lastCleanup = AtomicLong(Instant.now().epochSecond)
@@ -93,7 +101,12 @@ class RateLimitFilter(
     }
 
     private fun resolveClientIp(request: HttpServletRequest): String {
-        val forwarded = request.getHeader("X-Forwarded-For")
-        return forwarded?.split(",")?.first()?.trim() ?: request.remoteAddr
+        if (trustedProxies.isNotEmpty()) {
+            val forwarded = request.getHeader("X-Forwarded-For")
+            if (forwarded != null && request.remoteAddr in trustedProxies) {
+                return forwarded.split(",").first().trim()
+            }
+        }
+        return request.remoteAddr
     }
 }

@@ -106,7 +106,7 @@ class FormResourceImpl(
     override fun getResponsesByCustomer(customerId: UUID): ResponseEntity<List<FormResponseResponseDto>> {
         val responses = formUseCase.findResponsesByCustomerId(customerId)
         val formIds = responses.map { it.formId }.toSet()
-        val versionsByFormId = formIds.flatMap { formUseCase.findVersionsByFormId(it) }
+        val versionsByFormId = formUseCase.findVersionsByFormIds(formIds)
             .associateBy { it.id }
         return responseEntity(
             responses.map { it.toResponse(versionsByFormId[it.formVersionId]?.version) }

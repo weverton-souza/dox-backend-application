@@ -99,13 +99,20 @@ class FormServiceImpl(
     }
 
     @Transactional
-    override fun deleteForm(id: UUID) = formPersistencePort.deleteForm(id)
+    override fun deleteForm(id: UUID) {
+        formPersistencePort.findFormById(id)
+            ?: throw ResourceNotFoundException("Formulário", id.toString())
+        formPersistencePort.deleteForm(id)
+    }
 
     override fun findVersionsByFormId(formId: UUID): List<FormVersion> {
         formPersistencePort.findFormById(formId)
             ?: throw ResourceNotFoundException("Formulário", formId.toString())
         return formPersistencePort.findVersionsByFormId(formId)
     }
+
+    override fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion> =
+        formPersistencePort.findVersionsByFormIds(formIds)
 
     override fun findVersion(formId: UUID, version: Int): FormVersion =
         formPersistencePort.findVersionByFormIdAndVersion(formId, version)
@@ -151,5 +158,9 @@ class FormServiceImpl(
     }
 
     @Transactional
-    override fun deleteResponse(id: UUID) = formPersistencePort.deleteResponse(id)
+    override fun deleteResponse(id: UUID) {
+        formPersistencePort.findResponseById(id)
+            ?: throw ResourceNotFoundException("Resposta", id.toString())
+        formPersistencePort.deleteResponse(id)
+    }
 }

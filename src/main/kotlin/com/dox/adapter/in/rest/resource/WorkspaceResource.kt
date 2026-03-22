@@ -3,6 +3,7 @@ package com.dox.adapter.`in`.rest.resource
 import com.dox.adapter.`in`.rest.dto.workspace.CreateOrganizationRequest
 import com.dox.adapter.`in`.rest.dto.workspace.InviteMemberRequest
 import com.dox.adapter.`in`.rest.dto.workspace.WorkspaceResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -23,12 +24,12 @@ interface WorkspaceResource : BaseResource {
 
     @Operation(summary = "Criar nova organização")
     @PostMapping("/organizations")
-    fun createOrganization(@RequestBody request: CreateOrganizationRequest): ResponseEntity<WorkspaceResponse>
+    fun createOrganization(@Valid @RequestBody request: CreateOrganizationRequest): ResponseEntity<WorkspaceResponse>
 
     @Operation(summary = "Convidar membro para organização")
     @PostMapping("/organizations/{organizationId}/members")
     fun inviteMember(
         @PathVariable organizationId: UUID,
-        @RequestBody request: InviteMemberRequest
+        @Valid @RequestBody request: InviteMemberRequest
     ): ResponseEntity<Void>
 }

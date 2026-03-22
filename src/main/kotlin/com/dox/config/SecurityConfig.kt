@@ -4,6 +4,7 @@ import com.dox.adapter.`in`.filter.JwtAuthenticationFilter
 import com.dox.adapter.`in`.filter.MultiTenantFilter
 import com.dox.adapter.`in`.filter.RateLimitFilter
 import com.dox.adapter.`in`.filter.RequestSizeLimitFilter
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -22,7 +23,9 @@ class SecurityConfig(
     private val multiTenantFilter: MultiTenantFilter,
     private val rateLimitFilter: RateLimitFilter,
     private val requestSizeLimitFilter: RequestSizeLimitFilter,
-    private val corsConfig: CorsConfig
+    private val corsConfig: CorsConfig,
+    @Value("\${SWAGGER_ENABLED:false}")
+    private val swaggerEnabled: Boolean
 ) {
 
     @Bean
@@ -56,11 +59,15 @@ class SecurityConfig(
                     "/auth/login",
                     "/auth/refresh",
                     "/public/**",
-                    "/v3-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
                     "/actuator/health"
                 ).permitAll()
+                if (swaggerEnabled) {
+                    it.requestMatchers(
+                        "/v3-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
+                    ).permitAll()
+                }
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(requestSizeLimitFilter, UsernamePasswordAuthenticationFilter::class.java)

@@ -8,14 +8,12 @@ import java.util.UUID
 data class GenerateSectionCommand(
     val reportId: UUID,
     val sectionType: String,
-    val formResponseId: UUID? = null,
-    val customerId: UUID? = null
+    val formResponseId: UUID? = null
 )
 
 data class RegenerateSectionCommand(
     val reportId: UUID,
-    val sectionType: String,
-    val generationId: UUID
+    val sectionType: String
 )
 
 data class GetAiUsageCommand(

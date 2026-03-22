@@ -6,6 +6,7 @@ import com.dox.adapter.`in`.rest.dto.template.ReportTemplateRequest
 import com.dox.adapter.`in`.rest.dto.template.ReportTemplateResponse
 import com.dox.adapter.`in`.rest.dto.template.ScoreTableTemplateRequest
 import com.dox.adapter.`in`.rest.dto.template.ScoreTableTemplateResponse
+import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -27,7 +28,7 @@ interface TemplateResource : BaseResource {
 
     @Operation(summary = "Salvar template de relatório")
     @PostMapping("/reports")
-    fun saveReportTemplate(@RequestBody request: ReportTemplateRequest): ResponseEntity<ReportTemplateResponse>
+    fun saveReportTemplate(@Valid @RequestBody request: ReportTemplateRequest): ResponseEntity<ReportTemplateResponse>
 
     @Operation(summary = "Excluir template de relatório")
     @DeleteMapping("/reports/{id}")
@@ -39,7 +40,7 @@ interface TemplateResource : BaseResource {
 
     @Operation(summary = "Salvar template de tabela de escores")
     @PostMapping("/score-tables")
-    fun saveScoreTableTemplate(@RequestBody request: ScoreTableTemplateRequest): ResponseEntity<ScoreTableTemplateResponse>
+    fun saveScoreTableTemplate(@Valid @RequestBody request: ScoreTableTemplateRequest): ResponseEntity<ScoreTableTemplateResponse>
 
     @Operation(summary = "Excluir template de tabela de escores")
     @DeleteMapping("/score-tables/{id}")
@@ -51,7 +52,7 @@ interface TemplateResource : BaseResource {
 
     @Operation(summary = "Salvar template de gráfico")
     @PostMapping("/charts")
-    fun saveChartTemplate(@RequestBody request: ChartTemplateRequest): ResponseEntity<ChartTemplateResponse>
+    fun saveChartTemplate(@Valid @RequestBody request: ChartTemplateRequest): ResponseEntity<ChartTemplateResponse>
 
     @Operation(summary = "Excluir template de gráfico")
     @DeleteMapping("/charts/{id}")
