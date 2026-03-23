@@ -20,14 +20,14 @@ class AnthropicAiAdapter(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun generateSection(systemPrompt: String, userPrompt: String, model: String): AiGenerationResult {
+    override fun generateSection(systemPrompt: String, userPrompt: String, model: String, maxTokens: Int?): AiGenerationResult {
         log.info("=== AI GENERATION REQUEST === Model: {}, systemPromptChars={}, userPromptChars={}", model, systemPrompt.length, userPrompt.length)
         log.debug("System prompt preview: {}", systemPrompt.take(200))
         log.debug("User prompt preview: {}", userPrompt.take(300))
 
         val options = AnthropicChatOptions.builder()
             .model(model)
-            .maxTokens(MAX_TOKENS)
+            .maxTokens(maxTokens ?: MAX_TOKENS)
             .temperature(TEMPERATURE)
             .build()
 
@@ -48,9 +48,12 @@ class AnthropicAiAdapter(
         val inputTokens = usage?.promptTokens ?: 0
         val outputTokens = usage?.completionTokens ?: 0
 
+        val cacheReadTokens = extractCacheMetric(response, "cache_read_input_tokens")
+        val cacheWriteTokens = extractCacheMetric(response, "cache_creation_input_tokens")
+
         log.info(
-            "Anthropic generation completed: model={}, inputTokens={}, outputTokens={}, durationMs={}",
-            model, inputTokens, outputTokens, durationMs
+            "Anthropic generation completed: model={}, inputTokens={}, outputTokens={}, cacheRead={}, cacheWrite={}, durationMs={}",
+            model, inputTokens, outputTokens, cacheReadTokens, cacheWriteTokens, durationMs
         )
 
         return AiGenerationResult(
@@ -59,10 +62,9 @@ class AnthropicAiAdapter(
             model = model,
             inputTokens = inputTokens,
             outputTokens = outputTokens,
-            // TODO: extract actual cache token counts when prompt caching is enabled
-            cacheReadTokens = 0,
-            cacheWriteTokens = 0,
-            cached = false,
+            cacheReadTokens = cacheReadTokens,
+            cacheWriteTokens = cacheWriteTokens,
+            cached = cacheReadTokens > 0,
             durationMs = durationMs
         )
         } catch (e: Exception) {
@@ -74,6 +76,16 @@ class AnthropicAiAdapter(
                 log.error("Caused by: {}", e.cause?.message)
             }
             throw e
+        }
+    }
+
+    private fun extractCacheMetric(response: org.springframework.ai.chat.model.ChatResponse, key: String): Int {
+        return try {
+            val metadata = response.metadata
+            val map = metadata?.get("usage") as? Map<*, *>
+            (map?.get(key) as? Number)?.toInt() ?: 0
+        } catch (_: Exception) {
+            0
         }
     }
 

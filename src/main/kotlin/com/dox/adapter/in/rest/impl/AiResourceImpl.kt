@@ -4,27 +4,112 @@ import com.dox.adapter.`in`.rest.dto.ai.AiQuotaResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiStatusResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageDetailResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageSummaryResponse
+import com.dox.adapter.`in`.rest.dto.ai.GenerateFullReportRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
 import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
 import com.dox.adapter.`in`.rest.resource.AiResource
+import com.dox.application.port.input.ComputedChartData
+import com.dox.application.port.input.ComputedChartSeries
+import com.dox.application.port.input.ComputedTableData
+import com.dox.application.port.input.ComputedTableRow
+import com.dox.application.port.input.GenerateFullReportCommand
 import com.dox.application.port.input.GenerateSectionCommand
 import com.dox.application.port.input.GetAiUsageCommand
+import com.dox.application.port.input.QuantitativeDataPayload
 import com.dox.application.port.input.RegenerateSectionCommand
 import com.dox.application.port.input.ReportGenerationUseCase
 import com.dox.application.port.input.UpdateAiQuotaCommand
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.AiGenerationResult
 import com.dox.domain.model.AiUsage
+import com.dox.shared.ContextHolder
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.util.UUID
+import java.util.concurrent.Executors
 
 @RestController
 class AiResourceImpl(
-    private val reportGenerationUseCase: ReportGenerationUseCase
+    private val reportGenerationUseCase: ReportGenerationUseCase,
+    private val objectMapper: ObjectMapper
 ) : AiResource {
+
+    private val log = LoggerFactory.getLogger(javaClass)
+    private val sseExecutor = Executors.newCachedThreadPool()
+
+    override fun generateFullReport(id: UUID, request: GenerateFullReportRequest): SseEmitter {
+        val emitter = SseEmitter(300_000L)
+
+        val userId = ContextHolder.getUserIdOrThrow()
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+
+        val quantitativeData = request.quantitativeData?.let { qd ->
+            QuantitativeDataPayload(
+                tables = qd.tables.map { t ->
+                    ComputedTableData(t.blockId, t.title, t.category, t.dataStatus,
+                        t.rows.map { r -> ComputedTableRow(r.label, r.values) })
+                },
+                charts = qd.charts.map { c ->
+                    ComputedChartData(c.blockId, c.title, c.dataStatus,
+                        c.series.map { s -> ComputedChartSeries(s.label, s.values) })
+                }
+            )
+        }
+
+        val command = GenerateFullReportCommand(
+            reportId = id,
+            formResponseId = request.formResponseId,
+            quantitativeData = quantitativeData,
+            selectedSections = request.selectedSections
+        )
+
+        sseExecutor.submit {
+            try {
+                ContextHolder.setUserId(userId)
+                ContextHolder.setTenantId(tenantId)
+                com.dox.adapter.out.tenant.TenantContext.setTenantId(
+                    com.dox.adapter.out.tenant.TenantContext.convertToSchemaName(tenantId.toString())
+                )
+
+                reportGenerationUseCase.generateFullReport(command) { event ->
+                    try {
+                        val eventName = if (event.status == "done") "generation-complete" else "section-progress"
+                        emitter.send(
+                            SseEmitter.event()
+                                .name(eventName)
+                                .data(objectMapper.writeValueAsString(event))
+                        )
+                    } catch (e: Exception) {
+                        log.warn("Failed to send SSE event: {}", e.message)
+                    }
+                }
+
+                emitter.complete()
+            } catch (e: Exception) {
+                log.error("Full report generation failed: {}", e.message)
+                try {
+                    emitter.send(
+                        SseEmitter.event()
+                            .name("error")
+                            .data(objectMapper.writeValueAsString(mapOf("message" to (e.message ?: "Erro interno"))))
+                    )
+                } catch (_: Exception) {}
+                emitter.completeWithError(e)
+            } finally {
+                ContextHolder.clear()
+            }
+        }
+
+        emitter.onTimeout { emitter.complete() }
+        emitter.onError { emitter.complete() }
+
+        return emitter
+    }
 
     override fun generateSection(id: UUID, request: GenerateSectionRequest): ResponseEntity<GenerateSectionResponse> =
         responseEntity(
@@ -32,7 +117,22 @@ class AiResourceImpl(
                 GenerateSectionCommand(
                     reportId = id,
                     sectionType = request.sectionType,
-                    formResponseId = request.formResponseId
+                    formResponseId = request.formResponseId,
+                    previousSections = request.previousSections?.map {
+                        com.dox.application.port.input.PreviousSectionContext(it.sectionType, it.summary)
+                    },
+                    quantitativeData = request.quantitativeData?.let { qd ->
+                        QuantitativeDataPayload(
+                            tables = qd.tables.map { t ->
+                                ComputedTableData(t.blockId, t.title, t.category, t.dataStatus,
+                                    t.rows.map { r -> ComputedTableRow(r.label, r.values) })
+                            },
+                            charts = qd.charts.map { c ->
+                                ComputedChartData(c.blockId, c.title, c.dataStatus,
+                                    c.series.map { s -> ComputedChartSeries(s.label, s.values) })
+                            }
+                        )
+                    }
                 )
             ).toResponse()
         )

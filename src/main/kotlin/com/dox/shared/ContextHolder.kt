@@ -16,6 +16,14 @@ class ContextHolder {
             get() = contextThreadLocal.get() ?: Context()
             set(value) = contextThreadLocal.set(value)
 
+        fun setUserId(userId: UUID) {
+            context = context.copy(userId = userId)
+        }
+
+        fun setTenantId(tenantId: UUID) {
+            context = context.copy(tenantId = tenantId)
+        }
+
         fun clear() = contextThreadLocal.remove()
 
         fun getUserIdOrThrow(): UUID =
