@@ -9,13 +9,20 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
 
+data class PreviousSectionInput(
+    val sectionType: String,
+    val summary: String
+)
+
 data class GenerateSectionRequest(
     @field:NotBlank(message = "Tipo da seção é obrigatório")
     @field:Size(max = 100, message = "Tipo da seção deve ter no máximo 100 caracteres")
     val sectionType: String,
 
     val formResponseId: UUID? = null,
-    val customerId: UUID? = null
+    val customerId: UUID? = null,
+    val previousSections: List<PreviousSectionInput>? = null,
+    val quantitativeData: QuantitativeDataRequest? = null
 )
 
 data class GenerateSectionResponse(
@@ -88,4 +95,40 @@ data class AiStatusResponse(
     val available: Boolean,
     val tierName: String?,
     val model: String?
+)
+
+data class GenerateFullReportRequest(
+    val formResponseId: UUID? = null,
+    val quantitativeData: QuantitativeDataRequest? = null,
+    val selectedSections: List<String>? = null
+)
+
+data class QuantitativeDataRequest(
+    val tables: List<ComputedTableDataRequest> = emptyList(),
+    val charts: List<ComputedChartDataRequest> = emptyList()
+)
+
+data class ComputedTableDataRequest(
+    val blockId: String,
+    val title: String,
+    val category: String = "",
+    val dataStatus: String,
+    val rows: List<ComputedTableRowRequest> = emptyList()
+)
+
+data class ComputedTableRowRequest(
+    val label: String,
+    val values: Map<String, String> = emptyMap()
+)
+
+data class ComputedChartDataRequest(
+    val blockId: String,
+    val title: String,
+    val dataStatus: String,
+    val series: List<ComputedChartSeriesRequest> = emptyList()
+)
+
+data class ComputedChartSeriesRequest(
+    val label: String,
+    val values: Map<String, Double> = emptyMap()
 )
