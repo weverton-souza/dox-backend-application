@@ -4,6 +4,7 @@ import com.dox.adapter.`in`.rest.dto.ai.AiQuotaResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiStatusResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageDetailResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageSummaryResponse
+import com.dox.adapter.`in`.rest.dto.ai.GenerateFullReportRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
 import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.util.UUID
 
 @Tag(name = "IA", description = "Geração de laudos por IA e controle de consumo")
@@ -36,6 +38,13 @@ interface AiResource : BaseResource {
         @PathVariable id: UUID,
         @Valid @RequestBody request: RegenerateSectionRequest
     ): ResponseEntity<GenerateSectionResponse>
+
+    @Operation(summary = "Gerar laudo completo com IA (SSE)")
+    @PostMapping("/reports/{id}/generate-all", produces = ["text/event-stream"])
+    fun generateFullReport(
+        @PathVariable id: UUID,
+        @Valid @RequestBody request: GenerateFullReportRequest
+    ): SseEmitter
 
     @Operation(summary = "Resumo de consumo de IA do mês")
     @GetMapping("/ai/usage/summary")

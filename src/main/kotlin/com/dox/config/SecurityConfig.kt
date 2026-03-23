@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import jakarta.servlet.DispatcherType
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +25,7 @@ class SecurityConfig(
     private val rateLimitFilter: RateLimitFilter,
     private val requestSizeLimitFilter: RequestSizeLimitFilter,
     private val corsConfig: CorsConfig,
-    @Value("\${SWAGGER_ENABLED:false}")
+    @param:Value("\${SWAGGER_ENABLED:false}")
     private val swaggerEnabled: Boolean
 ) {
 
@@ -54,12 +55,14 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
+                it.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                 it.requestMatchers(
                     "/auth/register",
                     "/auth/login",
                     "/auth/refresh",
                     "/public/**",
-                    "/actuator/health"
+                    "/actuator/health",
+                    "/error"
                 ).permitAll()
                 if (swaggerEnabled) {
                     it.requestMatchers(

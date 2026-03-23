@@ -1,15 +1,22 @@
 package com.dox.application.service
 
 import com.dox.adapter.out.ai.config.AiConfig
+import com.dox.adapter.out.ai.prompt.PlanningResponseParser
 import com.dox.adapter.out.ai.prompt.SectionPromptBuilder
 import com.dox.adapter.out.ai.prompt.SystemPromptBuilder
 import com.dox.application.port.input.AiStatus
 import com.dox.application.port.input.AiUsageSummary
 import com.dox.application.port.input.AlertLevel
+import com.dox.application.port.input.GenerateFullReportCommand
 import com.dox.application.port.input.GenerateSectionCommand
+import com.dox.application.port.input.GenerationCompleteEvent
+import com.dox.application.port.input.GenerationPlan
 import com.dox.application.port.input.GetAiUsageCommand
+import com.dox.application.port.input.PreviousSectionContext
 import com.dox.application.port.input.RegenerateSectionCommand
 import com.dox.application.port.input.ReportGenerationUseCase
+import com.dox.application.port.input.SectionPlan
+import com.dox.application.port.input.SectionProgressEvent
 import com.dox.application.port.input.UpdateAiQuotaCommand
 import com.dox.application.port.output.AiGenerationPort
 import com.dox.application.port.output.AiQuotaPort
@@ -18,6 +25,7 @@ import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.application.port.output.FormPersistencePort
 import com.dox.application.port.output.ReportPersistencePort
 import com.dox.application.port.output.TenantPersistencePort
+import com.dox.domain.enum.Vertical
 import com.dox.domain.enum.AiGenerationStatus
 import com.dox.domain.enum.AiTier
 import com.dox.domain.model.AiQuota
@@ -46,8 +54,11 @@ class ReportGenerationServiceImpl(
     private val customerPersistencePort: CustomerPersistencePort,
     private val formPersistencePort: FormPersistencePort,
     private val tenantPersistencePort: TenantPersistencePort,
+    private val professionalPersistencePort: com.dox.application.port.output.ProfessionalSettingsPersistencePort,
+    private val templatePersistencePort: com.dox.application.port.output.TemplatePersistencePort,
     private val systemPromptBuilder: SystemPromptBuilder,
     private val sectionPromptBuilder: SectionPromptBuilder,
+    private val planningResponseParser: PlanningResponseParser,
     private val aiConfig: AiConfig
 ) : ReportGenerationUseCase {
 
@@ -147,12 +158,42 @@ class ReportGenerationServiceImpl(
         log.info("AI generation context: formResponseId={}, answersCount={}", formResponseId, formResponse.answers.size)
 
         val customer = report.customerId?.let { customerPersistencePort.findById(it) }
+        val professional = professionalPersistencePort.find()
+        val template = findLinkedTemplate(formResponse.formId)
 
         val systemPrompt = systemPromptBuilder.build(tenant.vertical)
-        val contextPrompt = sectionPromptBuilder.buildContext(customer, formResponse, null, null)
-        val userPrompt = contextPrompt + "\n\n" + sectionPromptBuilder.buildUserPrompt(command.sectionType)
+        val contextPrompt = sectionPromptBuilder.buildContext(
+            customer, formResponse, template, professional, command.quantitativeData
+        )
+
+        val userPrompt = if (!command.previousSections.isNullOrEmpty()) {
+            contextPrompt + "\n\n" + sectionPromptBuilder.buildUserPromptWithContext(
+                command.sectionType, command.previousSections, tenant.vertical
+            )
+        } else {
+            contextPrompt + "\n\n" + sectionPromptBuilder.buildUserPrompt(command.sectionType, tenant.vertical)
+        }
 
         return Pair(systemPrompt, userPrompt)
+    }
+
+    private fun findLinkedTemplate(formId: UUID): com.dox.domain.model.ReportTemplate? {
+        val form = formPersistencePort.findFormById(formId) ?: return null
+        val templateId = form.linkedTemplateId ?: return null
+        return templatePersistencePort.findAllReportTemplates().find { it.id == templateId }
+    }
+
+    fun summarizeForContext(sectionType: String, text: String): String {
+        val maxChars = 800
+        if (text.length <= maxChars) return text
+
+        val truncated = text.take(maxChars)
+        val lastSentenceEnd = truncated.lastIndexOfAny(charArrayOf('.', '!', '?'))
+        return if (lastSentenceEnd > maxChars / 2) {
+            truncated.substring(0, lastSentenceEnd + 1)
+        } else {
+            "$truncated..."
+        }
     }
 
     private fun executeAiGeneration(systemPrompt: String, userPrompt: String, model: String): AiGenerationResult {
@@ -201,6 +242,411 @@ class ReportGenerationServiceImpl(
             errorMessage = errorMessage
         )
         aiUsagePort.save(usage)
+    }
+
+    override fun generateFullReport(
+        command: GenerateFullReportCommand,
+        onSectionProgress: (SectionProgressEvent) -> Unit
+    ) {
+        val userId = ContextHolder.getUserIdOrThrow()
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+
+        val (quota, semaphore) = validateAndAcquireQuota(tenantId, command.reportId)
+
+        try {
+            val report = reportPersistencePort.findById(command.reportId)
+                ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
+
+            val fillableBlocks = report.blocks
+                .filter { block ->
+                    val type = block["type"]?.toString()
+                    val data = block["data"] as? Map<*, *>
+                    when (type) {
+                        "text" -> {
+                            val title = data?.get("title")?.toString()?.trim() ?: ""
+                            title.isNotEmpty()
+                        }
+                        "info-box" -> true
+                        else -> false
+                    }
+                }
+                .sortedBy { (it["order"] as? Number)?.toInt() ?: 0 }
+
+            if (fillableBlocks.isEmpty()) {
+                throw BusinessException("Nenhum bloco de seção ou info-box encontrado no relatório")
+            }
+
+            val blocksToGenerate = if (command.selectedSections != null) {
+                fillableBlocks.filter { block ->
+                    extractSectionType(block) in command.selectedSections
+                }
+            } else {
+                fillableBlocks
+            }
+
+            if (blocksToGenerate.isEmpty()) {
+                throw BusinessException("Nenhuma seção selecionada para geração")
+            }
+
+            val total = blocksToGenerate.size
+            val previousSections = mutableListOf<PreviousSectionContext>()
+            var completedCount = 0
+            var failedCount = 0
+            var skippedCount = 0
+            var totalTokens = 0
+            var totalCostBrl = BigDecimal.ZERO
+
+            val tenant = tenantPersistencePort.findById(tenantId)
+                ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
+
+            val sectionTitles = blocksToGenerate.map { extractSectionType(it) }
+            val plan = buildGenerationPlan(tenant.vertical, sectionTitles, command, quota.model)
+            val planMap = plan.sections.associateBy { it.title }
+
+            log.info("Generation plan: {} sections — full={}, partial={}, skip={}",
+                sectionTitles.size,
+                plan.sections.count { it.status == "full" },
+                plan.sections.count { it.status == "partial" },
+                plan.sections.count { it.status == "skip" }
+            )
+
+            for ((index, block) in blocksToGenerate.withIndex()) {
+                val sectionType = extractSectionType(block)
+                val sectionPlan = planMap[sectionType] ?: SectionPlan(title = sectionType, status = "full")
+
+                if (sectionPlan.status == "skip") {
+                    skippedCount++
+
+                    val warningMessage = sectionPlan.warning ?: "Dados insuficientes para gerar esta seção"
+                    val blockType = block["type"]?.toString()
+                    if (blockType == "info-box") {
+                        updateBlockContent(command.reportId, block, warningMessage, skipped = true)
+                    } else {
+                        insertContentBlockAfter(command.reportId, block, warningMessage, skipped = true)
+                    }
+
+                    onSectionProgress(
+                        SectionProgressEvent(
+                            sectionType = sectionType,
+                            index = index + 1,
+                            total = total,
+                            status = "skipped",
+                            message = warningMessage
+                        )
+                    )
+                    continue
+                }
+
+                try {
+                    val sectionCommand = GenerateSectionCommand(
+                        reportId = command.reportId,
+                        sectionType = sectionType,
+                        formResponseId = command.formResponseId,
+                        previousSections = previousSections.toList(),
+                        quantitativeData = command.quantitativeData
+                    )
+
+                    val (systemPrompt, userPrompt) = buildGenerationContext(command.reportId, sectionCommand)
+
+                    val finalUserPrompt = if (sectionPlan.status == "partial" && sectionPlan.warning != null) {
+                        "$userPrompt\n\nATENÇÃO: ${sectionPlan.warning}. Gere o texto com base nos dados disponíveis e indique claramente onde dados complementares seriam necessários."
+                    } else {
+                        userPrompt
+                    }
+
+                    val result = executeAiGeneration(systemPrompt, finalUserPrompt, quota.model)
+                    val sanitizedText = sanitizeOutput(result.text)
+
+                    if (sanitizedText.startsWith("[DADOS_INSUFICIENTES]")) {
+                        skippedCount++
+                        val warningMessage = sanitizedText.removePrefix("[DADOS_INSUFICIENTES]:").trim()
+
+                        val blockType = block["type"]?.toString()
+                        if (blockType == "info-box") {
+                            updateBlockContent(command.reportId, block, warningMessage, skipped = true)
+                        } else {
+                            insertContentBlockAfter(command.reportId, block, warningMessage, skipped = true)
+                        }
+
+                        onSectionProgress(
+                            SectionProgressEvent(
+                                sectionType = sectionType,
+                                index = index + 1,
+                                total = total,
+                                status = "skipped",
+                                message = warningMessage
+                            )
+                        )
+                        continue
+                    }
+
+                    val costBrl = calculateCost(result)
+
+                    recordUsage(
+                        reportId = command.reportId,
+                        userId = userId,
+                        sectionType = sectionType,
+                        result = result,
+                        costBrl = costBrl
+                    )
+
+                    val blockType = block["type"]?.toString()
+                    if (blockType == "info-box") {
+                        updateBlockContent(command.reportId, block, sanitizedText)
+                    } else {
+                        insertContentBlockAfter(command.reportId, block, sanitizedText)
+                    }
+
+                    previousSections.add(
+                        PreviousSectionContext(sectionType, summarizeForContext(sectionType, sanitizedText))
+                    )
+
+                    totalTokens += result.inputTokens + result.outputTokens
+                    totalCostBrl = totalCostBrl.add(costBrl)
+                    completedCount++
+
+                    onSectionProgress(
+                        SectionProgressEvent(
+                            sectionType = sectionType,
+                            index = index + 1,
+                            total = total,
+                            status = "completed",
+                            text = sanitizedText,
+                            generationId = result.generationId.toString(),
+                            tokensUsed = result.inputTokens + result.outputTokens,
+                            warning = sectionPlan.warning
+                        )
+                    )
+                } catch (e: Exception) {
+                    if (e is BusinessException && e.message?.contains("Plano de IA") == true) throw e
+
+                    log.error("Failed to generate section '{}' for report {}: {}", sectionType, command.reportId, e.message)
+                    failedCount++
+
+                    recordFailure(
+                        reportId = command.reportId,
+                        userId = userId,
+                        sectionType = sectionType,
+                        model = quota.model,
+                        errorMessage = e.message?.take(500)
+                    )
+
+                    onSectionProgress(
+                        SectionProgressEvent(
+                            sectionType = sectionType,
+                            index = index + 1,
+                            total = total,
+                            status = "error",
+                            message = e.message?.take(200) ?: "Erro desconhecido"
+                        )
+                    )
+                }
+            }
+
+            onSectionProgress(
+                SectionProgressEvent(
+                    sectionType = "_complete",
+                    index = total,
+                    total = total,
+                    status = "done",
+                    message = GenerationCompleteEvent(
+                        completedCount = completedCount,
+                        failedCount = failedCount,
+                        totalTokens = totalTokens,
+                        totalCostBrl = totalCostBrl.setScale(4, RoundingMode.HALF_UP).toPlainString()
+                    ).toString()
+                )
+            )
+        } finally {
+            semaphore.release()
+        }
+    }
+
+    private fun buildGenerationPlan(
+        vertical: Vertical,
+        sectionTitles: List<String>,
+        command: GenerateFullReportCommand,
+        model: String
+    ): GenerationPlan {
+        try {
+            val report = reportPersistencePort.findById(command.reportId) ?: return defaultPlan(sectionTitles)
+            val formResponseId = command.formResponseId ?: report.formResponseId
+            val formResponse = formResponseId?.let { formPersistencePort.findResponseById(it) }
+
+            val dataSummary = buildDataSummary(formResponse, command)
+            val titlesText = sectionTitles.mapIndexed { i, t -> "${i + 1}. $t" }.joinToString("\n")
+
+            val planningPrompt = systemPromptBuilder.buildPlanningPrompt(vertical, titlesText, dataSummary)
+                ?: return defaultPlan(sectionTitles)
+
+            val systemPrompt = systemPromptBuilder.build(vertical)
+            val result = aiGenerationPort.generateSection(systemPrompt, planningPrompt, model, maxTokens = 2000)
+
+            return planningResponseParser.parse(result.text, sectionTitles)
+        } catch (e: Exception) {
+            log.warn("Planning call failed, using default plan: {}", e.message)
+            return defaultPlan(sectionTitles)
+        }
+    }
+
+    private fun buildDataSummary(formResponse: com.dox.domain.model.FormResponse?, command: GenerateFullReportCommand): String {
+        val parts = mutableListOf<String>()
+
+        if (formResponse != null && formResponse.answers.isNotEmpty()) {
+            val answersText = formResponse.answers.joinToString("\n") { answer ->
+                val label = answer["label"]?.toString() ?: answer["fieldId"]?.toString() ?: ""
+                val value = answer["value"]?.toString() ?: ""
+                "- $label: $value"
+            }
+            parts.add("### Respostas do questionário (${formResponse.answers.size} campos)\n$answersText")
+        } else {
+            parts.add("### Respostas do questionário\nNenhuma resposta disponível.")
+        }
+
+        command.quantitativeData?.let { qd ->
+            val filledTables = qd.tables.filter { it.dataStatus != "empty" }
+            val filledCharts = qd.charts.filter { it.dataStatus != "empty" }
+
+            if (filledTables.isNotEmpty() || filledCharts.isNotEmpty()) {
+                val tablesSummary = filledTables.joinToString("\n") { "- Tabela: ${it.title} (${it.category}) [${it.dataStatus}]" }
+                val chartsSummary = filledCharts.joinToString("\n") { "- Gráfico: ${it.title} [${it.dataStatus}]" }
+                parts.add("### Dados quantitativos\n$tablesSummary\n$chartsSummary")
+            } else {
+                parts.add("### Dados quantitativos\nNenhum dado quantitativo disponível.")
+            }
+        } ?: parts.add("### Dados quantitativos\nNenhum dado quantitativo disponível.")
+
+        return parts.joinToString("\n\n")
+    }
+
+    private fun defaultPlan(sectionTitles: List<String>): GenerationPlan =
+        GenerationPlan(
+            verticalContext = "",
+            sections = sectionTitles.map { SectionPlan(title = it, status = "full") }
+        )
+
+    private fun extractSectionType(block: Map<String, Any?>): String {
+        val data = block["data"] as? Map<*, *> ?: return "Seção"
+        val title = data["title"]?.toString()
+        val subtitle = data["subtitle"]?.toString()
+        val label = data["label"]?.toString()
+        return title?.takeIf { it.isNotBlank() }
+            ?: subtitle?.takeIf { it.isNotBlank() }
+            ?: label?.takeIf { it.isNotBlank() }
+            ?: "Seção"
+    }
+
+    private fun updateBlockContent(reportId: UUID, block: Map<String, Any?>, generatedText: String, skipped: Boolean = false) {
+        val report = reportPersistencePort.findById(reportId) ?: return
+        val blockId = block["id"]?.toString() ?: return
+
+        val slateContent = textToSlateNodes(generatedText)
+
+        val updatedBlocks = report.blocks.map { existingBlock ->
+            if (existingBlock["id"]?.toString() == blockId) {
+                val existingData = (existingBlock["data"] as? Map<*, *>)?.toMutableMap() ?: mutableMapOf()
+                existingData["content"] = slateContent
+                existingData["generatedByAi"] = true
+
+                val mutableBlock = existingBlock.toMutableMap()
+                mutableBlock["data"] = existingData
+                if (skipped) mutableBlock["skippedByAi"] = true
+                mutableBlock
+            } else {
+                existingBlock
+            }
+        }
+
+        reportPersistencePort.save(report.copy(blocks = updatedBlocks))
+    }
+
+    private fun insertContentBlockAfter(reportId: UUID, sectionBlock: Map<String, Any?>, generatedText: String, skipped: Boolean = false) {
+        val report = reportPersistencePort.findById(reportId) ?: return
+        val sectionBlockId = sectionBlock["id"]?.toString() ?: return
+
+        val slateContent = textToSlateNodes(generatedText)
+        val sectionIndex = report.blocks.indexOfFirst { it["id"]?.toString() == sectionBlockId }
+        if (sectionIndex < 0) return
+
+        val nextBlock = report.blocks.getOrNull(sectionIndex + 1)
+        val nextData = nextBlock?.get("data") as? Map<*, *>
+        val isExistingAiBlock = nextBlock != null
+            && (nextBlock["generatedByAi"] == true || nextBlock["skippedByAi"] == true)
+            && nextData?.get("title")?.toString().isNullOrBlank()
+
+        if (isExistingAiBlock) {
+            val updatedBlocks = report.blocks.mapIndexed { index, block ->
+                if (index == sectionIndex + 1) {
+                    val existingData = (block["data"] as? Map<*, *>)?.toMutableMap() ?: mutableMapOf()
+                    existingData["content"] = slateContent
+
+                    val mutableBlock = block.toMutableMap()
+                    mutableBlock["data"] = existingData
+                    mutableBlock["generatedByAi"] = true
+                    if (skipped) mutableBlock["skippedByAi"] = true else mutableBlock.remove("skippedByAi")
+                    mutableBlock
+                } else {
+                    block
+                }
+            }
+            reportPersistencePort.save(report.copy(blocks = updatedBlocks))
+        } else {
+            val blockFields = mutableMapOf<String, Any?>(
+                "id" to UUID.randomUUID().toString(),
+                "type" to "text",
+                "order" to 0,
+                "collapsed" to false,
+                "generatedByAi" to true,
+                "data" to mapOf(
+                    "title" to "",
+                    "subtitle" to "",
+                    "content" to slateContent,
+                    "labeledItems" to emptyList<Any>(),
+                    "useLabeledItems" to false
+                )
+            )
+            if (skipped) blockFields["skippedByAi"] = true
+
+            val updatedBlocks = mutableListOf<Map<String, Any?>>()
+            for (existingBlock in report.blocks) {
+                updatedBlocks.add(existingBlock)
+                if (existingBlock["id"]?.toString() == sectionBlockId) {
+                    updatedBlocks.add(blockFields)
+                }
+            }
+
+            var order = 0
+            val reorderedBlocks = updatedBlocks.map { block ->
+                val mutableBlock = block.toMutableMap()
+                mutableBlock["order"] = order++
+                mutableBlock
+            }
+
+            reportPersistencePort.save(report.copy(blocks = reorderedBlocks))
+        }
+    }
+
+    private fun textToSlateNodes(text: String): List<Map<String, Any>> {
+        val paragraphs = text.split("\n\n").filter { it.isNotBlank() }
+        if (paragraphs.isEmpty()) {
+            return listOf(mapOf(
+                "id" to generateSlateId(),
+                "type" to "p",
+                "children" to listOf(mapOf("text" to ""))
+            ))
+        }
+        return paragraphs.map { paragraph ->
+            mapOf(
+                "id" to generateSlateId(),
+                "type" to "p",
+                "children" to listOf(mapOf("text" to paragraph.trim()))
+            )
+        }
+    }
+
+    private fun generateSlateId(): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
+        return (1..10).map { chars.random() }.joinToString("")
     }
 
     @Transactional

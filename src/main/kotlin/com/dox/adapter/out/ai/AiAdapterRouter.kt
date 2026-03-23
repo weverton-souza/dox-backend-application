@@ -15,10 +15,10 @@ class AiAdapterRouter(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun generateSection(systemPrompt: String, userPrompt: String, model: String): AiGenerationResult {
+    override fun generateSection(systemPrompt: String, userPrompt: String, model: String, maxTokens: Int?): AiGenerationResult {
         return try {
             log.info("Attempting generation with Anthropic provider")
-            anthropicAdapter.generateSection(systemPrompt, userPrompt, model)
+            anthropicAdapter.generateSection(systemPrompt, userPrompt, model, maxTokens)
         } catch (e: Exception) {
             log.error("Anthropic generation failed: {}", e.message)
             throw e
