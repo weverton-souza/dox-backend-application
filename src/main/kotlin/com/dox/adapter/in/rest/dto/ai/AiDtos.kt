@@ -104,6 +104,31 @@ data class GenerateFullReportRequest(
     val selectedSections: List<String>? = null
 )
 
+data class ReviewTextRequest(
+    @field:NotBlank(message = "Texto é obrigatório")
+    val text: String,
+
+    @field:NotBlank(message = "Ação é obrigatória")
+    @field:Size(max = 20, message = "Ação deve ter no máximo 20 caracteres")
+    val action: String,
+
+    @field:Size(max = 100, message = "Tipo da seção deve ter no máximo 100 caracteres")
+    val sectionType: String? = null,
+
+    @field:Size(max = 500, message = "Instrução deve ter no máximo 500 caracteres")
+    val instruction: String? = null,
+
+    val formResponseIds: List<UUID>? = null
+)
+
+data class ReviewTextResponse(
+    val original: String,
+    val revised: String,
+    val generationId: UUID,
+    val tokensUsed: Int,
+    val model: String
+)
+
 data class AiGenerationSourceResponse(
     val id: UUID,
     val reportId: UUID,

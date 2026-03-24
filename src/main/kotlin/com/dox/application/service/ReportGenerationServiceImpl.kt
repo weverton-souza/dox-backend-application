@@ -7,6 +7,7 @@ import com.dox.adapter.out.ai.prompt.SystemPromptBuilder
 import com.dox.application.port.input.AiStatus
 import com.dox.application.port.input.AiUsageSummary
 import com.dox.application.port.input.AlertLevel
+import com.dox.adapter.out.ai.prompt.ReviewPromptBuilder
 import com.dox.application.port.input.GenerateFullReportCommand
 import com.dox.application.port.input.GenerateSectionCommand
 import com.dox.application.port.input.GenerationCompleteEvent
@@ -15,6 +16,7 @@ import com.dox.application.port.input.GetAiUsageCommand
 import com.dox.application.port.input.PreviousSectionContext
 import com.dox.application.port.input.RegenerateSectionCommand
 import com.dox.application.port.input.ReportGenerationUseCase
+import com.dox.application.port.input.ReviewTextCommand
 import com.dox.application.port.input.SectionPlan
 import com.dox.application.port.input.SectionProgressEvent
 import com.dox.application.port.input.UpdateAiQuotaCommand
@@ -61,6 +63,7 @@ class ReportGenerationServiceImpl(
     private val templatePersistencePort: com.dox.application.port.output.TemplatePersistencePort,
     private val systemPromptBuilder: SystemPromptBuilder,
     private val sectionPromptBuilder: SectionPromptBuilder,
+    private val reviewPromptBuilder: ReviewPromptBuilder,
     private val planningResponseParser: PlanningResponseParser,
     private val aiConfig: AiConfig
 ) : ReportGenerationUseCase {
@@ -108,7 +111,7 @@ class ReportGenerationServiceImpl(
                 errorMessage = e.message?.take(500)
             )
 
-            throw BusinessException("Erro ao gerar seção com IA. Tente novamente.")
+            throw BusinessException("Erro ao gerar seção com o Assistente. Tente novamente.")
         } finally {
             semaphore.release()
         }
@@ -116,10 +119,10 @@ class ReportGenerationServiceImpl(
 
     private fun validateAndAcquireQuota(tenantId: UUID, reportId: UUID): Pair<AiQuota, Semaphore> {
         val quota = aiQuotaPort.findQuota()
-            ?: throw BusinessException("IA não habilitada para este workspace")
+            ?: throw BusinessException("Assistente não habilitado para este workspace")
 
         if (!quota.enabled || quota.aiTier == AiTier.NONE) {
-            throw BusinessException("Plano de IA não ativo")
+            throw BusinessException("Plano do Assistente não ativo")
         }
 
         reportPersistencePort.findById(reportId)
@@ -165,7 +168,7 @@ class ReportGenerationServiceImpl(
         }
 
         if (formResponses.isEmpty()) {
-            throw BusinessException("Nenhum questionário respondido vinculado a este relatório. Vincule um questionário antes de gerar com IA.")
+            throw BusinessException("Nenhum questionário respondido vinculado a este relatório. Vincule um questionário antes de gerar com o Assistente.")
         }
 
         log.info("AI generation context: formResponseIds={}, totalAnswers={}", resolvedIds, formResponses.sumOf { it.answers.size })
@@ -432,7 +435,7 @@ class ReportGenerationServiceImpl(
                         )
                     )
                 } catch (e: Exception) {
-                    if (e is BusinessException && e.message?.contains("Plano de IA") == true) throw e
+                    if (e is BusinessException && e.message?.contains("Plano do Assistente") == true) throw e
 
                     log.error("Failed to generate section '{}' for report {}: {}", sectionType, command.reportId, e.message)
                     failedCount++
@@ -742,6 +745,64 @@ class ReportGenerationServiceImpl(
 
     override fun getGenerationSources(reportId: UUID): List<AiGenerationSource> =
         aiGenerationSourcePort.findByReportId(reportId)
+
+    @Transactional
+    override fun reviewText(command: ReviewTextCommand): AiGenerationResult {
+        val userId = ContextHolder.getUserIdOrThrow()
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+
+        val (quota, semaphore) = validateAndAcquireQuota(tenantId, command.reportId)
+
+        try {
+            val tenant = tenantPersistencePort.findById(tenantId)
+                ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
+
+            val formResponses = if (!command.formResponseIds.isNullOrEmpty()) {
+                formPersistencePort.findResponsesByIds(command.formResponseIds)
+            } else {
+                emptyList()
+            }
+
+            val systemPrompt = reviewPromptBuilder.buildSystemPrompt(tenant.vertical)
+            val userPrompt = reviewPromptBuilder.buildUserPrompt(
+                text = command.text,
+                action = command.action,
+                sectionType = command.sectionType,
+                instruction = command.instruction,
+                formResponses = formResponses.ifEmpty { null }
+            )
+
+            val result = executeAiGeneration(systemPrompt, userPrompt, quota.model)
+            val sanitizedText = sanitizeOutput(result.text)
+            val costBrl = calculateCost(result)
+
+            recordUsage(
+                reportId = command.reportId,
+                userId = userId,
+                sectionType = "review:${command.action}",
+                result = result,
+                costBrl = costBrl
+            )
+
+            return result.copy(text = sanitizedText)
+        } catch (e: Exception) {
+            if (e is BusinessException || e is ResourceNotFoundException) throw e
+
+            log.error("AI review failed for report {}: {}", command.reportId, e.message)
+
+            recordFailure(
+                reportId = command.reportId,
+                userId = userId,
+                sectionType = "review:${command.action}",
+                model = quota.model,
+                errorMessage = e.message?.take(500)
+            )
+
+            throw BusinessException("Erro ao revisar texto com Assistente. Tente novamente.")
+        } finally {
+            semaphore.release()
+        }
+    }
 
     override fun getAiStatus(): AiStatus {
         val quota = aiQuotaPort.findQuota()
