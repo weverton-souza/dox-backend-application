@@ -61,6 +61,9 @@ class ReportResourceImpl(
     override fun findByCustomerId(customerId: UUID): ResponseEntity<List<ReportResponse>> =
         responseEntity(reportUseCase.findByCustomerId(customerId).map { it.toResponse() })
 
+    override fun getExportData(id: UUID): ResponseEntity<ReportResponse> =
+        responseEntity(reportUseCase.getExportData(id).toResponse())
+
     override fun getVersions(id: UUID): ResponseEntity<List<ReportVersionResponse>> =
         responseEntity(reportUseCase.getVersions(id).map { it.toResponse() })
 

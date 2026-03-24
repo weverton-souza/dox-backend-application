@@ -5,6 +5,8 @@ import com.dox.application.port.input.CreateVersionCommand
 import com.dox.application.port.input.ReportUseCase
 import com.dox.application.port.input.UpdateReportCommand
 import com.dox.application.port.output.ReportPersistencePort
+import com.dox.domain.enum.ReportStatus
+import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Report
 import com.dox.domain.model.ReportVersion
@@ -49,6 +51,10 @@ class ReportServiceImpl(
         val existing = reportPersistencePort.findById(command.id)
             ?: throw ResourceNotFoundException("Relatório", command.id.toString())
 
+        if (command.status != null && command.status != existing.status) {
+            validateStatusTransition(existing.status, command.status)
+        }
+
         return reportPersistencePort.save(
             existing.copy(
                 status = command.status ?: existing.status,
@@ -58,11 +64,33 @@ class ReportServiceImpl(
         )
     }
 
+    private fun validateStatusTransition(current: ReportStatus, target: ReportStatus) {
+        val allowed = when (current) {
+            ReportStatus.RASCUNHO -> setOf(ReportStatus.EM_REVISAO)
+            ReportStatus.EM_REVISAO -> setOf(ReportStatus.FINALIZADO, ReportStatus.RASCUNHO)
+            ReportStatus.FINALIZADO -> setOf(ReportStatus.EM_REVISAO)
+        }
+        if (target !in allowed) {
+            throw BusinessException("Transição de status inválida: ${current.name} → ${target.name}")
+        }
+    }
+
     @Transactional
     override fun delete(id: UUID) {
         reportPersistencePort.findById(id)
             ?: throw ResourceNotFoundException("Relatório", id.toString())
         reportPersistencePort.softDelete(id)
+    }
+
+    override fun getExportData(id: UUID): Report {
+        val report = reportPersistencePort.findById(id)
+            ?: throw ResourceNotFoundException("Relatório", id.toString())
+
+        if (report.status != ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório precisa estar finalizado para exportação. Status atual: ${report.status.name}")
+        }
+
+        return report
     }
 
     override fun getVersions(reportId: UUID): List<ReportVersion> =
