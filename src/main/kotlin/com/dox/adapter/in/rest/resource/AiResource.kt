@@ -7,6 +7,8 @@ import com.dox.adapter.`in`.rest.dto.ai.AiUsageDetailResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageSummaryResponse
 import com.dox.adapter.`in`.rest.dto.ai.GenerateFullReportRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
+import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
+import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
 import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
@@ -80,6 +82,13 @@ interface AiResource : BaseResource {
     @Operation(summary = "Status do serviço de IA")
     @GetMapping("/ai/status")
     fun getAiStatus(): ResponseEntity<AiStatusResponse>
+
+    @Operation(summary = "Revisar texto existente com Assistente")
+    @PostMapping("/reports/{id}/review-text")
+    fun reviewText(
+        @PathVariable id: UUID,
+        @Valid @RequestBody request: ReviewTextRequest
+    ): ResponseEntity<ReviewTextResponse>
 
     @Operation(summary = "Fontes usadas nas gerações do relatório")
     @GetMapping("/reports/{reportId}/generation-sources")

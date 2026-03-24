@@ -25,6 +25,15 @@ data class RegenerateSectionCommand(
     val sectionType: String
 )
 
+data class ReviewTextCommand(
+    val reportId: UUID,
+    val text: String,
+    val action: String,
+    val sectionType: String? = null,
+    val instruction: String? = null,
+    val formResponseIds: List<UUID>? = null
+)
+
 data class GenerateFullReportCommand(
     val reportId: UUID,
     val formResponseId: UUID? = null,
@@ -103,6 +112,8 @@ interface ReportGenerationUseCase {
     fun getAiStatus(): AiStatus
 
     fun getGenerationSources(reportId: UUID): List<AiGenerationSource>
+
+    fun reviewText(command: ReviewTextCommand): AiGenerationResult
 }
 
 data class AiUsageSummary(
@@ -147,7 +158,7 @@ data class GenerationCompleteEvent(
 )
 
 enum class AlertLevel(val message: String) {
-    WARNING_80("Você já usou 80% da sua franquia de laudos com IA"),
+    WARNING_80("Você já usou 80% da sua franquia de laudos do Assistente"),
     LIMIT_REACHED("Franquia mensal atingida. Gerações adicionais serão cobradas como excedente"),
     OVERAGE("Você está usando laudos excedentes que serão cobrados no fechamento")
 }

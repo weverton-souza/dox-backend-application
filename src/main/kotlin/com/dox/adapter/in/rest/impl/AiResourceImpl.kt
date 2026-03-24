@@ -15,12 +15,15 @@ import com.dox.application.port.input.ComputedChartData
 import com.dox.application.port.input.ComputedChartSeries
 import com.dox.application.port.input.ComputedTableData
 import com.dox.application.port.input.ComputedTableRow
+import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
+import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
 import com.dox.application.port.input.GenerateFullReportCommand
 import com.dox.application.port.input.GenerateSectionCommand
 import com.dox.application.port.input.GetAiUsageCommand
 import com.dox.application.port.input.QuantitativeDataPayload
 import com.dox.application.port.input.RegenerateSectionCommand
 import com.dox.application.port.input.ReportGenerationUseCase
+import com.dox.application.port.input.ReviewTextCommand
 import com.dox.application.port.input.UpdateAiQuotaCommand
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.AiGenerationResult
@@ -179,7 +182,7 @@ class AiResourceImpl(
 
     override fun getQuota(): ResponseEntity<AiQuotaResponse> {
         val quota = reportGenerationUseCase.getQuota()
-            ?: throw ResourceNotFoundException("Quota IA", "tenant")
+            ?: throw ResourceNotFoundException("Quota do Assistente", "tenant")
         return responseEntity(
             AiQuotaResponse(
                 tier = quota.aiTier.name,
@@ -219,6 +222,28 @@ class AiResourceImpl(
                 available = status.available,
                 tierName = status.tierName,
                 model = status.model
+            )
+        )
+    }
+
+    override fun reviewText(id: UUID, request: ReviewTextRequest): ResponseEntity<ReviewTextResponse> {
+        val result = reportGenerationUseCase.reviewText(
+            ReviewTextCommand(
+                reportId = id,
+                text = request.text,
+                action = request.action,
+                sectionType = request.sectionType,
+                instruction = request.instruction,
+                formResponseIds = request.formResponseIds
+            )
+        )
+        return responseEntity(
+            ReviewTextResponse(
+                original = request.text,
+                revised = result.text,
+                generationId = result.generationId,
+                tokensUsed = result.inputTokens + result.outputTokens,
+                model = result.model
             )
         )
     }
