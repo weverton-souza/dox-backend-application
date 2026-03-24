@@ -85,6 +85,9 @@ class FormPersistenceAdapter(
     override fun countResponsesByFormVersionId(formVersionId: UUID): Long =
         formResponseJpaRepository.countByFormVersionId(formVersionId)
 
+    override fun findResponsesByIds(ids: List<UUID>): List<FormResponse> =
+        formResponseJpaRepository.findAllByIdIn(ids).map { it.toDomain() }
+
     override fun deleteResponse(id: UUID) = formResponseJpaRepository.deleteById(id)
 
     private fun FormJpaEntity.toDomain() = Form(

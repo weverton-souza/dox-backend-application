@@ -18,58 +18,77 @@ INSERT INTO customers (id, data, deleted) VALUES
  '{"name":"Fernanda Rodrigues Lima","cpf":"333.444.555-66","birthDate":"1992-11-08","email":"fernanda.lima@email.com","phone":"(21) 99999-0003","address":"Rua Copacabana, 45 - Rio de Janeiro/RJ"}'::JSONB,
  false);
 
--- Report Template (Laudo Padrão Adulto)
+-- Report Template (Laudo Padrão Adulto) — com section type + parentId
 INSERT INTO report_templates (id, name, description, blocks, is_default) VALUES
 ('de000001-0000-0000-0000-000000000001', 'Laudo Padrão Adulto', 'Estrutura completa para avaliação de adultos',
  '[
-   {"type":"identification","order":0,"data":{}},
-   {"type":"text","order":1,"data":{"title":"DESCRIÇÃO DA DEMANDA E OBJETIVOS DA AVALIAÇÃO","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"type":"text","order":2,"data":{"title":"PROCEDIMENTOS","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"type":"text","order":3,"data":{"title":"ANAMNESE","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"type":"score-table","order":4,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
-   {"type":"score-table","order":5,"data":{"title":"RESULTADOS - MEMÓRIA","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
-   {"type":"score-table","order":6,"data":{"title":"RESULTADOS - FUNÇÕES EXECUTIVAS","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
-   {"type":"chart","order":7,"data":{"title":"GRÁFICO DE DESEMPENHO","chartType":"bar","categories":[],"series":[]}},
-   {"type":"text","order":8,"data":{"title":"ANÁLISE E OBSERVAÇÕES","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"type":"info-box","order":9,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":[{"type":"paragraph","children":[{"text":""}]}]}},
-   {"type":"text","order":10,"data":{"title":"SUGESTÕES E ENCAMINHAMENTOS","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"type":"text","order":11,"data":{"title":"CONCLUSÃO","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"type":"references","order":12,"data":{"title":"REFERÊNCIAS BIBLIOGRÁFICAS","references":[]}},
-   {"type":"closing-page","order":13,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
+   {"id":"tpl-id","type":"identification","parentId":null,"order":0,"data":{}},
+   {"id":"tpl-s1","type":"section","parentId":null,"order":1,"data":{"title":"DESCRIÇÃO DA DEMANDA E OBJETIVOS DA AVALIAÇÃO"}},
+   {"id":"tpl-s1-t1","type":"text","parentId":"tpl-s1","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"tpl-s2","type":"section","parentId":null,"order":2,"data":{"title":"PROCEDIMENTOS"}},
+   {"id":"tpl-s2-t1","type":"text","parentId":"tpl-s2","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"tpl-s3","type":"section","parentId":null,"order":3,"data":{"title":"ANAMNESE"}},
+   {"id":"tpl-s3-t1","type":"text","parentId":"tpl-s3","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"tpl-s4","type":"section","parentId":null,"order":4,"data":{"title":"RESULTADOS"}},
+   {"id":"tpl-s4-st1","type":"score-table","parentId":"tpl-s4","order":0,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
+   {"id":"tpl-s4-st2","type":"score-table","parentId":"tpl-s4","order":1,"data":{"title":"RESULTADOS - MEMÓRIA","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
+   {"id":"tpl-s4-st3","type":"score-table","parentId":"tpl-s4","order":2,"data":{"title":"RESULTADOS - FUNÇÕES EXECUTIVAS","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
+   {"id":"tpl-s4-ch1","type":"chart","parentId":"tpl-s4","order":3,"data":{"title":"GRÁFICO DE DESEMPENHO","chartType":"bar","categories":[],"series":[]}},
+   {"id":"tpl-s5","type":"section","parentId":null,"order":5,"data":{"title":"ANÁLISE E OBSERVAÇÕES"}},
+   {"id":"tpl-s5-t1","type":"text","parentId":"tpl-s5","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"tpl-s6-ib1","type":"info-box","parentId":null,"order":6,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":""}},
+   {"id":"tpl-s7","type":"section","parentId":null,"order":7,"data":{"title":"SUGESTÕES E ENCAMINHAMENTOS"}},
+   {"id":"tpl-s7-t1","type":"text","parentId":"tpl-s7","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"tpl-s8","type":"section","parentId":null,"order":8,"data":{"title":"CONCLUSÃO"}},
+   {"id":"tpl-s8-t1","type":"text","parentId":"tpl-s8","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"tpl-ref","type":"references","parentId":null,"order":9,"data":{"title":"REFERÊNCIAS BIBLIOGRÁFICAS","references":[]}},
+   {"id":"tpl-cp","type":"closing-page","parentId":null,"order":10,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
  ]'::JSONB, true);
 
--- Reports (2)
+-- Reports (2) — com section type + parentId
 INSERT INTO reports (id, status, customer_name, customer_id, form_response_id, blocks) VALUES
 ('d0000001-0000-0000-0000-000000000001', 'FINALIZADO', 'Maria Aparecida Santos', 'c0000001-0000-0000-0000-000000000001', 'fa000001-0000-0000-0000-000000000001',
  '[
-   {"id":"b001-0001-0000-0000-000000000001","type":"identification","order":0,"collapsed":false,"data":{"professional":{"name":"Dra. Ana Silva","crp":"06/12345","specialization":"Neuropsicologia"},"customer":{"name":"Maria Aparecida Santos","cpf":"111.222.333-44","birthDate":"1985-03-15","age":"40 anos","education":"Ensino Superior Completo","profession":"Professora","motherName":"Helena Maria dos Santos","fatherName":"Roberto Carlos Santos"},"date":"2025-12-15","location":"São Paulo - SP"}},
-   {"id":"b001-0002-0000-0000-000000000001","type":"text","order":1,"collapsed":false,"data":{"title":"DESCRIÇÃO DA DEMANDA E OBJETIVOS DA AVALIAÇÃO","subtitle":"","content":[{"type":"paragraph","children":[{"text":"Paciente do sexo feminino, 40 anos, encaminhada para avaliação neuropsicológica por queixa de ansiedade generalizada com episódios de insônia há aproximadamente 8 meses. Relata piora dos sintomas após mudança de emprego."}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b001-0003-0000-0000-000000000001","type":"text","order":2,"collapsed":false,"data":{"title":"PROCEDIMENTOS","subtitle":"","content":[{"type":"paragraph","children":[{"text":"Foram realizadas 4 sessões de avaliação, incluindo entrevista clínica semiestruturada, aplicação do Inventário de Ansiedade de Beck (BAI) e Inventário de Depressão de Beck (BDI-II). Escore BAI: 28 (moderado). Escore BDI-II: 14 (leve)."}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b001-0004-0000-0000-000000000001","type":"score-table","order":3,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[["Trail Making A","35s","60","Médio"],["Trail Making B","78s","45","Médio"]],"formulas":{},"columnAlignments":{}}},
-   {"id":"b001-0005-0000-0000-000000000001","type":"info-box","order":4,"collapsed":false,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":[{"type":"paragraph","children":[{"text":"Transtorno de Ansiedade Generalizada (F41.1) com impacto funcional moderado."}]}]}},
-   {"id":"b001-0006-0000-0000-000000000001","type":"text","order":5,"collapsed":false,"data":{"title":"CONCLUSÃO E RECOMENDAÇÕES","subtitle":"","content":[{"type":"paragraph","children":[{"text":"Recomenda-se acompanhamento psicoterapêutico semanal com abordagem cognitivo-comportamental por período mínimo de 12 semanas, com reavaliação ao final do período."}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b001-0007-0000-0000-000000000001","type":"references","order":6,"collapsed":false,"data":{"title":"REFERÊNCIAS BIBLIOGRÁFICAS","references":[]}},
-   {"id":"b001-0008-0000-0000-000000000001","type":"closing-page","order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
+   {"id":"b001-0001","type":"identification","parentId":null,"order":0,"collapsed":false,"data":{"professional":{"name":"Dra. Ana Silva","crp":"06/12345","specialization":"Neuropsicologia"},"customer":{"name":"Maria Aparecida Santos","cpf":"111.222.333-44","birthDate":"1985-03-15","age":"40 anos","education":"Ensino Superior Completo","profession":"Professora","motherName":"Helena Maria dos Santos","fatherName":"Roberto Carlos Santos"},"date":"2025-12-15","location":"São Paulo - SP"}},
+   {"id":"b001-0002","type":"section","parentId":null,"order":1,"collapsed":false,"data":{"title":"DESCRIÇÃO DA DEMANDA E OBJETIVOS DA AVALIAÇÃO"}},
+   {"id":"b001-0002-t1","type":"text","parentId":"b001-0002","order":0,"collapsed":false,"data":{"content":[{"type":"paragraph","children":[{"text":"Paciente do sexo feminino, 40 anos, encaminhada para avaliação neuropsicológica por queixa de ansiedade generalizada com episódios de insônia há aproximadamente 8 meses. Relata piora dos sintomas após mudança de emprego."}]}],"labeledItems":[],"useLabeledItems":false}},
+   {"id":"b001-0003","type":"section","parentId":null,"order":2,"collapsed":false,"data":{"title":"PROCEDIMENTOS"}},
+   {"id":"b001-0003-t1","type":"text","parentId":"b001-0003","order":0,"collapsed":false,"data":{"content":[{"type":"paragraph","children":[{"text":"Foram realizadas 4 sessões de avaliação, incluindo entrevista clínica semiestruturada, aplicação do Inventário de Ansiedade de Beck (BAI) e Inventário de Depressão de Beck (BDI-II). Escore BAI: 28 (moderado). Escore BDI-II: 14 (leve)."}]}],"labeledItems":[],"useLabeledItems":false}},
+   {"id":"b001-0004","type":"section","parentId":null,"order":3,"collapsed":false,"data":{"title":"RESULTADOS"}},
+   {"id":"b001-0004-st1","type":"score-table","parentId":"b001-0004","order":0,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[["Trail Making A","35s","60","Médio"],["Trail Making B","78s","45","Médio"]],"formulas":{},"columnAlignments":{}}},
+   {"id":"b001-0005","type":"info-box","parentId":null,"order":4,"collapsed":false,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":[{"type":"paragraph","children":[{"text":"Transtorno de Ansiedade Generalizada (F41.1) com impacto funcional moderado."}]}]}},
+   {"id":"b001-0006","type":"section","parentId":null,"order":5,"collapsed":false,"data":{"title":"CONCLUSÃO E RECOMENDAÇÕES"}},
+   {"id":"b001-0006-t1","type":"text","parentId":"b001-0006","order":0,"collapsed":false,"data":{"content":[{"type":"paragraph","children":[{"text":"Recomenda-se acompanhamento psicoterapêutico semanal com abordagem cognitivo-comportamental por período mínimo de 12 semanas, com reavaliação ao final do período."}]}],"labeledItems":[],"useLabeledItems":false}},
+   {"id":"b001-0007","type":"references","parentId":null,"order":6,"collapsed":false,"data":{"title":"REFERÊNCIAS BIBLIOGRÁFICAS","references":[]}},
+   {"id":"b001-0008","type":"closing-page","parentId":null,"order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
  ]'::JSONB),
 
 ('d0000003-0000-0000-0000-000000000003', 'RASCUNHO', 'Maria Aparecida Santos', 'c0000001-0000-0000-0000-000000000001', 'fa000001-0000-0000-0000-000000000001',
  '[
-   {"id":"b003-0001-0000-0000-000000000001","type":"identification","order":0,"collapsed":false,"data":{"professional":{"name":"Dra. Ana Silva","crp":"06/12345","specialization":"Neuropsicologia"},"customer":{"name":"Maria Aparecida Santos","cpf":"111.222.333-44","birthDate":"1985-03-15","age":"40 anos","education":"Ensino Superior Completo","profession":"Professora"},"date":"2026-03-22","location":"São Paulo - SP"}},
-   {"id":"b003-0002-0000-0000-000000000001","type":"text","order":1,"collapsed":false,"data":{"title":"DESCRIÇÃO DA DEMANDA E OBJETIVOS DA AVALIAÇÃO","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b003-0003-0000-0000-000000000001","type":"text","order":2,"collapsed":false,"data":{"title":"PROCEDIMENTOS","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b003-0004-0000-0000-000000000001","type":"text","order":3,"collapsed":false,"data":{"title":"ANAMNESE","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b003-0005-0000-0000-000000000001","type":"score-table","order":4,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
-   {"id":"b003-0006-0000-0000-000000000001","type":"info-box","order":5,"collapsed":false,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":[{"type":"paragraph","children":[{"text":""}]}]}},
-   {"id":"b003-0007-0000-0000-000000000001","type":"text","order":6,"collapsed":false,"data":{"title":"CONCLUSÃO","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b003-0008-0000-0000-000000000001","type":"closing-page","order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
+   {"id":"b003-0001","type":"identification","parentId":null,"order":0,"collapsed":false,"data":{"professional":{"name":"Dra. Ana Silva","crp":"06/12345","specialization":"Neuropsicologia"},"customer":{"name":"Maria Aparecida Santos","cpf":"111.222.333-44","birthDate":"1985-03-15","age":"40 anos","education":"Ensino Superior Completo","profession":"Professora"},"date":"2026-03-22","location":"São Paulo - SP"}},
+   {"id":"b003-0002","type":"section","parentId":null,"order":1,"collapsed":false,"data":{"title":"DESCRIÇÃO DA DEMANDA E OBJETIVOS DA AVALIAÇÃO"}},
+   {"id":"b003-0002-t1","type":"text","parentId":"b003-0002","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"b003-0003","type":"section","parentId":null,"order":2,"collapsed":false,"data":{"title":"PROCEDIMENTOS"}},
+   {"id":"b003-0003-t1","type":"text","parentId":"b003-0003","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"b003-0004","type":"section","parentId":null,"order":3,"collapsed":false,"data":{"title":"ANAMNESE"}},
+   {"id":"b003-0004-t1","type":"text","parentId":"b003-0004","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"b003-0005","type":"section","parentId":null,"order":4,"collapsed":false,"data":{"title":"RESULTADOS"}},
+   {"id":"b003-0005-st1","type":"score-table","parentId":"b003-0005","order":0,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
+   {"id":"b003-0006","type":"info-box","parentId":null,"order":5,"collapsed":false,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":""}},
+   {"id":"b003-0007","type":"section","parentId":null,"order":6,"collapsed":false,"data":{"title":"CONCLUSÃO"}},
+   {"id":"b003-0007-t1","type":"text","parentId":"b003-0007","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"b003-0008","type":"closing-page","parentId":null,"order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
  ]'::JSONB),
 
 ('d0000002-0000-0000-0000-000000000002', 'RASCUNHO', 'José Carlos Oliveira', 'c0000002-0000-0000-0000-000000000002', NULL,
  '[
-   {"id":"b002-0001-0000-0000-000000000001","type":"identification","order":0,"collapsed":false,"data":{"professional":{"name":"Dra. Ana Silva","crp":"06/12345","specialization":"Neuropsicologia"},"customer":{"name":"José Carlos Oliveira","cpf":"222.333.444-55","birthDate":"1978-07-22","age":"47 anos","education":"Ensino Superior Completo","profession":"Engenheiro Civil"},"date":"2026-01-10","location":"São Paulo - SP"}},
-   {"id":"b002-0002-0000-0000-000000000001","type":"text","order":1,"collapsed":false,"data":{"title":"DESCRIÇÃO DA DEMANDA","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b002-0003-0000-0000-000000000001","type":"text","order":2,"collapsed":false,"data":{"title":"PROCEDIMENTOS","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}},
-   {"id":"b002-0004-0000-0000-000000000001","type":"text","order":3,"collapsed":false,"data":{"title":"CONCLUSÃO","subtitle":"","content":[{"type":"paragraph","children":[{"text":""}]}],"labeledItems":[],"useLabeledItems":false}}
+   {"id":"b002-0001","type":"identification","parentId":null,"order":0,"collapsed":false,"data":{"professional":{"name":"Dra. Ana Silva","crp":"06/12345","specialization":"Neuropsicologia"},"customer":{"name":"José Carlos Oliveira","cpf":"222.333.444-55","birthDate":"1978-07-22","age":"47 anos","education":"Ensino Superior Completo","profession":"Engenheiro Civil"},"date":"2026-01-10","location":"São Paulo - SP"}},
+   {"id":"b002-0002","type":"section","parentId":null,"order":1,"collapsed":false,"data":{"title":"DESCRIÇÃO DA DEMANDA"}},
+   {"id":"b002-0002-t1","type":"text","parentId":"b002-0002","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"b002-0003","type":"section","parentId":null,"order":2,"collapsed":false,"data":{"title":"PROCEDIMENTOS"}},
+   {"id":"b002-0003-t1","type":"text","parentId":"b002-0003","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
+   {"id":"b002-0004","type":"section","parentId":null,"order":3,"collapsed":false,"data":{"title":"CONCLUSÃO"}},
+   {"id":"b002-0004-t1","type":"text","parentId":"b002-0004","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}}
  ]'::JSONB);
 
 -- Form (1 formulário com 2 versões, vinculado ao template)

@@ -1,5 +1,6 @@
 package com.dox.adapter.`in`.rest.resource
 
+import com.dox.adapter.`in`.rest.dto.ai.AiGenerationSourceResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiQuotaResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiStatusResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageDetailResponse
@@ -79,4 +80,10 @@ interface AiResource : BaseResource {
     @Operation(summary = "Status do serviço de IA")
     @GetMapping("/ai/status")
     fun getAiStatus(): ResponseEntity<AiStatusResponse>
+
+    @Operation(summary = "Fontes usadas nas gerações do relatório")
+    @GetMapping("/reports/{reportId}/generation-sources")
+    fun getGenerationSources(
+        @PathVariable reportId: UUID
+    ): ResponseEntity<List<AiGenerationSourceResponse>>
 }

@@ -1,6 +1,7 @@
 package com.dox.application.port.input
 
 import com.dox.domain.model.AiGenerationResult
+import com.dox.domain.model.AiGenerationSource
 import com.dox.domain.model.AiQuota
 import com.dox.domain.model.AiUsage
 import java.util.UUID
@@ -14,6 +15,7 @@ data class GenerateSectionCommand(
     val reportId: UUID,
     val sectionType: String,
     val formResponseId: UUID? = null,
+    val formResponseIds: List<UUID>? = null,
     val previousSections: List<PreviousSectionContext>? = null,
     val quantitativeData: QuantitativeDataPayload? = null
 )
@@ -26,6 +28,7 @@ data class RegenerateSectionCommand(
 data class GenerateFullReportCommand(
     val reportId: UUID,
     val formResponseId: UUID? = null,
+    val formResponseIds: List<UUID>? = null,
     val quantitativeData: QuantitativeDataPayload? = null,
     val selectedSections: List<String>? = null
 )
@@ -98,6 +101,8 @@ interface ReportGenerationUseCase {
     fun updateQuota(command: UpdateAiQuotaCommand): AiQuota
 
     fun getAiStatus(): AiStatus
+
+    fun getGenerationSources(reportId: UUID): List<AiGenerationSource>
 }
 
 data class AiUsageSummary(
