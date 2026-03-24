@@ -57,6 +57,10 @@ interface ReportResource : BaseResource {
     @GetMapping("/customer/{customerId}")
     fun findByCustomerId(@PathVariable customerId: UUID): ResponseEntity<List<ReportResponse>>
 
+    @Operation(summary = "Dados do relatório para exportação (somente finalizado)")
+    @GetMapping("/{id}/export-data")
+    fun getExportData(@PathVariable id: UUID): ResponseEntity<ReportResponse>
+
     @Operation(summary = "Listar versões de um relatório")
     @GetMapping("/{id}/versions")
     fun getVersions(@PathVariable id: UUID): ResponseEntity<List<ReportVersionResponse>>
