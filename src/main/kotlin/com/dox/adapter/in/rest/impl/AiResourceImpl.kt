@@ -1,5 +1,6 @@
 package com.dox.adapter.`in`.rest.impl
 
+import com.dox.adapter.`in`.rest.dto.ai.AiGenerationSourceResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiQuotaResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiStatusResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageDetailResponse
@@ -61,9 +62,13 @@ class AiResourceImpl(
             )
         }
 
+        val resolvedFormResponseIds = request.formResponseIds
+            ?: listOfNotNull(request.formResponseId)
+
         val command = GenerateFullReportCommand(
             reportId = id,
             formResponseId = request.formResponseId,
+            formResponseIds = resolvedFormResponseIds.ifEmpty { null },
             quantitativeData = quantitativeData,
             selectedSections = request.selectedSections
         )
@@ -217,6 +222,23 @@ class AiResourceImpl(
             )
         )
     }
+
+    override fun getGenerationSources(reportId: UUID): ResponseEntity<List<AiGenerationSourceResponse>> =
+        responseEntity(
+            reportGenerationUseCase.getGenerationSources(reportId).map {
+                AiGenerationSourceResponse(
+                    id = it.id,
+                    reportId = it.reportId,
+                    generationId = it.generationId,
+                    sourceType = it.sourceType,
+                    sourceId = it.sourceId,
+                    sourceLabel = it.sourceLabel,
+                    included = it.included,
+                    displayOrder = it.displayOrder,
+                    createdAt = it.createdAt
+                )
+            }
+        )
 
     private fun AiGenerationResult.toResponse() = GenerateSectionResponse(
         text = text,

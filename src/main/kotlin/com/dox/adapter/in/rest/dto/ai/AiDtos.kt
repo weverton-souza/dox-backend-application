@@ -99,8 +99,21 @@ data class AiStatusResponse(
 
 data class GenerateFullReportRequest(
     val formResponseId: UUID? = null,
+    val formResponseIds: List<UUID>? = null,
     val quantitativeData: QuantitativeDataRequest? = null,
     val selectedSections: List<String>? = null
+)
+
+data class AiGenerationSourceResponse(
+    val id: UUID,
+    val reportId: UUID,
+    val generationId: UUID,
+    val sourceType: String,
+    val sourceId: UUID,
+    val sourceLabel: String?,
+    val included: Boolean,
+    val displayOrder: Int,
+    val createdAt: LocalDateTime?
 )
 
 data class QuantitativeDataRequest(

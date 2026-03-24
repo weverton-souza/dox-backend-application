@@ -19,6 +19,7 @@ import com.dox.application.port.input.SectionPlan
 import com.dox.application.port.input.SectionProgressEvent
 import com.dox.application.port.input.UpdateAiQuotaCommand
 import com.dox.application.port.output.AiGenerationPort
+import com.dox.application.port.output.AiGenerationSourcePersistencePort
 import com.dox.application.port.output.AiQuotaPort
 import com.dox.application.port.output.AiUsagePort
 import com.dox.application.port.output.CustomerPersistencePort
@@ -32,6 +33,7 @@ import com.dox.domain.model.AiQuota
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.AiGenerationResult
+import com.dox.domain.model.AiGenerationSource
 import com.dox.domain.model.AiUsage
 import com.dox.shared.ContextHolder
 import org.slf4j.LoggerFactory
@@ -50,6 +52,7 @@ class ReportGenerationServiceImpl(
     private val aiGenerationPort: AiGenerationPort,
     private val aiUsagePort: AiUsagePort,
     private val aiQuotaPort: AiQuotaPort,
+    private val aiGenerationSourcePort: AiGenerationSourcePersistencePort,
     private val reportPersistencePort: ReportPersistencePort,
     private val customerPersistencePort: CustomerPersistencePort,
     private val formPersistencePort: FormPersistencePort,
@@ -142,7 +145,7 @@ class ReportGenerationServiceImpl(
         return Pair(quota, semaphore)
     }
 
-    private fun buildGenerationContext(reportId: UUID, command: GenerateSectionCommand): Pair<String, String> {
+    private fun buildGenerationContext(reportId: UUID, command: GenerateSectionCommand, formResponseIds: List<UUID>? = null): Pair<String, String> {
         val tenantId = ContextHolder.getTenantIdOrThrow()
         val tenant = tenantPersistencePort.findById(tenantId)
             ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
@@ -150,20 +153,30 @@ class ReportGenerationServiceImpl(
         val report = reportPersistencePort.findById(reportId)
             ?: throw ResourceNotFoundException("Relatório", reportId.toString())
 
-        val formResponseId = command.formResponseId ?: report.formResponseId
+        val resolvedIds = formResponseIds
+            ?: command.formResponseIds
+            ?: listOfNotNull(command.formResponseId)
+            ?: listOfNotNull(report.formResponseId)
 
-        val formResponse = formResponseId?.let { formPersistencePort.findResponseById(it) }
-            ?: throw BusinessException("Nenhum questionário respondido vinculado a este relatório. Vincule um questionário antes de gerar com IA.")
+        val formResponses = if (resolvedIds.isNotEmpty()) {
+            formPersistencePort.findResponsesByIds(resolvedIds)
+        } else {
+            emptyList()
+        }
 
-        log.info("AI generation context: formResponseId={}, answersCount={}", formResponseId, formResponse.answers.size)
+        if (formResponses.isEmpty()) {
+            throw BusinessException("Nenhum questionário respondido vinculado a este relatório. Vincule um questionário antes de gerar com IA.")
+        }
+
+        log.info("AI generation context: formResponseIds={}, totalAnswers={}", resolvedIds, formResponses.sumOf { it.answers.size })
 
         val customer = report.customerId?.let { customerPersistencePort.findById(it) }
         val professional = professionalPersistencePort.find()
-        val template = findLinkedTemplate(formResponse.formId)
+        val template = findLinkedTemplate(formResponses.first().formId)
 
         val systemPrompt = systemPromptBuilder.build(tenant.vertical)
         val contextPrompt = sectionPromptBuilder.buildContext(
-            customer, formResponse, template, professional, command.quantitativeData
+            customer, formResponses, template, professional, command.quantitativeData
         )
 
         val userPrompt = if (!command.previousSections.isNullOrEmpty()) {
@@ -257,15 +270,15 @@ class ReportGenerationServiceImpl(
             val report = reportPersistencePort.findById(command.reportId)
                 ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
 
+            val resolvedFormResponseIds = command.formResponseIds?.map { it }
+                ?: listOfNotNull(command.formResponseId)
+                    .ifEmpty { listOfNotNull(report.formResponseId) }
+
             val fillableBlocks = report.blocks
                 .filter { block ->
                     val type = block["type"]?.toString()
-                    val data = block["data"] as? Map<*, *>
                     when (type) {
-                        "text" -> {
-                            val title = data?.get("title")?.toString()?.trim() ?: ""
-                            title.isNotEmpty()
-                        }
+                        "section" -> true
                         "info-box" -> true
                         else -> false
                     }
@@ -342,11 +355,12 @@ class ReportGenerationServiceImpl(
                         reportId = command.reportId,
                         sectionType = sectionType,
                         formResponseId = command.formResponseId,
+                        formResponseIds = resolvedFormResponseIds.ifEmpty { null },
                         previousSections = previousSections.toList(),
                         quantitativeData = command.quantitativeData
                     )
 
-                    val (systemPrompt, userPrompt) = buildGenerationContext(command.reportId, sectionCommand)
+                    val (systemPrompt, userPrompt) = buildGenerationContext(command.reportId, sectionCommand, resolvedFormResponseIds.ifEmpty { null })
 
                     val finalUserPrompt = if (sectionPlan.status == "partial" && sectionPlan.warning != null) {
                         "$userPrompt\n\nATENÇÃO: ${sectionPlan.warning}. Gere o texto com base nos dados disponíveis e indique claramente onde dados complementares seriam necessários."
@@ -441,6 +455,20 @@ class ReportGenerationServiceImpl(
                         )
                     )
                 }
+            }
+
+            if (resolvedFormResponseIds.isNotEmpty() && completedCount > 0) {
+                val generationId = UUID.randomUUID()
+                val sources = resolvedFormResponseIds.mapIndexed { index, responseId ->
+                    AiGenerationSource(
+                        reportId = command.reportId,
+                        generationId = generationId,
+                        sourceType = "form_response",
+                        sourceId = responseId,
+                        displayOrder = index
+                    )
+                }
+                aiGenerationSourcePort.saveAll(sources)
             }
 
             onSectionProgress(
@@ -591,15 +619,15 @@ class ReportGenerationServiceImpl(
             }
             reportPersistencePort.save(report.copy(blocks = updatedBlocks))
         } else {
+            val sectionBlock = report.blocks.find { it["id"]?.toString() == sectionBlockId }
             val blockFields = mutableMapOf<String, Any?>(
                 "id" to UUID.randomUUID().toString(),
                 "type" to "text",
+                "parentId" to (sectionBlock?.get("id")?.toString()),
                 "order" to 0,
                 "collapsed" to false,
                 "generatedByAi" to true,
                 "data" to mapOf(
-                    "title" to "",
-                    "subtitle" to "",
                     "content" to slateContent,
                     "labeledItems" to emptyList<Any>(),
                     "useLabeledItems" to false
@@ -711,6 +739,9 @@ class ReportGenerationServiceImpl(
         )
         return aiQuotaPort.save(updated)
     }
+
+    override fun getGenerationSources(reportId: UUID): List<AiGenerationSource> =
+        aiGenerationSourcePort.findByReportId(reportId)
 
     override fun getAiStatus(): AiStatus {
         val quota = aiQuotaPort.findQuota()

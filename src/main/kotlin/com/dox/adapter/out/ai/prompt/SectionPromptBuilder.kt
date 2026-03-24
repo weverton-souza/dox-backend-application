@@ -35,12 +35,32 @@ class SectionPromptBuilder(
         template: ReportTemplate?,
         professional: ProfessionalSettings?,
         quantitativeData: QuantitativeDataPayload? = null
+    ): String = buildContext(customer, formResponse?.let { listOf(it) }, template, professional, quantitativeData)
+
+    fun buildContext(
+        customer: Customer?,
+        formResponses: List<FormResponse>?,
+        template: ReportTemplate?,
+        professional: ProfessionalSettings?,
+        quantitativeData: QuantitativeDataPayload? = null
     ): String {
         val parts = mutableListOf<String>()
 
         template?.let { parts.add(buildTemplateSection(it)) }
         customer?.let { parts.add(buildCustomerSection(it)) }
-        formResponse?.let { parts.add(buildFormResponseSection(it)) }
+        if (!formResponses.isNullOrEmpty()) {
+            val sorted = formResponses.sortedBy { it.createdAt }
+            if (sorted.size == 1) {
+                parts.add(buildFormResponseSection(sorted.first()))
+            } else {
+                sorted.forEachIndexed { index, response ->
+                    val date = response.createdAt?.toLocalDate()?.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
+                    val label = "${response.customerName ?: "Formulário ${index + 1}"} ($date)"
+                    parts.add(buildFormResponseSection(response, label))
+                }
+                parts.add("**IMPORTANTE: Quando houver informações conflitantes entre formulários, priorize os dados do formulário mais recente.**")
+            }
+        }
         professional?.let { parts.add(buildProfessionalSection(it)) }
         quantitativeData?.let {
             val section = buildQuantitativeDataSection(it)
@@ -125,14 +145,22 @@ class SectionPromptBuilder(
         """.trimMargin()
     }
 
-    private fun buildFormResponseSection(formResponse: FormResponse): String {
+    private fun buildFormResponseSection(formResponse: FormResponse): String =
+        buildFormResponseSection(formResponse, null)
+
+    private fun buildFormResponseSection(formResponse: FormResponse, sectionLabel: String?): String {
         val answers = formResponse.answers.joinToString("\n") { answer ->
             val label = answer["label"]?.toString() ?: answer["fieldId"]?.toString() ?: ""
             val value = answer["value"]?.toString() ?: ""
             "- ${promptSanitizer.sanitize(label)}: ${promptSanitizer.sanitize(value)}"
         }
+        val title = if (sectionLabel != null) {
+            "## Respostas do formulário: ${promptSanitizer.sanitize(sectionLabel)}"
+        } else {
+            "## Respostas do formulário"
+        }
         return """
-            |## Respostas do formulário
+            |$title
             |$answers
         """.trimMargin()
     }
