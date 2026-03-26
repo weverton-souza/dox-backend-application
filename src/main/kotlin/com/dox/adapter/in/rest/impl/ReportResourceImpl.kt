@@ -32,6 +32,8 @@ class ReportResourceImpl(
                     customerName = request.customerName,
                     customerId = request.customerId,
                     formResponseId = request.formResponseId,
+                    templateId = request.templateId,
+                    isStructureLocked = request.isStructureLocked,
                     blocks = request.blocks
                 )
             ).toResponse(),
@@ -76,7 +78,7 @@ class ReportResourceImpl(
         )
 
     private fun Report.toResponse() = ReportResponse(
-        id, status, customerName, customerId, formResponseId, blocks, createdAt, updatedAt
+        id, status, customerName, customerId, formResponseId, templateId, isStructureLocked, blocks, createdAt, updatedAt
     )
 
     private fun ReportVersion.toResponse() = ReportVersionResponse(

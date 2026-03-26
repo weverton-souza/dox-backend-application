@@ -13,7 +13,8 @@ data class ReportTemplateRequest(
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
 
-    val blocks: List<Map<String, Any?>> = emptyList()
+    val blocks: List<Map<String, Any?>> = emptyList(),
+    val isLocked: Boolean = false
 )
 
 data class ReportTemplateResponse(
@@ -22,6 +23,8 @@ data class ReportTemplateResponse(
     val description: String?,
     val blocks: List<Map<String, Any?>>,
     val isDefault: Boolean,
+    val isLocked: Boolean,
+    val isMaster: Boolean,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
 )

@@ -32,6 +32,8 @@ class ReportServiceImpl(
                 customerName = command.customerName,
                 customerId = command.customerId,
                 formResponseId = command.formResponseId,
+                templateId = command.templateId,
+                isStructureLocked = command.isStructureLocked,
                 blocks = command.blocks
             )
         )

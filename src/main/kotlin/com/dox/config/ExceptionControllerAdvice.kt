@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -87,6 +88,22 @@ class DomainExceptionHandler {
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
 
     private val log = LoggerFactory.getLogger(javaClass)
+
+    override fun handleHttpMessageNotReadable(
+        ex: HttpMessageNotReadableException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest
+    ): ResponseEntity<Any>? {
+        log.warn("Erro ao ler requisição: {}", ex.message?.substringBefore("\n"))
+        val pd = buildProblemDetail(
+            HttpStatus.BAD_REQUEST,
+            "Requisição inválida",
+            "Corpo da requisição inválido ou malformado",
+            "INVALID_REQUEST_BODY"
+        )
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pd)
+    }
 
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,

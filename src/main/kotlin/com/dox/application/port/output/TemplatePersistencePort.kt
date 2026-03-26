@@ -7,6 +7,7 @@ import java.util.UUID
 
 interface TemplatePersistencePort {
     fun findAllReportTemplates(): List<ReportTemplate>
+    fun findReportTemplateById(id: UUID): ReportTemplate?
     fun saveReportTemplate(template: ReportTemplate): ReportTemplate
     fun deleteReportTemplate(id: UUID)
 

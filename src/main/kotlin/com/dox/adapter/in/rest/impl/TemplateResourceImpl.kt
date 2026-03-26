@@ -27,7 +27,7 @@ class TemplateResourceImpl(
     override fun saveReportTemplate(request: ReportTemplateRequest): ResponseEntity<ReportTemplateResponse> =
         responseEntity(
             templateUseCase.saveReportTemplate(
-                ReportTemplate(name = request.name, description = request.description, blocks = request.blocks)
+                ReportTemplate(name = request.name, description = request.description, blocks = request.blocks, isLocked = request.isLocked)
             ).toResponse(),
             HttpStatus.CREATED
         )
@@ -36,6 +36,9 @@ class TemplateResourceImpl(
         templateUseCase.deleteReportTemplate(id)
         return noContent()
     }
+
+    override fun duplicateReportTemplate(id: UUID): ResponseEntity<ReportTemplateResponse> =
+        responseEntity(templateUseCase.duplicateReportTemplate(id).toResponse(), HttpStatus.CREATED)
 
     override fun getScoreTableTemplates(): ResponseEntity<List<ScoreTableTemplateResponse>> =
         responseEntity(templateUseCase.getAllScoreTableTemplates().map { it.toResponse() })
@@ -78,7 +81,7 @@ class TemplateResourceImpl(
     }
 
     private fun ReportTemplate.toResponse() = ReportTemplateResponse(
-        id, name, description, blocks, isDefault, createdAt, updatedAt
+        id, name, description, blocks, isDefault, isLocked, isMaster, createdAt, updatedAt
     )
 
     private fun ScoreTableTemplate.toResponse() = ScoreTableTemplateResponse(

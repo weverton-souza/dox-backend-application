@@ -28,8 +28,8 @@ class CustomerServiceImpl(
 
     @Transactional
     override fun create(command: CreateCustomerCommand): Customer {
-        validateDocuments(command.data)
-        return customerPersistencePort.save(Customer(data = command.data))
+        val normalizedData = validateAndNormalizeDocuments(command.data)
+        return customerPersistencePort.save(Customer(data = normalizedData))
     }
 
     override fun findById(id: UUID): Customer =
@@ -44,8 +44,8 @@ class CustomerServiceImpl(
     override fun update(command: UpdateCustomerCommand): Customer {
         customerPersistencePort.findById(command.id)
             ?: throw ResourceNotFoundException("Cliente", command.id.toString())
-        validateDocuments(command.data)
-        return customerPersistencePort.save(Customer(id = command.id, data = command.data))
+        val normalizedData = validateAndNormalizeDocuments(command.data)
+        return customerPersistencePort.save(Customer(id = command.id, data = normalizedData))
     }
 
     @Transactional
@@ -109,16 +109,22 @@ class CustomerServiceImpl(
         customerPersistencePort.deleteEvent(eventId)
     }
 
-    private fun validateDocuments(data: Map<String, Any?>) {
+    private fun validateAndNormalizeDocuments(data: Map<String, Any?>): Map<String, Any?> {
+        val mutable = data.toMutableMap()
+
         val cpf = data["cpf"]?.toString()
-        if (!cpf.isNullOrBlank() && !CpfValidator.isValidCpf(cpf)) {
-            throw BusinessException("CPF inválido")
+        if (!cpf.isNullOrBlank()) {
+            if (!CpfValidator.isValidCpf(cpf)) throw BusinessException("CPF inválido")
+            mutable["cpf"] = cpf.replace(Regex("[^0-9]"), "")
         }
 
         val cnpj = data["cnpj"]?.toString()
-        if (!cnpj.isNullOrBlank() && !CnpjValidator.isValidCnpj(cnpj)) {
-            throw BusinessException("CNPJ inválido")
+        if (!cnpj.isNullOrBlank()) {
+            if (!CnpjValidator.isValidCnpj(cnpj)) throw BusinessException("CNPJ inválido")
+            mutable["cnpj"] = cnpj.replace(Regex("[^0-9]"), "")
         }
+
+        return mutable
     }
 
     override fun findAllEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<Pair<CustomerEvent, String>> {

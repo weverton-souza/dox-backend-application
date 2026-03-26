@@ -9,6 +9,8 @@ data class ReportTemplate(
     val description: String? = null,
     val blocks: List<Map<String, Any?>> = emptyList(),
     val isDefault: Boolean = false,
+    val isLocked: Boolean = false,
+    val isMaster: Boolean = false,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null
 )

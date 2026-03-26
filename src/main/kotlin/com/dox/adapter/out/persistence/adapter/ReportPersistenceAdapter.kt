@@ -26,6 +26,8 @@ class ReportPersistenceAdapter(
         entity.customerName = report.customerName
         entity.customerId = report.customerId
         entity.formResponseId = report.formResponseId
+        entity.templateId = report.templateId
+        entity.isStructureLocked = report.isStructureLocked
         entity.blocks = report.blocks
         return reportJpaRepository.save(entity).toDomain()
     }
@@ -71,6 +73,7 @@ class ReportPersistenceAdapter(
     private fun ReportJpaEntity.toDomain() = Report(
         id = id, status = status, customerName = customerName,
         customerId = customerId, formResponseId = formResponseId,
+        templateId = templateId, isStructureLocked = isStructureLocked,
         blocks = blocks, deleted = deleted,
         createdAt = createdAt, updatedAt = updatedAt
     )
