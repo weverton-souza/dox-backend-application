@@ -13,6 +13,8 @@ data class ReportRequest(
 
     val customerId: UUID? = null,
     val formResponseId: UUID? = null,
+    val templateId: UUID? = null,
+    val isStructureLocked: Boolean = false,
     val blocks: List<Map<String, Any?>> = emptyList()
 )
 
@@ -22,6 +24,8 @@ data class ReportResponse(
     val customerName: String?,
     val customerId: UUID?,
     val formResponseId: UUID?,
+    val templateId: UUID?,
+    val isStructureLocked: Boolean,
     val blocks: List<Map<String, Any?>>,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?

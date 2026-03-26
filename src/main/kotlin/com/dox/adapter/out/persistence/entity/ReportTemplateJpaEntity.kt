@@ -34,6 +34,12 @@ class ReportTemplateJpaEntity(
     @Column(name = "is_default")
     var isDefault: Boolean = false,
 
+    @Column(name = "is_locked")
+    var isLocked: Boolean = false,
+
+    @Column(name = "is_master")
+    var isMaster: Boolean = false,
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

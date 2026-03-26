@@ -23,11 +23,18 @@ class TemplatePersistenceAdapter(
     override fun findAllReportTemplates(): List<ReportTemplate> =
         reportTemplateRepo.findAll().map { it.toDomain() }
 
+    override fun findReportTemplateById(id: UUID): ReportTemplate? =
+        reportTemplateRepo.findById(id).orElse(null)?.toDomain()
+
     override fun saveReportTemplate(template: ReportTemplate): ReportTemplate {
-        val entity = ReportTemplateJpaEntity().apply {
-            id = template.id; name = template.name; description = template.description
-            blocks = template.blocks; isDefault = template.isDefault
-        }
+        val entity = reportTemplateRepo.findById(template.id).orElse(null)
+            ?: ReportTemplateJpaEntity().apply { id = template.id }
+        entity.name = template.name
+        entity.description = template.description
+        entity.blocks = template.blocks
+        entity.isDefault = template.isDefault
+        entity.isLocked = template.isLocked
+        entity.isMaster = template.isMaster
         return reportTemplateRepo.save(entity).toDomain()
     }
 
@@ -62,7 +69,7 @@ class TemplatePersistenceAdapter(
     override fun deleteChartTemplate(id: UUID) = chartTemplateRepo.deleteById(id)
 
     private fun ReportTemplateJpaEntity.toDomain() = ReportTemplate(
-        id, name, description, blocks, isDefault, createdAt, updatedAt
+        id, name, description, blocks, isDefault, isLocked, isMaster, createdAt, updatedAt
     )
 
     private fun ScoreTableTemplateJpaEntity.toDomain() = ScoreTableTemplate(

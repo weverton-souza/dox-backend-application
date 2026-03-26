@@ -26,6 +26,12 @@ class ReportJpaEntity(
     @Column(name = "form_response_id")
     var formResponseId: UUID? = null,
 
+    @Column(name = "template_id")
+    var templateId: UUID? = null,
+
+    @Column(name = "is_structure_locked")
+    var isStructureLocked: Boolean = false,
+
     @Type(JsonType::class)
     @Column(name = "blocks", columnDefinition = "jsonb")
     var blocks: List<Map<String, Any?>> = emptyList()

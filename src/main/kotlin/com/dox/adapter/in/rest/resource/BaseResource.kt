@@ -25,11 +25,16 @@ interface BaseResource {
 
     fun retrievePageableParameter(parameters: Map<String, Any>): PageRequest {
         val pageNumber = parameters["pageNumber"]
-            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull() ?: 0
+            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull()?.coerceAtLeast(0) ?: 0
 
         val pageSize = parameters["pageSize"]
-            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull() ?: 15
+            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull()?.coerceIn(1, MAX_PAGE_SIZE) ?: DEFAULT_PAGE_SIZE
 
         return PageRequest.of(pageNumber, pageSize)
+    }
+
+    companion object {
+        private const val DEFAULT_PAGE_SIZE = 15
+        private const val MAX_PAGE_SIZE = 100
     }
 }

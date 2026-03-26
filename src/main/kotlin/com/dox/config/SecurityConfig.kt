@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import jakarta.servlet.DispatcherType
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +26,7 @@ class SecurityConfig(
     private val rateLimitFilter: RateLimitFilter,
     private val requestSizeLimitFilter: RequestSizeLimitFilter,
     private val corsConfig: CorsConfig,
-    @param:Value("\${SWAGGER_ENABLED:false}")
+    @param:Value("\${SWAGGER_ENABLED:true}")
     private val swaggerEnabled: Boolean
 ) {
 
@@ -53,6 +54,17 @@ class SecurityConfig(
         return http
             .cors { it.configurationSource(corsConfig.corsConfigurationSource()) }
             .csrf { it.disable() }
+            .headers {
+                it.contentSecurityPolicy { csp -> csp.policyDirectives("default-src 'self'; frame-ancestors 'none'") }
+                it.referrerPolicy { ref -> ref.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
+                it.permissionsPolicy { pp -> pp.policy("camera=(), microphone=(), geolocation=()") }
+                if (!swaggerEnabled) {
+                    it.httpStrictTransportSecurity { hsts ->
+                        hsts.includeSubDomains(true)
+                        hsts.maxAgeInSeconds(31536000)
+                    }
+                }
+            }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()

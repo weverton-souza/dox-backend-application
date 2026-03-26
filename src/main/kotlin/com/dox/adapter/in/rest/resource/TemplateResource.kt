@@ -34,6 +34,10 @@ interface TemplateResource : BaseResource {
     @DeleteMapping("/reports/{id}")
     fun deleteReportTemplate(@PathVariable id: UUID): ResponseEntity<Void>
 
+    @Operation(summary = "Duplicar template de relatório")
+    @PostMapping("/reports/{id}/duplicate")
+    fun duplicateReportTemplate(@PathVariable id: UUID): ResponseEntity<ReportTemplateResponse>
+
     @Operation(summary = "Listar templates de tabela de escores")
     @GetMapping("/score-tables")
     fun getScoreTableTemplates(): ResponseEntity<List<ScoreTableTemplateResponse>>
