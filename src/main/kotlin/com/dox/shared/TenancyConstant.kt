@@ -4,8 +4,6 @@ object TenancyConstant {
     const val PUBLIC_SCHEMA = "public"
     const val FLYWAY_PUBLIC_LOCATION = "classpath:db/migration/public"
     const val FLYWAY_SCHEMAS_LOCATION = "classpath:db/migration/schemas"
-    const val TENANT_ID = "TENANT_ID"
-    const val USER_KEY = "USER_KEY"
 
     private val VALID_SCHEMA_PATTERN = Regex("^_[a-f0-9]{32}$")
 
