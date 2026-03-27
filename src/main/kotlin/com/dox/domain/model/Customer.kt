@@ -9,7 +9,9 @@ data class Customer(
     val deleted: Boolean = false,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null
-)
+) {
+    fun displayName(): String? = data["name"] as? String
+}
 
 data class CustomerNote(
     val id: UUID = UUID.randomUUID(),

@@ -5,6 +5,7 @@ import com.dox.application.port.input.UserInfo
 import com.dox.application.port.input.UserUseCase
 import com.dox.application.port.output.UserPersistencePort
 import com.dox.domain.exception.ResourceNotFoundException
+import com.dox.domain.model.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -17,12 +18,7 @@ class UserServiceImpl(
     override fun getMe(userId: UUID): UserInfo {
         val user = userPersistencePort.findById(userId)
             ?: throw ResourceNotFoundException("Usuário", userId.toString())
-        return UserInfo(
-            id = user.id,
-            email = user.email,
-            name = user.name,
-            personalTenantId = user.personalTenantId
-        )
+        return user.toUserInfo()
     }
 
     @Transactional
@@ -31,11 +27,13 @@ class UserServiceImpl(
             ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
 
         val updated = userPersistencePort.save(user.copy(name = command.name))
-        return UserInfo(
-            id = updated.id,
-            email = updated.email,
-            name = updated.name,
-            personalTenantId = updated.personalTenantId
-        )
+        return updated.toUserInfo()
     }
+
+    private fun User.toUserInfo() = UserInfo(
+        id = id,
+        email = email,
+        name = name,
+        personalTenantId = personalTenantId
+    )
 }

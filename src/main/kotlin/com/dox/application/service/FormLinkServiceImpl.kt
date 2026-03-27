@@ -60,18 +60,17 @@ class FormLinkServiceImpl(
 
     override fun findFormLinksByTenant(): List<FormLinkWithToken> {
         val tenantId = ContextHolder.getTenantIdOrThrow()
-        return formLinkPersistencePort.findAll().map { formLink ->
-            val token = authTokenPort.generateFormLinkToken(tenantId, formLink.id, formLink.expiresAt)
-            FormLinkWithToken(formLink, token)
-        }
+        return formLinkPersistencePort.findAll().map { it.toWithToken(tenantId) }
     }
 
     override fun findFormLinksByCustomer(customerId: UUID): List<FormLinkWithToken> {
         val tenantId = ContextHolder.getTenantIdOrThrow()
-        return formLinkPersistencePort.findByCustomerId(customerId).map { formLink ->
-            val token = authTokenPort.generateFormLinkToken(tenantId, formLink.id, formLink.expiresAt)
-            FormLinkWithToken(formLink, token)
-        }
+        return formLinkPersistencePort.findByCustomerId(customerId).map { it.toWithToken(tenantId) }
+    }
+
+    private fun FormLink.toWithToken(tenantId: UUID): FormLinkWithToken {
+        val token = authTokenPort.generateFormLinkToken(tenantId, id, expiresAt)
+        return FormLinkWithToken(this, token)
     }
 
     @Transactional
@@ -87,8 +86,7 @@ class FormLinkServiceImpl(
         return TenantContext.withTenantContext(tokenData.tenantId) {
             val formLink = findAndValidateFormLink(tokenData.formLinkId)
             val formWithVersion = formUseCase.findFormById(formLink.formId)
-            val customer = customerPersistencePort.findById(formLink.customerId)
-            val customerName = customer?.data?.get("name") as? String
+            val customerName = customerPersistencePort.findById(formLink.customerId)?.displayName()
 
             PublicFormData(
                 formTitle = formWithVersion.version.title,
@@ -106,8 +104,7 @@ class FormLinkServiceImpl(
 
         return TenantContext.withTenantContext(tokenData.tenantId) {
             val formLink = findAndValidateFormLink(tokenData.formLinkId)
-            val customer = customerPersistencePort.findById(formLink.customerId)
-            val customerName = customer?.data?.get("name") as? String
+            val customerName = customerPersistencePort.findById(formLink.customerId)?.displayName()
 
             val response = formUseCase.createResponse(
                 CreateFormResponseCommand(
@@ -143,12 +140,12 @@ class FormLinkServiceImpl(
             throw BusinessException("Este link já foi utilizado")
         }
 
-        if (formLink.isExpired()) {
-            formLinkPersistencePort.save(formLink.copy(status = FormLinkStatus.EXPIRED))
+        if (formLink.status == FormLinkStatus.EXPIRED) {
             throw BusinessException("Este link expirou")
         }
 
-        if (formLink.status == FormLinkStatus.EXPIRED) {
+        if (formLink.isExpired()) {
+            formLinkPersistencePort.save(formLink.copy(status = FormLinkStatus.EXPIRED))
             throw BusinessException("Este link expirou")
         }
 
