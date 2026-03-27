@@ -9,6 +9,7 @@ import com.dox.domain.model.FormResponse
 import com.dox.domain.model.ProfessionalSettings
 import com.dox.domain.model.ReportTemplate
 import com.dox.application.port.output.AiInstructionPort
+import com.dox.application.port.output.AiSectionPromptPort
 import com.dox.domain.enum.Vertical
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component
 class SectionPromptBuilder(
     private val promptSanitizer: PromptSanitizer,
     private val aiInstructionPort: AiInstructionPort
-) {
+) : AiSectionPromptPort {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -37,12 +38,12 @@ class SectionPromptBuilder(
         quantitativeData: QuantitativeDataPayload? = null
     ): String = buildContext(customer, formResponse?.let { listOf(it) }, template, professional, quantitativeData)
 
-    fun buildContext(
+    override fun buildContext(
         customer: Customer?,
         formResponses: List<FormResponse>?,
         template: ReportTemplate?,
         professional: ProfessionalSettings?,
-        quantitativeData: QuantitativeDataPayload? = null
+        quantitativeData: QuantitativeDataPayload?
     ): String {
         val parts = mutableListOf<String>()
 
@@ -70,7 +71,7 @@ class SectionPromptBuilder(
         return parts.joinToString("\n\n")
     }
 
-    fun buildUserPrompt(sectionType: String, vertical: Vertical? = null): String {
+    override fun buildUserPrompt(sectionType: String, vertical: Vertical?): String {
         val instruction = resolveInstruction("section_prompt", vertical)
         if (instruction != null) {
             return instruction.replace("{{SECTION_TYPE}}", sectionType)
@@ -78,10 +79,10 @@ class SectionPromptBuilder(
         return """Com base nos dados acima, elabore a seção "$sectionType" do laudo. Use APENAS os dados das respostas do formulário e dados quantitativos fornecidos acima para compor o texto. Cada afirmação deve ter fundamentação direta nos dados disponíveis. Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação."""
     }
 
-    fun buildUserPromptWithContext(
+    override fun buildUserPromptWithContext(
         sectionType: String,
         previousSections: List<PreviousSectionContext>,
-        vertical: Vertical? = null
+        vertical: Vertical?
     ): String {
         if (previousSections.isEmpty()) return buildUserPrompt(sectionType, vertical)
 

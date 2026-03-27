@@ -1,6 +1,7 @@
 package com.dox.adapter.out.ai.prompt
 
 import com.dox.application.port.output.AiInstructionPort
+import com.dox.application.port.output.AiSystemPromptPort
 import com.dox.domain.enum.Vertical
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -8,11 +9,11 @@ import org.springframework.stereotype.Component
 @Component
 class SystemPromptBuilder(
     private val aiInstructionPort: AiInstructionPort
-) {
+) : AiSystemPromptPort {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun build(vertical: Vertical): String {
+    override fun build(vertical: Vertical): String {
         val instruction = aiInstructionPort.findActiveByTypeAndVertical("system_prompt", vertical)
             ?: aiInstructionPort.findActiveByType("system_prompt")
 
@@ -26,7 +27,7 @@ class SystemPromptBuilder(
         return buildHardcodedFallback(vertical)
     }
 
-    fun buildPlanningPrompt(vertical: Vertical, sectionTitles: String, dataSummary: String): String? {
+    override fun buildPlanningPrompt(vertical: Vertical, sectionTitles: String, dataSummary: String): String? {
         val instruction = aiInstructionPort.findActiveByTypeAndVertical("planning_prompt", vertical)
             ?: aiInstructionPort.findActiveByType("planning_prompt")
             ?: return null
