@@ -54,41 +54,45 @@ class SecurityConfig(
         return http
             .cors { it.configurationSource(corsConfig.corsConfigurationSource()) }
             .csrf { it.disable() }
-            .headers {
-                it.contentSecurityPolicy { csp -> csp.policyDirectives("default-src 'self'; frame-ancestors 'none'") }
-                it.referrerPolicy { ref -> ref.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
-                it.permissionsPolicy { pp -> pp.policy("camera=(), microphone=(), geolocation=()") }
-                if (!swaggerEnabled) {
-                    it.httpStrictTransportSecurity { hsts ->
-                        hsts.includeSubDomains(true)
-                        hsts.maxAgeInSeconds(31536000)
-                    }
-                }
-            }
+            .headers { configureHeaders(it) }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests {
-                it.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
-                it.requestMatchers(
-                    "/auth/register",
-                    "/auth/login",
-                    "/auth/refresh",
-                    "/public/**",
-                    "/actuator/health",
-                    "/error"
-                ).permitAll()
-                if (swaggerEnabled) {
-                    it.requestMatchers(
-                        "/v3-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html"
-                    ).permitAll()
-                }
-                it.anyRequest().authenticated()
-            }
+            .authorizeHttpRequests { configureAuthorization(it) }
             .addFilterBefore(requestSizeLimitFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterAfter(multiTenantFilter, JwtAuthenticationFilter::class.java)
             .build()
+    }
+
+    private fun configureHeaders(headers: org.springframework.security.config.annotation.web.configurers.HeadersConfigurer<HttpSecurity>) {
+        headers.contentSecurityPolicy { it.policyDirectives("default-src 'self'; frame-ancestors 'none'") }
+        headers.referrerPolicy { it.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
+        headers.permissionsPolicy { it.policy("camera=(), microphone=(), geolocation=()") }
+        if (!swaggerEnabled) {
+            headers.httpStrictTransportSecurity { hsts ->
+                hsts.includeSubDomains(true)
+                hsts.maxAgeInSeconds(31536000)
+            }
+        }
+    }
+
+    private fun configureAuthorization(auth: org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) {
+        auth.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+        auth.requestMatchers(
+            "/auth/register",
+            "/auth/login",
+            "/auth/refresh",
+            "/public/**",
+            "/actuator/health",
+            "/error"
+        ).permitAll()
+        if (swaggerEnabled) {
+            auth.requestMatchers(
+                "/v3-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html"
+            ).permitAll()
+        }
+        auth.anyRequest().authenticated()
     }
 }

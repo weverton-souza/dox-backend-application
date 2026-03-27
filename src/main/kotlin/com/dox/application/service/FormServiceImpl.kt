@@ -70,32 +70,44 @@ class FormServiceImpl(
         )
 
         return if (responseCount == 0L) {
-            val updatedVersion = formPersistencePort.saveVersion(
-                currentVersion.copy(
-                    title = command.title,
-                    description = command.description,
-                    fields = command.fields,
-                    fieldMappings = command.fieldMappings
-                )
-            )
-            FormWithCurrentVersion(updatedForm, updatedVersion)
+            updateVersionInPlace(updatedForm, currentVersion, command)
         } else {
-            val newVersionNumber = form.currentVersion + 1
-            val newVersion = formPersistencePort.saveVersion(
-                FormVersion(
-                    formId = form.id,
-                    version = newVersionNumber,
-                    title = command.title,
-                    description = command.description,
-                    fields = command.fields,
-                    fieldMappings = command.fieldMappings
-                )
-            )
-            val formWithNewVersion = formPersistencePort.saveForm(
-                updatedForm.copy(currentVersion = newVersionNumber)
-            )
-            FormWithCurrentVersion(formWithNewVersion, newVersion)
+            createNewVersion(updatedForm, command)
         }
+    }
+
+    private fun updateVersionInPlace(
+        form: Form,
+        currentVersion: FormVersion,
+        command: UpdateFormCommand
+    ): FormWithCurrentVersion {
+        val updatedVersion = formPersistencePort.saveVersion(
+            currentVersion.copy(
+                title = command.title,
+                description = command.description,
+                fields = command.fields,
+                fieldMappings = command.fieldMappings
+            )
+        )
+        return FormWithCurrentVersion(form, updatedVersion)
+    }
+
+    private fun createNewVersion(form: Form, command: UpdateFormCommand): FormWithCurrentVersion {
+        val newVersionNumber = form.currentVersion + 1
+        val newVersion = formPersistencePort.saveVersion(
+            FormVersion(
+                formId = form.id,
+                version = newVersionNumber,
+                title = command.title,
+                description = command.description,
+                fields = command.fields,
+                fieldMappings = command.fieldMappings
+            )
+        )
+        val formWithNewVersion = formPersistencePort.saveForm(
+            form.copy(currentVersion = newVersionNumber)
+        )
+        return FormWithCurrentVersion(formWithNewVersion, newVersion)
     }
 
     @Transactional

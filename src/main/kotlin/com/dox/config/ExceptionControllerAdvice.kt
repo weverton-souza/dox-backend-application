@@ -62,11 +62,7 @@ class DomainExceptionHandler {
                 pd.setProperty("field", ex.field)
                 pd.setProperty("value", ex.value)
             }
-            is InvalidCredentialsException,
-            is InvalidTokenException,
-            is TokenExpiredException,
-            is AccessDeniedException,
-            is BusinessException -> {}
+            else -> {}
         }
 
         return pd
@@ -129,7 +125,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleIllegalState(ex: IllegalStateException): ProblemDetail {
         log.warn("IllegalStateException: {}", ex.message)
         return buildProblemDetail(
-            org.springframework.http.HttpStatus.BAD_REQUEST,
+            HttpStatus.BAD_REQUEST,
             "Estado inválido",
             ex.message ?: "Estado inválido",
             "ILLEGAL_STATE"
@@ -142,7 +138,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         log.error("Erro inesperado [traceId={}]", traceId, ex)
 
         val pd = buildProblemDetail(
-            org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpStatus.INTERNAL_SERVER_ERROR,
             ErrorCode.INTERNAL_ERROR.title,
             "Erro inesperado. Referência: $traceId",
             ErrorCode.INTERNAL_ERROR.code

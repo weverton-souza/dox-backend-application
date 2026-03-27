@@ -2,18 +2,19 @@ package com.dox.adapter.out.ai.prompt
 
 import com.dox.application.port.input.GenerationPlan
 import com.dox.application.port.input.SectionPlan
+import com.dox.application.port.output.AiPlanningParserPort
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PlanningResponseParser {
+class PlanningResponseParser : AiPlanningParserPort {
 
     private val log = LoggerFactory.getLogger(javaClass)
     private val objectMapper = jacksonObjectMapper()
 
-    fun parse(raw: String, sectionTitles: List<String>): GenerationPlan {
+    override fun parse(raw: String, sectionTitles: List<String>): GenerationPlan {
         val cleaned = cleanMarkdown(raw)
         return try {
             val parsed = objectMapper.readValue<GenerationPlan>(cleaned)

@@ -136,8 +136,7 @@ class CustomerServiceImpl(
             .associateBy { it.id }
 
         return events.map { event ->
-            val customerName = customerMap[event.customerId]
-                ?.data?.get("name")?.toString() ?: ""
+            val customerName = customerMap[event.customerId]?.displayName() ?: ""
             event to customerName
         }
     }

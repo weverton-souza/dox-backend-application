@@ -1,5 +1,6 @@
 package com.dox.adapter.out.ai.prompt
 
+import com.dox.application.port.output.AiReviewPromptPort
 import com.dox.domain.enum.Vertical
 import com.dox.domain.model.FormResponse
 import org.springframework.stereotype.Component
@@ -7,13 +8,13 @@ import org.springframework.stereotype.Component
 @Component
 class ReviewPromptBuilder(
     private val promptSanitizer: PromptSanitizer
-) {
+) : AiReviewPromptPort {
 
     companion object {
         private val VALID_ACTIONS = setOf("corrigir", "melhorar", "resumir", "expandir")
     }
 
-    fun buildSystemPrompt(vertical: Vertical): String {
+    override fun buildSystemPrompt(vertical: Vertical): String {
         val role = roleForVertical(vertical)
         return """
             |Você é um $role revisor de textos técnicos com mais de 15 anos de experiência.
@@ -38,7 +39,7 @@ class ReviewPromptBuilder(
         """.trimMargin()
     }
 
-    fun buildUserPrompt(
+    override fun buildUserPrompt(
         text: String,
         action: String,
         sectionType: String?,

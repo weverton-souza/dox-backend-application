@@ -33,39 +33,33 @@ class WorkspaceServiceImpl(
         val user = userPersistencePort.findById(userId)
             ?: throw ResourceNotFoundException("Usuário", userId.toString())
 
-        val workspaces = mutableListOf<WorkspaceInfo>()
+        return listOfNotNull(buildPersonalWorkspace(user.personalTenantId)) +
+            buildOrgWorkspaces(userId)
+    }
 
-        if (user.personalTenantId != null) {
-            val tenant = tenantPersistencePort.findById(user.personalTenantId)
-            if (tenant != null) {
-                workspaces.add(
-                    WorkspaceInfo(
-                        tenantId = tenant.id,
-                        name = PERSONAL_WORKSPACE_NAME,
-                        type = TenantType.PERSONAL,
-                        vertical = tenant.vertical,
-                        role = null
-                    )
-                )
-            }
-        }
+    private fun buildPersonalWorkspace(personalTenantId: UUID?): WorkspaceInfo? {
+        val tenant = personalTenantId?.let { tenantPersistencePort.findById(it) } ?: return null
+        return WorkspaceInfo(
+            tenantId = tenant.id,
+            name = PERSONAL_WORKSPACE_NAME,
+            type = TenantType.PERSONAL,
+            vertical = tenant.vertical,
+            role = null
+        )
+    }
 
-        val memberships = organizationPersistencePort.findMembersByUserId(userId)
-        for (membership in memberships) {
-            val org = organizationPersistencePort.findById(membership.organizationId) ?: continue
-            val tenant = tenantPersistencePort.findById(org.tenantId) ?: continue
-            workspaces.add(
-                WorkspaceInfo(
-                    tenantId = tenant.id,
-                    name = org.name,
-                    type = TenantType.ORGANIZATION,
-                    vertical = tenant.vertical,
-                    role = membership.role
-                )
+    private fun buildOrgWorkspaces(userId: UUID): List<WorkspaceInfo> {
+        return organizationPersistencePort.findMembersByUserId(userId).mapNotNull { membership ->
+            val org = organizationPersistencePort.findById(membership.organizationId) ?: return@mapNotNull null
+            val tenant = tenantPersistencePort.findById(org.tenantId) ?: return@mapNotNull null
+            WorkspaceInfo(
+                tenantId = tenant.id,
+                name = org.name,
+                type = TenantType.ORGANIZATION,
+                vertical = tenant.vertical,
+                role = membership.role
             )
         }
-
-        return workspaces
     }
 
     @Transactional

@@ -40,23 +40,7 @@ class CalendarServiceImpl(
 
     @Transactional
     override fun createEvent(command: CreateCalendarEventCommand): CalendarEvent =
-        calendarPersistencePort.saveEvent(
-            CalendarEvent(
-                summary = command.summary,
-                description = command.description,
-                location = command.location,
-                startDate = command.startDate,
-                startDateTime = command.startDateTime,
-                startTimeZone = command.startTimeZone,
-                endDate = command.endDate,
-                endDateTime = command.endDateTime,
-                endTimeZone = command.endTimeZone,
-                allDay = command.allDay,
-                tagId = command.tagId,
-                customerId = command.customerId,
-                status = command.status
-            )
-        )
+        calendarPersistencePort.saveEvent(command.toCalendarEvent())
 
     override fun findEventById(id: UUID): CalendarEvent =
         calendarPersistencePort.findEventById(id)
@@ -70,7 +54,7 @@ class CalendarServiceImpl(
         val tags = calendarPersistencePort.findAllTags().associateBy { it.id }
         val customerIds = events.mapNotNull { it.customerId }.toSet()
         val customerNames = if (customerIds.isNotEmpty())
-            customerPersistencePort.findByIds(customerIds).associate { it.id to (it.data["name"] as? String) }
+            customerPersistencePort.findByIds(customerIds).associate { it.id to it.displayName() }
         else emptyMap()
         return events.map { event ->
             EnrichedCalendarEvent(
@@ -84,7 +68,7 @@ class CalendarServiceImpl(
     override fun enrichEvent(event: CalendarEvent): EnrichedCalendarEvent {
         val tag = event.tagId?.let { calendarPersistencePort.findTagById(it) }
         val customerName = event.customerId?.let { cid ->
-            customerPersistencePort.findById(cid)?.data?.get("name") as? String
+            customerPersistencePort.findById(cid)?.displayName()
         }
         return EnrichedCalendarEvent(event = event, tag = tag, customerName = customerName)
     }
@@ -93,25 +77,22 @@ class CalendarServiceImpl(
     override fun updateEvent(command: UpdateCalendarEventCommand): CalendarEvent {
         calendarPersistencePort.findEventById(command.id)
             ?: throw ResourceNotFoundException("Evento", command.id.toString())
-        return calendarPersistencePort.saveEvent(
-            CalendarEvent(
-                id = command.id,
-                summary = command.summary,
-                description = command.description,
-                location = command.location,
-                startDate = command.startDate,
-                startDateTime = command.startDateTime,
-                startTimeZone = command.startTimeZone,
-                endDate = command.endDate,
-                endDateTime = command.endDateTime,
-                endTimeZone = command.endTimeZone,
-                allDay = command.allDay,
-                tagId = command.tagId,
-                customerId = command.customerId,
-                status = command.status
-            )
-        )
+        return calendarPersistencePort.saveEvent(command.toCalendarEvent())
     }
+
+    private fun CreateCalendarEventCommand.toCalendarEvent() = CalendarEvent(
+        summary = summary, description = description, location = location,
+        startDate = startDate, startDateTime = startDateTime, startTimeZone = startTimeZone,
+        endDate = endDate, endDateTime = endDateTime, endTimeZone = endTimeZone,
+        allDay = allDay, tagId = tagId, customerId = customerId, status = status
+    )
+
+    private fun UpdateCalendarEventCommand.toCalendarEvent() = CalendarEvent(
+        id = id, summary = summary, description = description, location = location,
+        startDate = startDate, startDateTime = startDateTime, startTimeZone = startTimeZone,
+        endDate = endDate, endDateTime = endDateTime, endTimeZone = endTimeZone,
+        allDay = allDay, tagId = tagId, customerId = customerId, status = status
+    )
 
     @Transactional
     override fun deleteEvent(id: UUID) {
