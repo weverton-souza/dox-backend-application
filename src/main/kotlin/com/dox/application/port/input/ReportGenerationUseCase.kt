@@ -114,7 +114,14 @@ interface ReportGenerationUseCase {
     fun getGenerationSources(reportId: UUID): List<AiGenerationSource>
 
     fun reviewText(command: ReviewTextCommand): AiGenerationResult
+
+    fun getRegenerationInfo(reportId: UUID): RegenerationInfo
 }
+
+data class RegenerationInfo(
+    val used: Int,
+    val limit: Int
+)
 
 data class AiUsageSummary(
     val used: Int,

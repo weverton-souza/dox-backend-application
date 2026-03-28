@@ -9,6 +9,7 @@ import com.dox.adapter.`in`.rest.dto.ai.GenerateFullReportRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
 import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
+import com.dox.adapter.`in`.rest.dto.ai.RegenerationInfoResponse
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
 import com.dox.adapter.`in`.rest.resource.AiResource
 import com.dox.application.port.input.ComputedChartData
@@ -119,41 +120,43 @@ class AiResourceImpl(
         return emitter
     }
 
-    override fun generateSection(id: UUID, request: GenerateSectionRequest): ResponseEntity<GenerateSectionResponse> =
-        responseEntity(
-            reportGenerationUseCase.generateSection(
-                GenerateSectionCommand(
-                    reportId = id,
-                    sectionType = request.sectionType,
-                    formResponseId = request.formResponseId,
-                    previousSections = request.previousSections?.map {
-                        com.dox.application.port.input.PreviousSectionContext(it.sectionType, it.summary)
-                    },
-                    quantitativeData = request.quantitativeData?.let { qd ->
-                        QuantitativeDataPayload(
-                            tables = qd.tables.map { t ->
-                                ComputedTableData(t.blockId, t.title, t.category, t.dataStatus,
-                                    t.rows.map { r -> ComputedTableRow(r.label, r.values) })
-                            },
-                            charts = qd.charts.map { c ->
-                                ComputedChartData(c.blockId, c.title, c.dataStatus,
-                                    c.series.map { s -> ComputedChartSeries(s.label, s.values) })
-                            }
-                        )
-                    }
-                )
-            ).toResponse()
+    override fun generateSection(id: UUID, request: GenerateSectionRequest): ResponseEntity<GenerateSectionResponse> {
+        val result = reportGenerationUseCase.generateSection(
+            GenerateSectionCommand(
+                reportId = id,
+                sectionType = request.sectionType,
+                formResponseId = request.formResponseId,
+                previousSections = request.previousSections?.map {
+                    com.dox.application.port.input.PreviousSectionContext(it.sectionType, it.summary)
+                },
+                quantitativeData = request.quantitativeData?.let { qd ->
+                    QuantitativeDataPayload(
+                        tables = qd.tables.map { t ->
+                            ComputedTableData(t.blockId, t.title, t.category, t.dataStatus,
+                                t.rows.map { r -> ComputedTableRow(r.label, r.values) })
+                        },
+                        charts = qd.charts.map { c ->
+                            ComputedChartData(c.blockId, c.title, c.dataStatus,
+                                c.series.map { s -> ComputedChartSeries(s.label, s.values) })
+                        }
+                    )
+                }
+            )
         )
+        val regenInfo = reportGenerationUseCase.getRegenerationInfo(id)
+        return responseEntity(result.toResponse(regenInfo.used, regenInfo.limit))
+    }
 
-    override fun regenerateSection(id: UUID, request: RegenerateSectionRequest): ResponseEntity<GenerateSectionResponse> =
-        responseEntity(
-            reportGenerationUseCase.regenerateSection(
-                RegenerateSectionCommand(
-                    reportId = id,
-                    sectionType = request.sectionType
-                )
-            ).toResponse()
+    override fun regenerateSection(id: UUID, request: RegenerateSectionRequest): ResponseEntity<GenerateSectionResponse> {
+        val result = reportGenerationUseCase.regenerateSection(
+            RegenerateSectionCommand(
+                reportId = id,
+                sectionType = request.sectionType
+            )
         )
+        val regenInfo = reportGenerationUseCase.getRegenerationInfo(id)
+        return responseEntity(result.toResponse(regenInfo.used, regenInfo.limit))
+    }
 
     override fun getUsageSummary(month: Int, year: Int): ResponseEntity<AiUsageSummaryResponse> =
         responseEntity(
@@ -265,12 +268,22 @@ class AiResourceImpl(
             }
         )
 
-    private fun AiGenerationResult.toResponse() = GenerateSectionResponse(
+    override fun getRegenerationInfo(reportId: UUID): ResponseEntity<RegenerationInfoResponse> {
+        val info = reportGenerationUseCase.getRegenerationInfo(reportId)
+        return responseEntity(RegenerationInfoResponse(used = info.used, limit = info.limit))
+    }
+
+    private fun AiGenerationResult.toResponse(
+        regenerationsUsed: Int = 0,
+        regenerationLimit: Int = 3
+    ) = GenerateSectionResponse(
         text = text,
         tokensUsed = inputTokens + outputTokens,
         model = model,
         generationId = generationId,
-        cached = cached
+        cached = cached,
+        regenerationsUsed = regenerationsUsed,
+        regenerationLimit = regenerationLimit
     )
 
     private fun AiUsage.toResponse() = AiUsageDetailResponse(

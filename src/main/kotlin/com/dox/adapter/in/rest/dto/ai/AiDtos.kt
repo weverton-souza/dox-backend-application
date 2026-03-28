@@ -30,7 +30,9 @@ data class GenerateSectionResponse(
     val tokensUsed: Int,
     val model: String,
     val generationId: UUID,
-    val cached: Boolean
+    val cached: Boolean,
+    val regenerationsUsed: Int = 0,
+    val regenerationLimit: Int = 3
 )
 
 data class AiUsageSummaryResponse(
@@ -169,4 +171,9 @@ data class ComputedChartDataRequest(
 data class ComputedChartSeriesRequest(
     val label: String,
     val values: Map<String, Double> = emptyMap()
+)
+
+data class RegenerationInfoResponse(
+    val used: Int,
+    val limit: Int
 )
