@@ -7,6 +7,7 @@ import com.dox.adapter.`in`.rest.dto.ai.AiUsageDetailResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageSummaryResponse
 import com.dox.adapter.`in`.rest.dto.ai.GenerateFullReportRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
+import com.dox.adapter.`in`.rest.dto.ai.RegenerationInfoResponse
 import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
 import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
@@ -95,4 +96,10 @@ interface AiResource : BaseResource {
     fun getGenerationSources(
         @PathVariable reportId: UUID
     ): ResponseEntity<List<AiGenerationSourceResponse>>
+
+    @Operation(summary = "Info de regenerações disponíveis para o relatório")
+    @GetMapping("/reports/{reportId}/regeneration-info")
+    fun getRegenerationInfo(
+        @PathVariable reportId: UUID
+    ): ResponseEntity<RegenerationInfoResponse>
 }

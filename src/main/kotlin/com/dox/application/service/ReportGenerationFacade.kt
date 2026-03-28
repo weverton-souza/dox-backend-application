@@ -6,6 +6,7 @@ import com.dox.application.port.input.GenerateFullReportCommand
 import com.dox.application.port.input.GenerateSectionCommand
 import com.dox.application.port.input.GetAiUsageCommand
 import com.dox.application.port.input.RegenerateSectionCommand
+import com.dox.application.port.input.RegenerationInfo
 import com.dox.application.port.input.ReportGenerationUseCase
 import com.dox.application.port.input.ReviewTextCommand
 import com.dox.application.port.input.SectionProgressEvent
@@ -56,4 +57,7 @@ class ReportGenerationFacade(
 
     override fun getGenerationSources(reportId: UUID): List<AiGenerationSource> =
         aiUsageService.getGenerationSources(reportId)
+
+    override fun getRegenerationInfo(reportId: UUID): RegenerationInfo =
+        aiUsageService.getRegenerationInfo(reportId)
 }

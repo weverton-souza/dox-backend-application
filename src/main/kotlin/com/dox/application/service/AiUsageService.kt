@@ -4,6 +4,7 @@ import com.dox.application.port.input.AiStatus
 import com.dox.application.port.input.AiUsageSummary
 import com.dox.application.port.input.AlertLevel
 import com.dox.application.port.input.GetAiUsageCommand
+import com.dox.application.port.input.RegenerationInfo
 import com.dox.application.port.input.UpdateAiQuotaCommand
 import com.dox.application.port.output.AiConfigPort
 import com.dox.application.port.output.AiGenerationSourcePersistencePort
@@ -79,6 +80,12 @@ class AiUsageService(
 
     fun getGenerationSources(reportId: UUID): List<AiGenerationSource> =
         aiGenerationSourcePort.findByReportId(reportId)
+
+    fun getRegenerationInfo(reportId: UUID): RegenerationInfo =
+        RegenerationInfo(
+            used = aiUsagePort.countByReportId(reportId),
+            limit = aiConfigPort.regenerationLimit()
+        )
 
     private fun resolveAlertLevel(used: Int, limit: Int): AlertLevel? {
         if (limit <= 0) return null
