@@ -34,7 +34,7 @@ spring:
 dox:
   security:
     jwt-signing-key: ${JWT_SECRET:intSz26ioFppLXCsH7tta3HicyHtkJRTIuiC4M8jVRaP6wQNs3CNvG3mNjICqQ1M}
-    access-token-expiration: ${ACCESS_TOKEN_EXPIRATION:900000}
+    access-token-expiration: ${ACCESS_TOKEN_EXPIRATION:10800000}
     refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION:604800000}
   ai:
     enabled: ${AI_ENABLED:true}
