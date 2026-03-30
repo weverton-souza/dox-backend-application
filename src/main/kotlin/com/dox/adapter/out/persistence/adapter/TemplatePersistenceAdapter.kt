@@ -73,7 +73,7 @@ class TemplatePersistenceAdapter(
     )
 
     private fun ScoreTableTemplateJpaEntity.toDomain() = ScoreTableTemplate(
-        id, name, description, instrumentName, category, columns, rows, isDefault, createdAt, updatedAt
+        id, name, description, instrumentName, category, columns, rows, footnote, isDefault, createdAt, updatedAt
     )
 
     private fun ChartTemplateJpaEntity.toDomain() = ChartTemplate(

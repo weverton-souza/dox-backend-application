@@ -5,8 +5,8 @@
 
 -- 1. WAIS-III Índices Compostos
 -- Colunas: A=Índices, B=Soma PP, C=Composto, D=Classificação, E=Percentil, F=IC 95%
-INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, is_default) VALUES
-('a1000001-0000-4000-8000-000000000001', 'WAIS-III Índices', 'Resultados e conversão da soma dos pontos ponderados em pontos compostos — QIs e Índices Fatoriais', 'WAIS-III', 'Inteligência',
+INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, footnote, is_default) VALUES
+('a1000001-0000-4000-8000-000000000001', 'Tabela: WAIS-III Índices', 'Resultados e conversão da soma dos pontos ponderados em pontos compostos — QIs e Índices Fatoriais', 'WAIS-III', 'Inteligência',
 '[
   {"id":"wais-idx-col-indice","label":"Índices","formula":null,"alignment":"left"},
   {"id":"wais-idx-col-soma","label":"Soma PP","formula":null},
@@ -24,12 +24,13 @@ INSERT INTO score_table_templates (id, name, description, instrument_name, categ
   {"id":"wais-idx-row-5","defaultValues":{"wais-idx-col-indice":"QI de Execução (QIE)","wais-idx-col-classificacao":"=CLASSIFICAR(C6;>=130;\"● Muito Superior\"@#81C784;>=120;\"● Superior\"@#A5D6A7;>=110;\"● Médio Superior\"@#C5E1A5;>=90;\"● Média\"@#64B5F6;>=80;\"● Médio Inferior\"@#FFB74D;>=70;\"● Limítrofe\"@#FF8A65;\"● Extremamente Baixo\"@#EF9A9A)"}},
   {"id":"wais-idx-row-6","defaultValues":{"wais-idx-col-indice":"QI Total (QIT)","wais-idx-col-classificacao":"=CLASSIFICAR(C7;>=130;\"● Muito Superior\"@#81C784;>=120;\"● Superior\"@#A5D6A7;>=110;\"● Médio Superior\"@#C5E1A5;>=90;\"● Média\"@#64B5F6;>=80;\"● Médio Inferior\"@#FFB74D;>=70;\"● Limítrofe\"@#FF8A65;\"● Extremamente Baixo\"@#EF9A9A)"}}
 ]'::JSONB,
+'[{"type":"p","children":[{"text":"Nota: ","bold":true,"italic":true},{"text":"PP","bold":true},{"text":" = Pontos Ponderados · "},{"text":"IC 95%","bold":true},{"text":" = Intervalo de Confiança 95% · "},{"text":"Percentil","bold":true},{"text":" = posição relativa comparada à população da mesma faixa etária (ex: 99,6 = supera 99,6% das pessoas de mesma idade)"}]}]'::JSONB,
 true);
 
 -- 2. Percepção e Noções Básicas
 -- Colunas: A=Instrumentos, B=Máximo, C=Referência, D=Obtido, E=Interpretação
 INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, is_default) VALUES
-('a1000002-0000-4000-8000-000000000002', 'Percepção e Noções Básicas', 'Avaliação de habilidades visuoespaciais, visuoconstrutivas e percepção visual', 'Diversos', 'Percepção',
+('a1000002-0000-4000-8000-000000000002', 'Tabela: Percepção e Noções Básicas', 'Avaliação de habilidades visuoespaciais, visuoconstrutivas e percepção visual', 'Diversos', 'Percepção',
 '[
   {"id":"perc-col-instrumento","label":"Instrumento","formula":null,"alignment":"left"},
   {"id":"perc-col-max","label":"Máximo","formula":null},
@@ -50,7 +51,7 @@ true);
 -- 3. Atenção e Velocidade de Processamento
 -- Colunas: A=Instrumentos, B=Máximo, C=Referência, D=Obtido, E=Interpretação
 INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, is_default) VALUES
-('a1000003-0000-4000-8000-000000000003', 'Atenção e Velocidade de Processamento', 'Avaliação de atenção seletiva, alternada, dividida e velocidade de processamento', 'WAIS-III / FDT', 'Atenção',
+('a1000003-0000-4000-8000-000000000003', 'Tabela: Atenção e Velocidade de Processamento', 'Avaliação de atenção seletiva, alternada, dividida e velocidade de processamento', 'WAIS-III / FDT', 'Atenção',
 '[
   {"id":"atv-col-instrumento","label":"Instrumento","formula":null,"alignment":"left"},
   {"id":"atv-col-max","label":"Máximo","formula":null},
@@ -72,7 +73,7 @@ true);
 -- 4. BPA-2 — Bateria Psicológica para Avaliação da Atenção
 -- Colunas: A=Atenção, B=Pontos, C=Percentil, D=Classificação
 INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, is_default) VALUES
-('a1000004-0000-4000-8000-000000000004', 'BPA-2', 'Bateria Psicológica para Avaliação da Atenção — atenção concentrada, dividida, alternada e geral', 'BPA-2', 'Atenção',
+('a1000004-0000-4000-8000-000000000004', 'Tabela: BPA-2', 'Bateria Psicológica para Avaliação da Atenção — atenção concentrada, dividida, alternada e geral', 'BPA-2', 'Atenção',
 '[
   {"id":"bpa-col-atencao","label":"Atenção","formula":null,"alignment":"left"},
   {"id":"bpa-col-pontos","label":"Pontos","formula":null},
@@ -90,7 +91,7 @@ true);
 -- 5. Memória
 -- Colunas: A=Instrumentos, B=Máximo, C=Referência, D=Obtido, E=Interpretação
 INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, is_default) VALUES
-('a1000005-0000-4000-8000-000000000005', 'Memória', 'Avaliação de memória operacional, de curto prazo, semântica e visual', 'WAIS-III / Figuras de Rey', 'Memória',
+('a1000005-0000-4000-8000-000000000005', 'Tabela: Memória', 'Avaliação de memória operacional, de curto prazo, semântica e visual', 'WAIS-III / Figuras de Rey', 'Memória',
 '[
   {"id":"mem-col-instrumento","label":"Instrumento","formula":null,"alignment":"left"},
   {"id":"mem-col-max","label":"Máximo","formula":null},
@@ -112,7 +113,7 @@ true);
 -- 6. Funções Executivas
 -- Colunas: A=Instrumentos, B=Máximo, C=Referência, D=Obtido, E=Interpretação
 INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, is_default) VALUES
-('a1000006-0000-4000-8000-000000000006', 'Funções Executivas', 'Avaliação de memória operacional, controle inibitório, flexibilidade cognitiva e planejamento', 'WAIS-III / FDT / Rey / ToL-BR', 'Funções Executivas',
+('a1000006-0000-4000-8000-000000000006', 'Tabela: Funções Executivas', 'Avaliação de memória operacional, controle inibitório, flexibilidade cognitiva e planejamento', 'WAIS-III / FDT / Rey / ToL-BR', 'Funções Executivas',
 '[
   {"id":"fe-col-instrumento","label":"Instrumento","formula":null,"alignment":"left"},
   {"id":"fe-col-max","label":"Máximo","formula":null},
@@ -137,8 +138,8 @@ true);
 
 -- 7. ETDAH-AD — Escala de TDAH para Adultos
 -- Colunas: A=Fator, B=Referência, C=Obtido, D=Classificação
-INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, is_default) VALUES
-('a1000007-0000-4000-8000-000000000007', 'ETDAH-AD', 'Escala de Transtorno do Déficit de Atenção e Hiperatividade — Versão Adolescentes e Adultos', 'ETDAH-AD', 'Comportamento',
+INSERT INTO score_table_templates (id, name, description, instrument_name, category, columns, rows, footnote, is_default) VALUES
+('a1000007-0000-4000-8000-000000000007', 'Tabela: ETDAH-AD', 'Escala de Transtorno do Déficit de Atenção e Hiperatividade — Versão Adolescentes e Adultos', 'ETDAH-AD', 'Comportamento',
 '[
   {"id":"etdah-col-fator","label":"Fator","formula":null,"alignment":"left"},
   {"id":"etdah-col-ref","label":"Referência","formula":null},
@@ -152,4 +153,5 @@ INSERT INTO score_table_templates (id, name, description, instrument_name, categ
   {"id":"etdah-row-3","defaultValues":{"etdah-col-fator":"Autorregulação","etdah-col-ref":"25 a 80","etdah-col-classificacao":"=CLASSIFICAR(C4;>=81;\"● Superior/ Dificuldade\"@#EF9A9A;>=25;\"● Média Superior/ Adequado\"@#64B5F6;\"● Média/ Adequado\"@#A5D6A7)"}},
   {"id":"etdah-row-4","defaultValues":{"etdah-col-fator":"Hiperatividade","etdah-col-ref":"25 a 80","etdah-col-classificacao":"=CLASSIFICAR(C5;>=81;\"● Superior/ Dificuldade\"@#EF9A9A;>=25;\"● Média Superior/ Adequado\"@#64B5F6;\"● Média/ Adequado\"@#A5D6A7)"}}
 ]'::JSONB,
+'[{"type":"p","children":[{"text":"Nota: ","bold":true,"italic":true},{"text":"A Autorregulação é analisada em três pontos: Atenção, Motivação e Ação"}]}]'::JSONB,
 true);

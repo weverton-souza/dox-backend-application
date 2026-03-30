@@ -55,6 +55,7 @@ data class ScoreTableTemplateResponse(
     val category: String?,
     val columns: List<Map<String, Any?>>,
     val rows: List<Map<String, Any?>>,
+    val footnote: List<Map<String, Any?>>?,
     val isDefault: Boolean,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
