@@ -32,8 +32,12 @@ data class SwitchTenantCommand(
 
 interface AuthUseCase {
     fun register(command: RegisterCommand): AuthResult
+
     fun login(command: LoginCommand): AuthResult
+
     fun refresh(refreshToken: String): AuthResult
+
     fun logout(userId: UUID)
+
     fun switchTenant(command: SwitchTenantCommand): AuthResult
 }

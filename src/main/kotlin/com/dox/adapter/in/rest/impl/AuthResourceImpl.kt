@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController
 class AuthResourceImpl(
     private val authUseCase: AuthUseCase
 ) : AuthResource {
-
     override fun register(request: RegisterRequest): ResponseEntity<AuthResponse> {
         val result = authUseCase.register(
             RegisterCommand(

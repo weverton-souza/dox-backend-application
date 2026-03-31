@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class TenantIdentifierResolver : CurrentTenantIdentifierResolver<String>, HibernatePropertiesCustomizer {
-
     override fun resolveCurrentTenantIdentifier(): String =
         TenantContext.getTenantId() ?: TenancyConstant.PUBLIC_SCHEMA
 

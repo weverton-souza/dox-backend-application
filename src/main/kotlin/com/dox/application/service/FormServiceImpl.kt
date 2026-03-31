@@ -19,7 +19,6 @@ import java.util.UUID
 class FormServiceImpl(
     private val formPersistencePort: FormPersistencePort
 ) : FormUseCase {
-
     @Transactional
     override fun createForm(command: CreateFormCommand): FormWithCurrentVersion {
         val form = formPersistencePort.saveForm(
@@ -42,7 +41,7 @@ class FormServiceImpl(
         val form = formPersistencePort.findFormById(id)
             ?: throw ResourceNotFoundException("Formulário", id.toString())
         val version = formPersistencePort.findVersionByFormIdAndVersion(id, form.currentVersion)
-            ?: throw ResourceNotFoundException("Versão do formulário", "${id}:v${form.currentVersion}")
+            ?: throw ResourceNotFoundException("Versão do formulário", "$id:v${form.currentVersion}")
         return FormWithCurrentVersion(form, version)
     }
 
@@ -128,7 +127,7 @@ class FormServiceImpl(
 
     override fun findVersion(formId: UUID, version: Int): FormVersion =
         formPersistencePort.findVersionByFormIdAndVersion(formId, version)
-            ?: throw ResourceNotFoundException("Versão do formulário", "${formId}:v${version}")
+            ?: throw ResourceNotFoundException("Versão do formulário", "$formId:v$version")
 
     @Transactional
     override fun createResponse(command: CreateFormResponseCommand): FormResponse {

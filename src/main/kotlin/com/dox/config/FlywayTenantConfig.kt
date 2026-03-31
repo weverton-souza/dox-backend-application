@@ -11,7 +11,6 @@ import javax.sql.DataSource
 class FlywayTenantConfig(
     private val dataSource: DataSource
 ) {
-
     @Bean
     fun flywayMigrationStrategy(): FlywayMigrationStrategy {
         return FlywayMigrationStrategy {

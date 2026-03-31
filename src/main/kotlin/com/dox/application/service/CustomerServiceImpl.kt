@@ -10,10 +10,10 @@ import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Customer
-import com.dox.domain.validation.CnpjValidator
-import com.dox.domain.validation.CpfValidator
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
+import com.dox.domain.validation.CnpjValidator
+import com.dox.domain.validation.CpfValidator
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -25,7 +25,6 @@ import java.util.UUID
 class CustomerServiceImpl(
     private val customerPersistencePort: CustomerPersistencePort
 ) : CustomerUseCase {
-
     @Transactional
     override fun create(command: CreateCustomerCommand): Customer {
         val normalizedData = validateAndNormalizeDocuments(command.data)
@@ -37,8 +36,11 @@ class CustomerServiceImpl(
             ?: throw ResourceNotFoundException("Cliente", id.toString())
 
     override fun findAll(search: String?, pageable: Pageable): Page<Customer> =
-        if (search.isNullOrBlank()) customerPersistencePort.findAll(pageable)
-        else customerPersistencePort.search(search, pageable)
+        if (search.isNullOrBlank()) {
+            customerPersistencePort.findAll(pageable)
+        } else {
+            customerPersistencePort.search(search, pageable)
+        }
 
     @Transactional
     override fun update(command: UpdateCustomerCommand): Customer {

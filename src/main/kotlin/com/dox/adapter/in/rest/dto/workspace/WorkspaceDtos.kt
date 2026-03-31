@@ -20,10 +20,8 @@ data class CreateOrganizationRequest(
     @field:NotBlank(message = "Nome é obrigatório")
     @field:Size(max = 255, message = "Nome deve ter no máximo 255 caracteres")
     val name: String,
-
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
-
     val vertical: Vertical = Vertical.GENERAL
 )
 
@@ -31,6 +29,5 @@ data class InviteMemberRequest(
     @field:NotBlank(message = "Email é obrigatório")
     @field:Email(message = "Email inválido")
     val email: String,
-
     val role: MemberRole = MemberRole.MEMBER
 )

@@ -23,7 +23,6 @@ import java.util.UUID
 class FormResourceImpl(
     private val formUseCase: FormUseCase
 ) : FormResource {
-
     override fun findAll(): ResponseEntity<List<FormResponseDto>> =
         responseEntity(formUseCase.findAllForms().map { it.toResponse() })
 
@@ -31,8 +30,10 @@ class FormResourceImpl(
         responseEntity(
             formUseCase.createForm(
                 CreateFormCommand(
-                    title = request.title, description = request.description,
-                    fields = request.fields, linkedTemplateId = request.linkedTemplateId,
+                    title = request.title,
+                    description = request.description,
+                    fields = request.fields,
+                    linkedTemplateId = request.linkedTemplateId,
                     fieldMappings = request.fieldMappings
                 )
             ).toResponse(),
@@ -46,8 +47,11 @@ class FormResourceImpl(
         responseEntity(
             formUseCase.updateForm(
                 UpdateFormCommand(
-                    id = id, title = request.title, description = request.description,
-                    fields = request.fields, linkedTemplateId = request.linkedTemplateId,
+                    id = id,
+                    title = request.title,
+                    description = request.description,
+                    fields = request.fields,
+                    linkedTemplateId = request.linkedTemplateId,
                     fieldMappings = request.fieldMappings
                 )
             ).toResponse()
@@ -75,8 +79,10 @@ class FormResourceImpl(
         responseEntity(
             formUseCase.createResponse(
                 CreateFormResponseCommand(
-                    formId = id, customerId = request.customerId,
-                    customerName = request.customerName, answers = request.answers
+                    formId = id,
+                    customerId = request.customerId,
+                    customerName = request.customerName,
+                    answers = request.answers
                 )
             ).toResponse(null),
             HttpStatus.CREATED
@@ -93,7 +99,9 @@ class FormResourceImpl(
         responseEntity(
             formUseCase.updateResponse(
                 UpdateFormResponseCommand(
-                    id = responseId, status = request.status, answers = request.answers
+                    id = responseId,
+                    status = request.status,
+                    answers = request.answers
                 )
             ).toResponse(null)
         )
@@ -126,7 +134,14 @@ class FormResourceImpl(
     )
 
     private fun FormVersion.toResponse() = FormVersionResponseDto(
-        id, formId, version, title, description, fields, fieldMappings, createdAt
+        id,
+        formId,
+        version,
+        title,
+        description,
+        fields,
+        fieldMappings,
+        createdAt
     )
 
     private fun FormResponse.toResponse(versionNumber: Int?) = FormResponseResponseDto(

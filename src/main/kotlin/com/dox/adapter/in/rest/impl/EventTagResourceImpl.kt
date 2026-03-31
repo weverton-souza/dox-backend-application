@@ -16,7 +16,6 @@ import java.util.UUID
 class EventTagResourceImpl(
     private val calendarUseCase: CalendarUseCase
 ) : EventTagResource {
-
     override fun findAll(): ResponseEntity<List<EventTagResponse>> =
         responseEntity(calendarUseCase.findAllTags().map { it.toResponse() })
 

@@ -9,7 +9,6 @@ import com.dox.domain.model.ProfessionalSettings
 import com.dox.domain.model.ReportTemplate
 
 interface AiSectionPromptPort {
-
     fun buildContext(
         customer: Customer?,
         formResponses: List<FormResponse>?,

@@ -15,7 +15,6 @@ import java.util.UUID
 class AiUsagePersistenceAdapter(
     private val aiUsageJpaRepository: AiUsageJpaRepository
 ) : AiUsagePort {
-
     override fun save(usage: AiUsage): AiUsage {
         val entity = AiUsageJpaEntity().apply {
             id = usage.id

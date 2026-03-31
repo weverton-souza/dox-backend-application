@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component
 class AiAdapterRouter(
     @Qualifier("anthropicAiAdapter") private val anthropicAdapter: AiGenerationPort
 ) : AiGenerationPort {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun generateSection(systemPrompt: String, userPrompt: String, model: String, maxTokens: Int?): AiGenerationResult {

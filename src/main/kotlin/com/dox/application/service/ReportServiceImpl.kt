@@ -20,7 +20,6 @@ import java.util.UUID
 class ReportServiceImpl(
     private val reportPersistencePort: ReportPersistencePort
 ) : ReportUseCase {
-
     companion object {
         private const val MAX_VERSIONS = 20
     }
@@ -118,5 +117,4 @@ class ReportServiceImpl(
             )
         )
     }
-
 }

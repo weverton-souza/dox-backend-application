@@ -14,7 +14,6 @@ import java.util.UUID
 class UserServiceImpl(
     private val userPersistencePort: UserPersistencePort
 ) : UserUseCase {
-
     override fun getMe(userId: UUID): UserInfo {
         val user = userPersistencePort.findById(userId)
             ?: throw ResourceNotFoundException("Usuário", userId.toString())

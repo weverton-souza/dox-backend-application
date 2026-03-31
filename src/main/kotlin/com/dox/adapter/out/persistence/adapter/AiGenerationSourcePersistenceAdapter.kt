@@ -11,7 +11,6 @@ import java.util.UUID
 class AiGenerationSourcePersistenceAdapter(
     private val repository: AiGenerationSourceJpaRepository
 ) : AiGenerationSourcePersistencePort {
-
     override fun saveAll(sources: List<AiGenerationSource>): List<AiGenerationSource> =
         repository.saveAll(sources.map { it.toEntity() }).map { it.toDomain() }
 

@@ -4,7 +4,6 @@ import com.dox.application.port.input.GenerateSectionCommand
 import com.dox.application.port.input.RegenerateSectionCommand
 import com.dox.application.port.input.ReviewTextCommand
 import com.dox.application.port.output.AiConfigPort
-import com.dox.application.port.output.AiCostConfig
 import com.dox.application.port.output.AiGenerationPort
 import com.dox.application.port.output.AiQuotaPort
 import com.dox.application.port.output.AiReviewPromptPort
@@ -52,7 +51,6 @@ class AiGenerationService(
     private val reviewPromptPort: AiReviewPromptPort,
     private val aiConfigPort: AiConfigPort
 ) {
-
     private val log = LoggerFactory.getLogger(javaClass)
     private val tenantSemaphores = ConcurrentHashMap<String, Semaphore>()
 
@@ -234,8 +232,13 @@ class AiGenerationService(
             throw BusinessException("Nenhum questionário respondido ou dado quantitativo vinculado a este relatório.")
         }
 
-        log.info("AI generation context: section={}, formResponseIds={}, totalAnswers={}, hasQuantitative={}",
-            command.sectionType, resolvedIds.size, formResponses.sumOf { it.answers.size }, hasQuantitativeData)
+        log.info(
+            "AI generation context: section={}, formResponseIds={}, totalAnswers={}, hasQuantitative={}",
+            command.sectionType,
+            resolvedIds.size,
+            formResponses.sumOf { it.answers.size },
+            hasQuantitativeData
+        )
 
         val customer = if (command.includeCustomerData) report.customerId?.let { customerPersistencePort.findById(it) } else null
         val professional = professionalPersistencePort.find()
@@ -243,7 +246,12 @@ class AiGenerationService(
 
         val systemPrompt = systemPromptPort.build(tenant.vertical)
         val contextPrompt = sectionPromptPort.buildContext(
-            customer, formResponses, template, professional, command.quantitativeData, command.quantitativeContext
+            customer,
+            formResponses,
+            template,
+            professional,
+            command.quantitativeData,
+            command.quantitativeContext
         )
 
         val userPrompt = if (!command.previousSections.isNullOrEmpty()) {

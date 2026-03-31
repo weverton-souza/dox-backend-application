@@ -13,7 +13,6 @@ class TenantProvisioningAdapter(
     private val jdbcTemplate: JdbcTemplate,
     private val flywayTenantConfig: FlywayTenantConfig
 ) : TenantProvisioningPort {
-
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     override fun createSchema(schemaName: String) {
         val sanitized = TenancyConstant.validateSchemaName(schemaName)

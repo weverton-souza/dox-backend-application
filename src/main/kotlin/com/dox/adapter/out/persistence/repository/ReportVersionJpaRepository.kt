@@ -6,5 +6,6 @@ import java.util.UUID
 
 interface ReportVersionJpaRepository : JpaRepository<ReportVersionJpaEntity, UUID> {
     fun findByReportIdOrderByCreatedAtDesc(reportId: UUID): List<ReportVersionJpaEntity>
+
     fun countByReportId(reportId: UUID): Long
 }

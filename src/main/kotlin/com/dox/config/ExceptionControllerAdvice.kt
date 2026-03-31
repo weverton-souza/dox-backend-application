@@ -43,7 +43,6 @@ private fun buildProblemDetail(
 @RestControllerAdvice
 @Order(1)
 class DomainExceptionHandler {
-
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @ExceptionHandler(DomainException::class)
@@ -82,7 +81,6 @@ class DomainExceptionHandler {
 @RestControllerAdvice
 @Order(2)
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun handleHttpMessageNotReadable(

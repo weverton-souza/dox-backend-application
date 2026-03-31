@@ -24,7 +24,6 @@ class WorkspaceServiceImpl(
     private val tenantProvisioningService: TenantProvisioningService,
     private val organizationPersistencePort: OrganizationPersistencePort
 ) : WorkspaceUseCase {
-
     companion object {
         private const val PERSONAL_WORKSPACE_NAME = "Pessoal"
     }

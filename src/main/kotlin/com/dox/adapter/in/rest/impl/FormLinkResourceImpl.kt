@@ -15,7 +15,6 @@ import java.util.UUID
 class FormLinkResourceImpl(
     private val formLinkUseCase: FormLinkUseCase
 ) : FormLinkResource {
-
     override fun create(request: CreateFormLinkRequest): ResponseEntity<FormLinkResponse> =
         responseEntity(
             formLinkUseCase.createFormLink(
@@ -43,7 +42,13 @@ class FormLinkResourceImpl(
     }
 
     private fun FormLinkWithToken.toResponse() = FormLinkResponse(
-        formLink.id, token, formLink.formId, formLink.customerId,
-        formLink.status, formLink.expiresAt, formLink.createdAt, formLink.updatedAt
+        formLink.id,
+        token,
+        formLink.formId,
+        formLink.customerId,
+        formLink.status,
+        formLink.expiresAt,
+        formLink.createdAt,
+        formLink.updatedAt
     )
 }

@@ -7,15 +7,14 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 interface AiUsageJpaRepository : JpaRepository<AiUsageJpaEntity, UUID> {
-
     fun findByReportId(reportId: UUID): List<AiUsageJpaEntity>
 
     @Query(
         "SELECT COUNT(e) FROM AiUsageJpaEntity e " +
-                "WHERE e.professionalId = :professionalId " +
-                "AND e.createdAt >= :startDate " +
-                "AND e.createdAt < :endDate " +
-                "AND e.status = com.dox.domain.enum.AiGenerationStatus.SUCCESS"
+            "WHERE e.professionalId = :professionalId " +
+            "AND e.createdAt >= :startDate " +
+            "AND e.createdAt < :endDate " +
+            "AND e.status = com.dox.domain.enum.AiGenerationStatus.SUCCESS"
     )
     fun countSuccessByProfessionalAndPeriod(
         professionalId: UUID,
@@ -30,10 +29,10 @@ interface AiUsageJpaRepository : JpaRepository<AiUsageJpaEntity, UUID> {
 
     @Query(
         "SELECT e FROM AiUsageJpaEntity e " +
-                "WHERE e.professionalId = :professionalId " +
-                "AND e.createdAt >= :startDate " +
-                "AND e.createdAt < :endDate " +
-                "ORDER BY e.createdAt DESC"
+            "WHERE e.professionalId = :professionalId " +
+            "AND e.createdAt >= :startDate " +
+            "AND e.createdAt < :endDate " +
+            "ORDER BY e.createdAt DESC"
     )
     fun findByProfessionalAndPeriod(
         professionalId: UUID,

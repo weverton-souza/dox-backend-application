@@ -14,17 +14,13 @@ class EventTagJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "name", nullable = false, length = 100)
     var name: String = "",
-
     @Column(name = "color", nullable = false, length = 7)
     var color: String = "",
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

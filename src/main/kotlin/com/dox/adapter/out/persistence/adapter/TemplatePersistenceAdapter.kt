@@ -19,7 +19,6 @@ class TemplatePersistenceAdapter(
     private val scoreTableTemplateRepo: ScoreTableTemplateJpaRepository,
     private val chartTemplateRepo: ChartTemplateJpaRepository
 ) : TemplatePersistencePort {
-
     override fun findAllReportTemplates(): List<ReportTemplate> =
         reportTemplateRepo.findAll().map { it.toDomain() }
 
@@ -45,9 +44,14 @@ class TemplatePersistenceAdapter(
 
     override fun saveScoreTableTemplate(template: ScoreTableTemplate): ScoreTableTemplate {
         val entity = ScoreTableTemplateJpaEntity().apply {
-            id = template.id; name = template.name; description = template.description
-            instrumentName = template.instrumentName; category = template.category
-            columns = template.columns; rows = template.rows; isDefault = template.isDefault
+            id = template.id
+            name = template.name
+            description = template.description
+            instrumentName = template.instrumentName
+            category = template.category
+            columns = template.columns
+            rows = template.rows
+            isDefault = template.isDefault
         }
         return scoreTableTemplateRepo.save(entity).toDomain()
     }
@@ -59,9 +63,13 @@ class TemplatePersistenceAdapter(
 
     override fun saveChartTemplate(template: ChartTemplate): ChartTemplate {
         val entity = ChartTemplateJpaEntity().apply {
-            id = template.id; name = template.name; description = template.description
-            instrumentName = template.instrumentName; category = template.category
-            data = template.data; isDefault = template.isDefault
+            id = template.id
+            name = template.name
+            description = template.description
+            instrumentName = template.instrumentName
+            category = template.category
+            data = template.data
+            isDefault = template.isDefault
         }
         return chartTemplateRepo.save(entity).toDomain()
     }

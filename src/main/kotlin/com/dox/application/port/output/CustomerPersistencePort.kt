@@ -10,19 +10,29 @@ import java.util.UUID
 
 interface CustomerPersistencePort {
     fun save(customer: Customer): Customer
+
     fun findById(id: UUID): Customer?
+
     fun findAll(pageable: Pageable): Page<Customer>
+
     fun search(query: String, pageable: Pageable): Page<Customer>
+
     fun softDelete(id: UUID)
 
     fun saveNote(note: CustomerNote): CustomerNote
+
     fun findNoteById(noteId: UUID): CustomerNote?
+
     fun findNotesByCustomerId(customerId: UUID): List<CustomerNote>
+
     fun deleteNote(noteId: UUID)
 
     fun saveEvent(event: CustomerEvent): CustomerEvent
+
     fun findEventById(eventId: UUID): CustomerEvent?
+
     fun findEventsByCustomerId(customerId: UUID): List<CustomerEvent>
+
     fun deleteEvent(eventId: UUID)
 
     fun findByIds(ids: Set<UUID>): List<Customer>

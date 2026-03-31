@@ -17,16 +17,12 @@ class RefreshTokenJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "user_id", nullable = false)
     var userId: UUID = UUID.randomUUID(),
-
     @Column(name = "token_hash", nullable = false)
     var tokenHash: String = "",
-
     @Column(name = "expires_at", nullable = false)
     var expiresAt: LocalDateTime = LocalDateTime.now(),
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null

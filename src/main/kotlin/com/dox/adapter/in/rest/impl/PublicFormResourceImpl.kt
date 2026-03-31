@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController
 class PublicFormResourceImpl(
     private val formLinkUseCase: FormLinkUseCase
 ) : PublicFormResource {
-
     override fun getForm(token: String): ResponseEntity<PublicFormResponse> {
         val data = formLinkUseCase.resolvePublicForm(token)
         return responseEntity(

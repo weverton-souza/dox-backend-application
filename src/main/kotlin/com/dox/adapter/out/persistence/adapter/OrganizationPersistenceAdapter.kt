@@ -16,7 +16,6 @@ class OrganizationPersistenceAdapter(
     private val organizationJpaRepository: OrganizationJpaRepository,
     private val memberJpaRepository: OrganizationMemberJpaRepository
 ) : OrganizationPersistencePort {
-
     override fun save(organization: Organization): Organization {
         val entity = OrganizationJpaEntity().apply {
             id = organization.id

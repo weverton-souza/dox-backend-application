@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class PlanningResponseParser : AiPlanningParserPort {
-
     private val log = LoggerFactory.getLogger(javaClass)
     private val objectMapper = jacksonObjectMapper()
 

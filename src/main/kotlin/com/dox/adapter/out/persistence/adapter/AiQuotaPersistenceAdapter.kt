@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 class AiQuotaPersistenceAdapter(
     private val aiQuotaJpaRepository: AiQuotaJpaRepository
 ) : AiQuotaPort {
-
     override fun findQuota(): AiQuota? =
         aiQuotaJpaRepository.findFirstByOrderByCreatedAtAsc()?.toDomain()
 

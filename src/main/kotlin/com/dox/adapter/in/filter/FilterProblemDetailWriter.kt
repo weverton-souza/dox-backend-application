@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse
 import java.time.Instant
 
 object FilterProblemDetailWriter {
-
     private val objectMapper = jacksonObjectMapper()
 
     fun write(response: HttpServletResponse, status: Int, type: String, title: String, detail: String) {

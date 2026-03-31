@@ -19,27 +19,20 @@ class FormVersionJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "form_id", nullable = false)
     var formId: UUID = UUID.randomUUID(),
-
     @Column(name = "version", nullable = false)
     var version: Int = 1,
-
     @Column(name = "title", nullable = false)
     var title: String = "",
-
     @Column(name = "description")
     var description: String? = null,
-
     @Type(JsonType::class)
     @Column(name = "fields", columnDefinition = "jsonb")
     var fields: List<Map<String, Any?>> = emptyList(),
-
     @Type(JsonType::class)
     @Column(name = "field_mappings", columnDefinition = "jsonb")
     var fieldMappings: Map<String, Any?> = emptyMap(),
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null

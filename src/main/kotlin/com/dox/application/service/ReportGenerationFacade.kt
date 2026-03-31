@@ -24,7 +24,6 @@ class ReportGenerationFacade(
     private val fullReportGenerationService: FullReportGenerationService,
     private val aiUsageService: AiUsageService
 ) : ReportGenerationUseCase {
-
     override fun generateSection(command: GenerateSectionCommand): AiGenerationResult =
         aiGenerationService.generateSection(command)
 

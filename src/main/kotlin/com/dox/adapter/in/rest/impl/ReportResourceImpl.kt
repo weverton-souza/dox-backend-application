@@ -21,7 +21,6 @@ import java.util.UUID
 class ReportResourceImpl(
     private val reportUseCase: ReportUseCase
 ) : ReportResource {
-
     override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<ReportResponse>> =
         responseEntity(reportUseCase.findAll(retrievePageableParameter(parameters)).map { it.toResponse() })
 
@@ -82,6 +81,13 @@ class ReportResourceImpl(
     )
 
     private fun ReportVersion.toResponse() = ReportVersionResponse(
-        id, reportId, status, description, customerName, blocks, type, createdAt
+        id,
+        reportId,
+        status,
+        description,
+        customerName,
+        blocks,
+        type,
+        createdAt
     )
 }

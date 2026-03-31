@@ -25,7 +25,6 @@ class AiUsageService(
     private val aiGenerationSourcePort: AiGenerationSourcePersistencePort,
     private val aiConfigPort: AiConfigPort
 ) {
-
     fun getUsageSummary(command: GetAiUsageCommand): AiUsageSummary {
         val userId = ContextHolder.getUserIdOrThrow()
         val quota = aiQuotaPort.findQuota()

@@ -20,30 +20,22 @@ class ReportTemplateJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "name", nullable = false)
     var name: String = "",
-
     @Column(name = "description")
     var description: String? = null,
-
     @Type(JsonType::class)
     @Column(name = "blocks", columnDefinition = "jsonb")
     var blocks: List<Map<String, Any?>> = emptyList(),
-
     @Column(name = "is_default")
     var isDefault: Boolean = false,
-
     @Column(name = "is_locked")
     var isLocked: Boolean = false,
-
     @Column(name = "is_master")
     var isMaster: Boolean = false,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

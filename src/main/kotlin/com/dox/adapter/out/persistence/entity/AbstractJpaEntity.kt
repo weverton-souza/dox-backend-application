@@ -18,15 +18,12 @@ abstract class AbstractJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     open var id: UUID = UUID.randomUUID(),
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     open var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     open var updatedAt: LocalDateTime? = null,
-
     @Column(name = "deleted")
     open var deleted: Boolean = false
 )

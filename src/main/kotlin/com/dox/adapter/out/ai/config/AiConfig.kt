@@ -15,9 +15,13 @@ class AiConfig : AiConfigPort {
     var cost: CostConfig = CostConfig()
 
     override fun isEnabled(): Boolean = enabled
+
     override fun defaultModel(): String = defaultModel
+
     override fun concurrencyLimit(): Int = maxConcurrentPerTenant
+
     override fun regenerationLimit(): Int = maxRegenerationsPerReport
+
     override fun costConfig(): AiCostConfig = AiCostConfig(
         sonnetInputPerMillion = cost.sonnetInputPerMillion,
         sonnetOutputPerMillion = cost.sonnetOutputPerMillion,

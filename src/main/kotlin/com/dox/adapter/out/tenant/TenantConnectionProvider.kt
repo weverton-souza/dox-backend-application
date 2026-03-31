@@ -12,7 +12,6 @@ import javax.sql.DataSource
 class TenantConnectionProvider(
     private val dataSource: DataSource
 ) : MultiTenantConnectionProvider<String>, HibernatePropertiesCustomizer {
-
     override fun getAnyConnection(): Connection = dataSource.connection
 
     override fun releaseAnyConnection(connection: Connection) = connection.close()

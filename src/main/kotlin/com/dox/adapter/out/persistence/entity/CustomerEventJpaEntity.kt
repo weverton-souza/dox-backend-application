@@ -10,19 +10,14 @@ import java.util.UUID
 @Table(name = "customer_events")
 class CustomerEventJpaEntity(
     id: UUID = UUID.randomUUID(),
-
     @Column(name = "customer_id", nullable = false)
     var customerId: UUID = UUID.randomUUID(),
-
     @Column(name = "type", nullable = false)
     var type: String = "",
-
     @Column(name = "title", nullable = false)
     var title: String = "",
-
     @Column(name = "description", columnDefinition = "TEXT")
     var description: String? = null,
-
     @Column(name = "date", nullable = false)
     var date: LocalDateTime = LocalDateTime.now()
 ) : AbstractJpaEntity(id = id)

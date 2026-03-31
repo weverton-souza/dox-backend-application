@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query
 import java.util.UUID
 
 interface CustomerJpaRepository : JpaRepository<CustomerJpaEntity, UUID> {
-
     @Query(
         "SELECT c FROM CustomerJpaEntity c WHERE " +
             "LOWER(CAST(function('jsonb_extract_path_text', c.data, 'name') AS string)) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

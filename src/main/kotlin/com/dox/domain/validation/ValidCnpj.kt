@@ -16,7 +16,6 @@ annotation class ValidCnpj(
 )
 
 class CnpjValidator : ConstraintValidator<ValidCnpj, String> {
-
     override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
         if (value.isNullOrBlank()) return true
         return isValidCnpj(value)

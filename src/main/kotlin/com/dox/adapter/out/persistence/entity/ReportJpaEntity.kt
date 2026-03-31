@@ -16,22 +16,16 @@ class ReportJpaEntity(
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: ReportStatus = ReportStatus.RASCUNHO,
-
     @Column(name = "customer_name")
     var customerName: String? = null,
-
     @Column(name = "customer_id")
     var customerId: UUID? = null,
-
     @Column(name = "form_response_id")
     var formResponseId: UUID? = null,
-
     @Column(name = "template_id")
     var templateId: UUID? = null,
-
     @Column(name = "is_structure_locked")
     var isStructureLocked: Boolean = false,
-
     @Type(JsonType::class)
     @Column(name = "blocks", columnDefinition = "jsonb")
     var blocks: List<Map<String, Any?>> = emptyList()

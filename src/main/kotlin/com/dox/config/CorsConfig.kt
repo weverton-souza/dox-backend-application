@@ -12,7 +12,6 @@ class CorsConfig(
     @param:Value("\${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}")
     private val allowedOriginsRaw: String
 ) {
-
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {

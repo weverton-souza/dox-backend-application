@@ -6,10 +6,12 @@ import com.dox.adapter.out.persistence.repository.ReportJpaRepository
 import com.dox.adapter.out.persistence.repository.ReportVersionJpaRepository
 import com.dox.application.port.output.ReportPersistencePort
 import com.dox.domain.model.Report
-import com.dox.extensions.softDeleteById
 import com.dox.domain.model.ReportVersion
+import com.dox.extensions.softDeleteById
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import java.util.UUID
 
@@ -18,7 +20,6 @@ class ReportPersistenceAdapter(
     private val reportJpaRepository: ReportJpaRepository,
     private val versionJpaRepository: ReportVersionJpaRepository
 ) : ReportPersistencePort {
-
     override fun save(report: Report): Report {
         val entity = reportJpaRepository.findById(report.id).orElse(null)
             ?: ReportJpaEntity().apply { id = report.id }
@@ -36,7 +37,9 @@ class ReportPersistenceAdapter(
         reportJpaRepository.findById(id).orElse(null)?.toDomain()
 
     override fun findAll(pageable: Pageable): Page<Report> =
-        reportJpaRepository.findAll(pageable).map { it.toDomain() }
+        reportJpaRepository.findAll(
+            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt"))
+        ).map { it.toDomain() }
 
     override fun findByCustomerId(customerId: UUID): List<Report> =
         reportJpaRepository.findByCustomerId(customerId).map { it.toDomain() }
@@ -79,8 +82,13 @@ class ReportPersistenceAdapter(
     )
 
     private fun ReportVersionJpaEntity.toDomain() = ReportVersion(
-        id = id, reportId = reportId, status = status,
-        description = description, customerName = customerName,
-        blocks = blocks, type = type, createdAt = createdAt
+        id = id,
+        reportId = reportId,
+        status = status,
+        description = description,
+        customerName = customerName,
+        blocks = blocks,
+        type = type,
+        createdAt = createdAt
     )
 }

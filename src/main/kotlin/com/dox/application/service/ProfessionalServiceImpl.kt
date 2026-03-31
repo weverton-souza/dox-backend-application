@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional
 class ProfessionalServiceImpl(
     private val persistencePort: ProfessionalSettingsPersistencePort
 ) : ProfessionalUseCase {
-
     override fun get(): ProfessionalSettings =
         persistencePort.find() ?: ProfessionalSettings()
 

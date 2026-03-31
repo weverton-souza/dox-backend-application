@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class OpenApiConfig {
-
     @Bean
     fun customOpenAPI(): OpenAPI {
         val schemeName = "bearerAuth"

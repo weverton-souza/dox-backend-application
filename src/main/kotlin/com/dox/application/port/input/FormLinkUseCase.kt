@@ -31,9 +31,14 @@ data class FormLinkWithToken(
 
 interface FormLinkUseCase {
     fun createFormLink(command: CreateFormLinkCommand): FormLinkWithToken
+
     fun findFormLinksByTenant(): List<FormLinkWithToken>
+
     fun findFormLinksByCustomer(customerId: UUID): List<FormLinkWithToken>
+
     fun revokeFormLink(id: UUID)
+
     fun resolvePublicForm(token: String): PublicFormData
+
     fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse
 }

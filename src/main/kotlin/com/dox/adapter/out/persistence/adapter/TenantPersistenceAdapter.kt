@@ -11,7 +11,6 @@ import java.util.UUID
 class TenantPersistenceAdapter(
     private val tenantJpaRepository: TenantJpaRepository
 ) : TenantPersistencePort {
-
     override fun save(tenant: Tenant): Tenant {
         val entity = TenantJpaEntity().apply {
             id = tenant.id

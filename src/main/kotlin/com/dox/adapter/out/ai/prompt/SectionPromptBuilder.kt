@@ -4,13 +4,13 @@ import com.dox.application.port.input.ComputedChartData
 import com.dox.application.port.input.ComputedTableData
 import com.dox.application.port.input.PreviousSectionContext
 import com.dox.application.port.input.QuantitativeDataPayload
+import com.dox.application.port.output.AiInstructionPort
+import com.dox.application.port.output.AiSectionPromptPort
+import com.dox.domain.enum.Vertical
 import com.dox.domain.model.Customer
 import com.dox.domain.model.FormResponse
 import com.dox.domain.model.ProfessionalSettings
 import com.dox.domain.model.ReportTemplate
-import com.dox.application.port.output.AiInstructionPort
-import com.dox.application.port.output.AiSectionPromptPort
-import com.dox.domain.enum.Vertical
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -19,7 +19,6 @@ class SectionPromptBuilder(
     private val promptSanitizer: PromptSanitizer,
     private val aiInstructionPort: AiInstructionPort
 ) : AiSectionPromptPort {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
@@ -60,7 +59,9 @@ class SectionPromptBuilder(
                     val label = "${response.customerName ?: "Formulário ${index + 1}"} ($date)"
                     parts.add(buildFormResponseSection(response, label))
                 }
-                parts.add("**IMPORTANTE: Quando houver informações conflitantes entre formulários, priorize os dados do formulário mais recente.**")
+                parts.add(
+                    "**IMPORTANTE: Quando houver informações conflitantes entre formulários, priorize os dados do formulário mais recente.**"
+                )
             }
         }
         professional?.let { parts.add(buildProfessionalSection(it)) }
@@ -82,7 +83,11 @@ class SectionPromptBuilder(
         val basePrompt = if (dbInstruction != null) {
             dbInstruction.replace("{{SECTION_TYPE}}", sectionType)
         } else {
-            """Com base nos dados acima, elabore a seção "$sectionType" do laudo. Use APENAS os dados das respostas do formulário e dados quantitativos fornecidos acima para compor o texto. Cada afirmação deve ter fundamentação direta nos dados disponíveis. Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação."""
+            "Com base nos dados acima, elabore a seção \"$sectionType\" do laudo. " +
+                "Use APENAS os dados das respostas do formulário e dados quantitativos fornecidos acima para compor o texto. " +
+                "Cada afirmação deve ter fundamentação direta nos dados disponíveis. " +
+                "Se não houver dados suficientes para alguma parte da seção, indique isso claramente no texto ao invés de inferir ou inventar informações. " +
+                "Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação."
         }
         return appendProfessionalInstruction(basePrompt, instruction)
     }
@@ -150,7 +155,7 @@ Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos d
             |${if (template.description != null) promptSanitizer.sanitize(template.description) else ""}
             |Seções esperadas:
             |$blocksDescription
-        """.trimMargin()
+            """.trimMargin()
     }
 
     private fun buildCustomerSection(customer: Customer): String {
@@ -164,7 +169,7 @@ Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos d
         return """
             |## Dados do paciente/cliente
             |$fields
-        """.trimMargin()
+            """.trimMargin()
     }
 
     private fun buildFormResponseSection(formResponse: FormResponse): String =
@@ -184,7 +189,7 @@ Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos d
         return """
             |$title
             |$answers
-        """.trimMargin()
+            """.trimMargin()
     }
 
     private fun buildProfessionalSection(professional: ProfessionalSettings): String =

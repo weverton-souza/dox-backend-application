@@ -5,10 +5,9 @@ import com.dox.adapter.`in`.rest.dto.auth.LoginRequest
 import com.dox.adapter.`in`.rest.dto.auth.RefreshRequest
 import com.dox.adapter.`in`.rest.dto.auth.RegisterRequest
 import com.dox.adapter.`in`.rest.dto.auth.SwitchTenantRequest
-import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,18 +16,23 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Tag(name = "Autenticação", description = "Registro, login, refresh e switch de tenant")
 @RequestMapping("/auth")
 interface AuthResource : BaseResource {
-
     @Operation(summary = "Registrar novo usuário", security = [])
     @PostMapping("/register")
-    fun register(@Valid @RequestBody request: RegisterRequest): ResponseEntity<AuthResponse>
+    fun register(
+        @Valid @RequestBody request: RegisterRequest
+    ): ResponseEntity<AuthResponse>
 
     @Operation(summary = "Login com email e senha", security = [])
     @PostMapping("/login")
-    fun login(@Valid @RequestBody request: LoginRequest): ResponseEntity<AuthResponse>
+    fun login(
+        @Valid @RequestBody request: LoginRequest
+    ): ResponseEntity<AuthResponse>
 
     @Operation(summary = "Renovar tokens", security = [])
     @PostMapping("/refresh")
-    fun refresh(@Valid @RequestBody request: RefreshRequest): ResponseEntity<AuthResponse>
+    fun refresh(
+        @Valid @RequestBody request: RefreshRequest
+    ): ResponseEntity<AuthResponse>
 
     @Operation(summary = "Logout (revoga refresh tokens)")
     @PostMapping("/logout")
@@ -36,5 +40,7 @@ interface AuthResource : BaseResource {
 
     @Operation(summary = "Trocar de workspace/tenant")
     @PostMapping("/switch-tenant")
-    fun switchTenant(@Valid @RequestBody request: SwitchTenantRequest): ResponseEntity<AuthResponse>
+    fun switchTenant(
+        @Valid @RequestBody request: SwitchTenantRequest
+    ): ResponseEntity<AuthResponse>
 }

@@ -97,7 +97,6 @@ data class AiStatus(
 )
 
 interface ReportGenerationUseCase {
-
     fun generateSection(command: GenerateSectionCommand): AiGenerationResult
 
     fun regenerateSection(command: RegenerateSectionCommand): AiGenerationResult

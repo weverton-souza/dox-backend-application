@@ -20,39 +20,28 @@ class CustomerFileJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "customer_id", nullable = false)
     var customerId: UUID = UUID.randomUUID(),
-
     @Column(name = "file_name", nullable = false)
     var fileName: String = "",
-
     @Column(name = "file_type")
     var fileType: String? = null,
-
     @Column(name = "category")
     var category: String? = null,
-
     @Column(name = "s3_key")
     var s3Key: String? = null,
-
     @Column(name = "s3_url")
     var s3Url: String? = null,
-
     @Column(name = "file_size_bytes")
     var fileSizeBytes: Long? = null,
-
     @Column(name = "uploaded_by")
     var uploadedBy: UUID? = null,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null,
-
     @Column(name = "deleted", nullable = false)
     var deleted: Boolean = false
 )

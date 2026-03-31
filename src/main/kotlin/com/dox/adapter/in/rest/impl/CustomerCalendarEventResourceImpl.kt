@@ -11,7 +11,6 @@ import java.time.OffsetDateTime
 class CustomerCalendarEventResourceImpl(
     private val customerUseCase: CustomerUseCase
 ) : CustomerCalendarEventResource {
-
     override fun findByDateRange(from: String, to: String): ResponseEntity<List<CustomerCalendarEventResponse>> {
         val fromDate = OffsetDateTime.parse(from).toLocalDateTime()
         val toDate = OffsetDateTime.parse(to).toLocalDateTime()

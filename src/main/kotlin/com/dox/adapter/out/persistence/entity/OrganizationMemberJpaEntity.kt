@@ -20,17 +20,13 @@ class OrganizationMemberJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "organization_id", nullable = false)
     var organizationId: UUID = UUID.randomUUID(),
-
     @Column(name = "user_id", nullable = false)
     var userId: UUID = UUID.randomUUID(),
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     var role: MemberRole = MemberRole.MEMBER,
-
     @CreatedDate
     @Column(name = "joined_at", updatable = false)
     var joinedAt: LocalDateTime? = null
