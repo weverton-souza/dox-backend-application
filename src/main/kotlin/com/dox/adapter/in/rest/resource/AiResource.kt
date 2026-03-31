@@ -7,15 +7,15 @@ import com.dox.adapter.`in`.rest.dto.ai.AiUsageDetailResponse
 import com.dox.adapter.`in`.rest.dto.ai.AiUsageSummaryResponse
 import com.dox.adapter.`in`.rest.dto.ai.GenerateFullReportRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
+import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
+import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.RegenerationInfoResponse
 import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
 import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
-import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
-import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
-import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -28,7 +28,6 @@ import java.util.UUID
 
 @Tag(name = "IA", description = "Geração de laudos por IA e controle de consumo")
 interface AiResource : BaseResource {
-
     @Operation(summary = "Gerar seção do laudo com IA")
     @PostMapping("/reports/{id}/generate-section")
     fun generateSection(

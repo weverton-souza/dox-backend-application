@@ -20,38 +20,28 @@ class ScoreTableTemplateJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "name", nullable = false)
     var name: String = "",
-
     @Column(name = "description")
     var description: String? = null,
-
     @Column(name = "instrument_name")
     var instrumentName: String? = null,
-
     @Column(name = "category")
     var category: String? = null,
-
     @Type(JsonType::class)
     @Column(name = "columns", columnDefinition = "jsonb")
     var columns: List<Map<String, Any?>> = emptyList(),
-
     @Type(JsonType::class)
     @Column(name = "rows", columnDefinition = "jsonb")
     var rows: List<Map<String, Any?>> = emptyList(),
-
     @Type(JsonType::class)
     @Column(name = "footnote", columnDefinition = "jsonb")
     var footnote: List<Map<String, Any?>>? = null,
-
     @Column(name = "is_default")
     var isDefault: Boolean = false,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

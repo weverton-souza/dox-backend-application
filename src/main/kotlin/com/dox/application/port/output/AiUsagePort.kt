@@ -5,7 +5,6 @@ import com.dox.domain.model.TokenSummary
 import java.util.UUID
 
 interface AiUsagePort {
-
     fun save(usage: AiUsage): AiUsage
 
     fun countByProfessionalAndMonth(professionalId: UUID, month: Int, year: Int): Int

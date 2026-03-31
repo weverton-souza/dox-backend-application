@@ -6,6 +6,8 @@ import java.util.UUID
 
 interface OrganizationMemberJpaRepository : JpaRepository<OrganizationMemberJpaEntity, UUID> {
     fun findByUserId(userId: UUID): List<OrganizationMemberJpaEntity>
+
     fun findByOrganizationId(organizationId: UUID): List<OrganizationMemberJpaEntity>
+
     fun existsByOrganizationIdAndUserId(organizationId: UUID, userId: UUID): Boolean
 }

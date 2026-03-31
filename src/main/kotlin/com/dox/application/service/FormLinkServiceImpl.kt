@@ -31,7 +31,6 @@ class FormLinkServiceImpl(
     private val customerPersistencePort: CustomerPersistencePort,
     private val authTokenPort: AuthTokenPort
 ) : FormLinkUseCase {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Transactional
@@ -151,5 +150,4 @@ class FormLinkServiceImpl(
 
         return formLink
     }
-
 }

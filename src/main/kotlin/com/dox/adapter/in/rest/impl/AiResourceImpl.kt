@@ -10,14 +10,14 @@ import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.GenerateSectionResponse
 import com.dox.adapter.`in`.rest.dto.ai.RegenerateSectionRequest
 import com.dox.adapter.`in`.rest.dto.ai.RegenerationInfoResponse
+import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
+import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
 import com.dox.adapter.`in`.rest.resource.AiResource
 import com.dox.application.port.input.ComputedChartData
 import com.dox.application.port.input.ComputedChartSeries
 import com.dox.application.port.input.ComputedTableData
 import com.dox.application.port.input.ComputedTableRow
-import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
-import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
 import com.dox.application.port.input.GenerateFullReportCommand
 import com.dox.application.port.input.GenerateSectionCommand
 import com.dox.application.port.input.GetAiUsageCommand
@@ -43,7 +43,6 @@ class AiResourceImpl(
     private val reportGenerationUseCase: ReportGenerationUseCase,
     private val objectMapper: ObjectMapper
 ) : AiResource {
-
     private val log = LoggerFactory.getLogger(javaClass)
     private val sseExecutor = Executors.newCachedThreadPool()
 
@@ -56,12 +55,21 @@ class AiResourceImpl(
         val quantitativeData = request.quantitativeData?.let { qd ->
             QuantitativeDataPayload(
                 tables = qd.tables.map { t ->
-                    ComputedTableData(t.blockId, t.title, t.category, t.dataStatus,
-                        t.rows.map { r -> ComputedTableRow(r.label, r.values) })
+                    ComputedTableData(
+                        t.blockId,
+                        t.title,
+                        t.category,
+                        t.dataStatus,
+                        t.rows.map { r -> ComputedTableRow(r.label, r.values) }
+                    )
                 },
                 charts = qd.charts.map { c ->
-                    ComputedChartData(c.blockId, c.title, c.dataStatus,
-                        c.series.map { s -> ComputedChartSeries(s.label, s.values) })
+                    ComputedChartData(
+                        c.blockId,
+                        c.title,
+                        c.dataStatus,
+                        c.series.map { s -> ComputedChartSeries(s.label, s.values) }
+                    )
                 }
             )
         }
@@ -114,7 +122,8 @@ class AiResourceImpl(
                             .name("error")
                             .data(objectMapper.writeValueAsString(mapOf("message" to (e.message ?: "Erro interno"))))
                     )
-                } catch (_: Exception) {}
+                } catch (_: Exception) {
+                }
                 emitter.completeWithError(e)
             } finally {
                 ContextHolder.clear()
@@ -139,12 +148,21 @@ class AiResourceImpl(
                 quantitativeData = request.quantitativeData?.let { qd ->
                     QuantitativeDataPayload(
                         tables = qd.tables.map { t ->
-                            ComputedTableData(t.blockId, t.title, t.category, t.dataStatus,
-                                t.rows.map { r -> ComputedTableRow(r.label, r.values) })
+                            ComputedTableData(
+                                t.blockId,
+                                t.title,
+                                t.category,
+                                t.dataStatus,
+                                t.rows.map { r -> ComputedTableRow(r.label, r.values) }
+                            )
                         },
                         charts = qd.charts.map { c ->
-                            ComputedChartData(c.blockId, c.title, c.dataStatus,
-                                c.series.map { s -> ComputedChartSeries(s.label, s.values) })
+                            ComputedChartData(
+                                c.blockId,
+                                c.title,
+                                c.dataStatus,
+                                c.series.map { s -> ComputedChartSeries(s.label, s.values) }
+                            )
                         }
                     )
                 }

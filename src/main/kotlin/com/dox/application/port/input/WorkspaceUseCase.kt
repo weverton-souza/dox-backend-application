@@ -28,6 +28,8 @@ data class InviteMemberCommand(
 
 interface WorkspaceUseCase {
     fun listWorkspaces(userId: UUID): List<WorkspaceInfo>
+
     fun createOrganization(command: CreateOrganizationCommand): WorkspaceInfo
+
     fun inviteMember(command: InviteMemberCommand)
 }

@@ -15,7 +15,6 @@ import java.util.UUID
 class TemplateServiceImpl(
     private val templatePersistencePort: TemplatePersistencePort
 ) : TemplateUseCase {
-
     override fun getAllReportTemplates(): List<ReportTemplate> =
         templatePersistencePort.findAllReportTemplates()
 

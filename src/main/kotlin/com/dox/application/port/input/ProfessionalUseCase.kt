@@ -15,5 +15,6 @@ data class UpdateProfessionalCommand(
 
 interface ProfessionalUseCase {
     fun get(): ProfessionalSettings
+
     fun update(command: UpdateProfessionalCommand): ProfessionalSettings
 }

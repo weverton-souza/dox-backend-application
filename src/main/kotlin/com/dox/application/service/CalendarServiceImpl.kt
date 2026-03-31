@@ -16,7 +16,6 @@ class CalendarServiceImpl(
     private val calendarPersistencePort: CalendarPersistencePort,
     private val customerPersistencePort: CustomerPersistencePort
 ) : CalendarUseCase {
-
     @Transactional
     override fun createTag(command: CreateTagCommand): EventTag =
         calendarPersistencePort.saveTag(EventTag(name = command.name, color = command.color))
@@ -53,9 +52,11 @@ class CalendarServiceImpl(
         val events = calendarPersistencePort.findEventsByDateRange(from, to)
         val tags = calendarPersistencePort.findAllTags().associateBy { it.id }
         val customerIds = events.mapNotNull { it.customerId }.toSet()
-        val customerNames = if (customerIds.isNotEmpty())
+        val customerNames = if (customerIds.isNotEmpty()) {
             customerPersistencePort.findByIds(customerIds).associate { it.id to it.displayName() }
-        else emptyMap()
+        } else {
+            emptyMap()
+        }
         return events.map { event ->
             EnrichedCalendarEvent(
                 event = event,

@@ -17,7 +17,6 @@ import java.util.UUID
 class WorkspaceResourceImpl(
     private val workspaceUseCase: WorkspaceUseCase
 ) : WorkspaceResource {
-
     override fun listWorkspaces(): ResponseEntity<List<WorkspaceResponse>> {
         val userId = ContextHolder.getUserIdOrThrow()
         val workspaces = workspaceUseCase.listWorkspaces(userId).map {

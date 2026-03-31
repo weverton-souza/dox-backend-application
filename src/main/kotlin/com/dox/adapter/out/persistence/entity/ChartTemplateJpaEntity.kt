@@ -20,30 +20,22 @@ class ChartTemplateJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "name", nullable = false)
     var name: String = "",
-
     @Column(name = "description")
     var description: String? = null,
-
     @Column(name = "instrument_name")
     var instrumentName: String? = null,
-
     @Column(name = "category")
     var category: String? = null,
-
     @Type(JsonType::class)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: Map<String, Any?> = emptyMap(),
-
     @Column(name = "is_default")
     var isDefault: Boolean = false,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

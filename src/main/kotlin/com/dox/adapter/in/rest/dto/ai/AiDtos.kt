@@ -18,7 +18,6 @@ data class GenerateSectionRequest(
     @field:NotBlank(message = "Tipo da seção é obrigatório")
     @field:Size(max = 100, message = "Tipo da seção deve ter no máximo 100 caracteres")
     val sectionType: String,
-
     val formResponseId: UUID? = null,
     val customerId: UUID? = null,
     val previousSections: List<PreviousSectionInput>? = null,
@@ -64,7 +63,6 @@ data class RegenerateSectionRequest(
     @field:NotBlank(message = "Tipo da seção é obrigatório")
     @field:Size(max = 100, message = "Tipo da seção deve ter no máximo 100 caracteres")
     val sectionType: String,
-
     @field:NotNull(message = "ID da geração é obrigatório")
     val generationId: UUID
 )
@@ -80,16 +78,12 @@ data class AiQuotaResponse(
 data class UpdateAiQuotaRequest(
     @field:Size(max = 100, message = "Tier deve ter no máximo 100 caracteres")
     val aiTier: String? = null,
-
     @field:Size(max = 100, message = "Modelo deve ter no máximo 100 caracteres")
     val model: String? = null,
-
     @field:Min(value = 0, message = "Limite mensal não pode ser negativo")
     val monthlyLimit: Int? = null,
-
     @field:Min(value = 0, message = "Preço de excedente não pode ser negativo")
     val overagePriceCents: Int? = null,
-
     val enabled: Boolean? = null
 )
 
@@ -116,17 +110,13 @@ data class GenerateFullReportRequest(
 data class ReviewTextRequest(
     @field:NotBlank(message = "Texto é obrigatório")
     val text: String,
-
     @field:NotBlank(message = "Ação é obrigatória")
     @field:Size(max = 20, message = "Ação deve ter no máximo 20 caracteres")
     val action: String,
-
     @field:Size(max = 100, message = "Tipo da seção deve ter no máximo 100 caracteres")
     val sectionType: String? = null,
-
     @field:Size(max = 500, message = "Instrução deve ter no máximo 500 caracteres")
     val instruction: String? = null,
-
     val formResponseIds: List<UUID>? = null
 )
 

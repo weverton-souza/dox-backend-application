@@ -21,24 +21,18 @@ class AiInstructionJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "type", nullable = false)
     var type: String = "",
-
     @Enumerated(EnumType.STRING)
     @Column(name = "vertical")
     var vertical: Vertical? = null,
-
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     var content: String = "",
-
     @Column(name = "active", nullable = false)
     var active: Boolean = true,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

@@ -10,6 +10,7 @@ import com.dox.application.port.output.FormPersistencePort
 import com.dox.domain.model.Form
 import com.dox.domain.model.FormResponse
 import com.dox.domain.model.FormVersion
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import java.util.UUID
 
@@ -19,7 +20,6 @@ class FormPersistenceAdapter(
     private val formVersionJpaRepository: FormVersionJpaRepository,
     private val formResponseJpaRepository: FormResponseJpaRepository
 ) : FormPersistencePort {
-
     override fun saveForm(form: Form): Form {
         val entity = formJpaRepository.findById(form.id).orElse(null)
             ?: FormJpaEntity().apply { id = form.id }
@@ -32,7 +32,7 @@ class FormPersistenceAdapter(
         formJpaRepository.findById(id).orElse(null)?.toDomain()
 
     override fun findAllForms(): List<Form> =
-        formJpaRepository.findAll().map { it.toDomain() }
+        formJpaRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt")).map { it.toDomain() }
 
     override fun deleteForm(id: UUID) = formJpaRepository.deleteById(id)
 
@@ -91,11 +91,22 @@ class FormPersistenceAdapter(
     override fun deleteResponse(id: UUID) = formResponseJpaRepository.deleteById(id)
 
     private fun FormJpaEntity.toDomain() = Form(
-        id, linkedTemplateId, currentVersion, createdAt, updatedAt
+        id,
+        linkedTemplateId,
+        currentVersion,
+        createdAt,
+        updatedAt
     )
 
     private fun FormVersionJpaEntity.toDomain() = FormVersion(
-        id, formId, version, title, description, fields, fieldMappings, createdAt
+        id,
+        formId,
+        version,
+        title,
+        description,
+        fields,
+        fieldMappings,
+        createdAt
     )
 
     private fun FormResponseJpaEntity.toDomain() = FormResponse(

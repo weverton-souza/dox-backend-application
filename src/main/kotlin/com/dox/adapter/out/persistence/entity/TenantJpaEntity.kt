@@ -21,21 +21,16 @@ class TenantJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "schema_name", unique = true, nullable = false)
     var schemaName: String = "",
-
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     var type: TenantType = TenantType.PERSONAL,
-
     @Column(name = "name", nullable = false)
     var name: String = "",
-
     @Enumerated(EnumType.STRING)
     @Column(name = "vertical", nullable = false)
     var vertical: Vertical = Vertical.GENERAL,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null

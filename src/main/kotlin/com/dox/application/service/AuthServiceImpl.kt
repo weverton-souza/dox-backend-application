@@ -12,7 +12,6 @@ import com.dox.application.port.output.RefreshTokenPersistencePort
 import com.dox.application.port.output.TenantPersistencePort
 import com.dox.application.port.output.UserPersistencePort
 import com.dox.domain.enum.TenantType
-import com.dox.extensions.isExpired
 import com.dox.domain.exception.AccessDeniedException
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.InvalidCredentialsException
@@ -21,6 +20,7 @@ import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.exception.TokenExpiredException
 import com.dox.domain.model.RefreshToken
 import com.dox.domain.model.User
+import com.dox.extensions.isExpired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
@@ -37,7 +37,6 @@ class AuthServiceImpl(
     private val authTokenPort: AuthTokenPort,
     private val passwordEncoderPort: PasswordEncoderPort
 ) : AuthUseCase {
-
     companion object {
         private const val REFRESH_TOKEN_DURATION_DAYS = 7L
         private const val MIN_PASSWORD_LENGTH = 8

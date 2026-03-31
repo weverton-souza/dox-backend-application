@@ -5,9 +5,9 @@ import com.dox.adapter.`in`.rest.dto.form.FormResponseDto
 import com.dox.adapter.`in`.rest.dto.form.FormResponseRequest
 import com.dox.adapter.`in`.rest.dto.form.FormResponseResponseDto
 import com.dox.adapter.`in`.rest.dto.form.FormVersionResponseDto
-import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,44 +16,58 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import java.util.UUID
 
 @Tag(name = "Formulários", description = "CRUD de formulários e respostas")
 @RequestMapping("/forms")
 interface FormResource : BaseResource {
-
     @Operation(summary = "Listar formulários")
     @GetMapping
     fun findAll(): ResponseEntity<List<FormResponseDto>>
 
     @Operation(summary = "Criar formulário")
     @PostMapping
-    fun create(@Valid @RequestBody request: FormRequest): ResponseEntity<FormResponseDto>
+    fun create(
+        @Valid @RequestBody request: FormRequest
+    ): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Buscar formulário por ID")
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: UUID): ResponseEntity<FormResponseDto>
+    fun findById(
+        @PathVariable id: UUID
+    ): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Atualizar formulário")
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @Valid @RequestBody request: FormRequest): ResponseEntity<FormResponseDto>
+    fun update(
+        @PathVariable id: UUID,
+        @Valid @RequestBody request: FormRequest
+    ): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Excluir formulário")
     @DeleteMapping("/{id}")
-    fun deleteForm(@PathVariable id: UUID): ResponseEntity<Void>
+    fun deleteForm(
+        @PathVariable id: UUID
+    ): ResponseEntity<Void>
 
     @Operation(summary = "Listar versões de um formulário")
     @GetMapping("/{id}/versions")
-    fun getVersions(@PathVariable id: UUID): ResponseEntity<List<FormVersionResponseDto>>
+    fun getVersions(
+        @PathVariable id: UUID
+    ): ResponseEntity<List<FormVersionResponseDto>>
 
     @Operation(summary = "Buscar versão específica")
     @GetMapping("/{id}/versions/{version}")
-    fun getVersion(@PathVariable id: UUID, @PathVariable version: Int): ResponseEntity<FormVersionResponseDto>
+    fun getVersion(
+        @PathVariable id: UUID,
+        @PathVariable version: Int
+    ): ResponseEntity<FormVersionResponseDto>
 
     @Operation(summary = "Listar respostas de um formulário")
     @GetMapping("/{id}/responses")
-    fun getResponses(@PathVariable id: UUID): ResponseEntity<List<FormResponseResponseDto>>
+    fun getResponses(
+        @PathVariable id: UUID
+    ): ResponseEntity<List<FormResponseResponseDto>>
 
     @Operation(summary = "Criar resposta para formulário")
     @PostMapping("/{id}/responses")
@@ -79,9 +93,14 @@ interface FormResource : BaseResource {
 
     @Operation(summary = "Excluir resposta")
     @DeleteMapping("/{id}/responses/{responseId}")
-    fun deleteResponse(@PathVariable id: UUID, @PathVariable responseId: UUID): ResponseEntity<Void>
+    fun deleteResponse(
+        @PathVariable id: UUID,
+        @PathVariable responseId: UUID
+    ): ResponseEntity<Void>
 
     @Operation(summary = "Listar respostas por cliente")
     @GetMapping("/by-customer/{customerId}/responses")
-    fun getResponsesByCustomer(@PathVariable customerId: UUID): ResponseEntity<List<FormResponseResponseDto>>
+    fun getResponsesByCustomer(
+        @PathVariable customerId: UUID
+    ): ResponseEntity<List<FormResponseResponseDto>>
 }

@@ -16,7 +16,6 @@ class CalendarPersistenceAdapter(
     private val tagRepository: EventTagJpaRepository,
     private val eventRepository: CalendarEventJpaRepository
 ) : CalendarPersistencePort {
-
     override fun saveTag(tag: EventTag): EventTag {
         val entity = tagRepository.findById(tag.id).orElse(null)
             ?: EventTagJpaEntity().apply { id = tag.id }

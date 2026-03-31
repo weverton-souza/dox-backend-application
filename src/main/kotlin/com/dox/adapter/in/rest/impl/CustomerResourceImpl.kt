@@ -26,7 +26,6 @@ import java.util.UUID
 class CustomerResourceImpl(
     private val customerUseCase: CustomerUseCase
 ) : CustomerResource {
-
     override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<CustomerResponse>> {
         val search = parameters["search"]?.toString()?.takeIf { it.isNotBlank() }
         val pageable = retrievePageableParameter(parameters)

@@ -11,7 +11,6 @@ import java.util.UUID
 class CustomerFilePersistenceAdapter(
     private val repository: CustomerFileJpaRepository
 ) : CustomerFilePersistencePort {
-
     override fun save(customerFile: CustomerFile): CustomerFile =
         repository.save(customerFile.toEntity()).toDomain()
 

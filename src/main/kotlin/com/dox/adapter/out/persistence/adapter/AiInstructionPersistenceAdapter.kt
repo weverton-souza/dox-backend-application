@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component
 class AiInstructionPersistenceAdapter(
     private val repository: AiInstructionJpaRepository
 ) : AiInstructionPort {
-
     override fun findActiveByTypeAndVertical(type: String, vertical: Vertical): AiInstruction? =
         repository.findFirstByTypeAndVerticalAndActiveTrue(type, vertical)?.toDomain()
 

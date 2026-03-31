@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 class ProfessionalSettingsPersistenceAdapter(
     private val repository: ProfessionalSettingsJpaRepository
 ) : ProfessionalSettingsPersistencePort {
-
     override fun find(): ProfessionalSettings? =
         repository.findFirstByOrderByCreatedAtAsc()?.toDomain()
 

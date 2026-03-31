@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 class UserResourceImpl(
     private val userUseCase: UserUseCase
 ) : UserResource {
-
     override fun getMe(): ResponseEntity<UserResponse> {
         val userId = ContextHolder.getUserIdOrThrow()
         return responseEntity(userUseCase.getMe(userId).toResponse())

@@ -3,8 +3,6 @@ package com.dox.adapter.`in`.rest.impl
 import com.dox.adapter.`in`.rest.dto.calendar.*
 import com.dox.adapter.`in`.rest.resource.CalendarEventResource
 import com.dox.application.port.input.*
-import com.dox.domain.model.CalendarEvent
-import com.dox.domain.model.EventTag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -15,7 +13,6 @@ import java.util.UUID
 class CalendarEventResourceImpl(
     private val calendarUseCase: CalendarUseCase
 ) : CalendarEventResource {
-
     override fun findByDateRange(from: OffsetDateTime, to: OffsetDateTime): ResponseEntity<List<CalendarEventResponse>> {
         val enrichedEvents = calendarUseCase.findEnrichedEventsByDateRange(from, to)
         return responseEntity(enrichedEvents.map { it.toResponse() })

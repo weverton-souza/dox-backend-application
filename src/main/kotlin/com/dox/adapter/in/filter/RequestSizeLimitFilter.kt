@@ -13,7 +13,6 @@ class RequestSizeLimitFilter(
     @param:Value("\${MAX_REQUEST_BODY_BYTES:2097152}")
     private val maxBodyBytes: Long
 ) : OncePerRequestFilter() {
-
     override fun shouldNotFilter(request: HttpServletRequest): Boolean =
         request.method in setOf("GET", "DELETE", "OPTIONS", "HEAD")
 

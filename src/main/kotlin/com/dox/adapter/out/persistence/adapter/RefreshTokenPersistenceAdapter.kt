@@ -13,7 +13,6 @@ import java.util.UUID
 class RefreshTokenPersistenceAdapter(
     private val refreshTokenJpaRepository: RefreshTokenJpaRepository
 ) : RefreshTokenPersistencePort {
-
     override fun save(refreshToken: RefreshToken): RefreshToken {
         val entity = RefreshTokenJpaEntity().apply {
             id = refreshToken.id

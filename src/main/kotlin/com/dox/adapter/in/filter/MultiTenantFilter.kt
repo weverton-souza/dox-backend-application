@@ -10,7 +10,6 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class MultiTenantFilter : OncePerRequestFilter() {
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,

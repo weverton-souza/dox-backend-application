@@ -16,5 +16,6 @@ data class UpdateUserCommand(
 
 interface UserUseCase {
     fun getMe(userId: UUID): UserInfo
+
     fun updateMe(command: UpdateUserCommand): UserInfo
 }

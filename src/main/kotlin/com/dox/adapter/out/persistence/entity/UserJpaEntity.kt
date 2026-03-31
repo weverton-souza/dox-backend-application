@@ -12,13 +12,10 @@ import jakarta.persistence.Table
 class UserJpaEntity(
     @Column(name = "email", unique = true, nullable = false)
     var email: String = "",
-
     @Column(name = "name", nullable = false)
     var name: String = "",
-
     @Column(name = "password_hash", nullable = false)
     var passwordHash: String = "",
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personal_tenant_id")
     var personalTenant: TenantJpaEntity? = null

@@ -31,13 +31,20 @@ data class CreateVersionCommand(
 
 interface ReportUseCase {
     fun create(command: CreateReportCommand): Report
+
     fun findById(id: UUID): Report
+
     fun findAll(pageable: Pageable): Page<Report>
+
     fun findByCustomerId(customerId: UUID): List<Report>
+
     fun update(command: UpdateReportCommand): Report
+
     fun delete(id: UUID)
+
     fun getExportData(id: UUID): Report
 
     fun getVersions(reportId: UUID): List<ReportVersion>
+
     fun createVersion(command: CreateVersionCommand): ReportVersion
 }

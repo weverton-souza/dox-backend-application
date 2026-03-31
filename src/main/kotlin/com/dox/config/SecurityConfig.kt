@@ -4,6 +4,7 @@ import com.dox.adapter.`in`.filter.JwtAuthenticationFilter
 import com.dox.adapter.`in`.filter.MultiTenantFilter
 import com.dox.adapter.`in`.filter.RateLimitFilter
 import com.dox.adapter.`in`.filter.RequestSizeLimitFilter
+import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
@@ -15,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import jakarta.servlet.DispatcherType
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 
 @Configuration
@@ -29,7 +29,6 @@ class SecurityConfig(
     @param:Value("\${SWAGGER_ENABLED:true}")
     private val swaggerEnabled: Boolean
 ) {
-
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
@@ -76,7 +75,9 @@ class SecurityConfig(
         }
     }
 
-    private fun configureAuthorization(auth: org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) {
+    private fun configureAuthorization(
+        auth: org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry,
+    ) {
         auth.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
         auth.requestMatchers(
             "/auth/register",

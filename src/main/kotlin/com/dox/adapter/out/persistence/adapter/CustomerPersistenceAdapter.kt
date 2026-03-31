@@ -8,11 +8,13 @@ import com.dox.adapter.out.persistence.repository.CustomerJpaRepository
 import com.dox.adapter.out.persistence.repository.CustomerNoteJpaRepository
 import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.domain.model.Customer
-import com.dox.extensions.softDeleteById
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
+import com.dox.extensions.softDeleteById
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.UUID
@@ -23,7 +25,6 @@ class CustomerPersistenceAdapter(
     private val noteJpaRepository: CustomerNoteJpaRepository,
     private val eventJpaRepository: CustomerEventJpaRepository
 ) : CustomerPersistencePort {
-
     override fun save(customer: Customer): Customer {
         val entity = customerJpaRepository.findById(customer.id).orElse(null)
             ?: CustomerJpaEntity().apply { id = customer.id }
@@ -35,10 +36,15 @@ class CustomerPersistenceAdapter(
         customerJpaRepository.findById(id).orElse(null)?.toDomain()
 
     override fun findAll(pageable: Pageable): Page<Customer> =
-        customerJpaRepository.findAll(pageable).map { it.toDomain() }
+        customerJpaRepository.findAll(
+            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt"))
+        ).map { it.toDomain() }
 
     override fun search(query: String, pageable: Pageable): Page<Customer> =
-        customerJpaRepository.searchByNameOrCpf(query, pageable).map { it.toDomain() }
+        customerJpaRepository.searchByNameOrCpf(
+            query,
+            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt"))
+        ).map { it.toDomain() }
 
     override fun softDelete(id: UUID) =
         customerJpaRepository.softDeleteById(id, "Cliente")

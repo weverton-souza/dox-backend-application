@@ -12,7 +12,6 @@ import java.util.UUID
 class UserPersistenceAdapter(
     private val userJpaRepository: UserJpaRepository
 ) : UserPersistencePort {
-
     override fun save(user: User): User {
         val entity = userJpaRepository.findByEmail(user.email) ?: UserJpaEntity()
         entity.email = user.email

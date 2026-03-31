@@ -11,15 +11,12 @@ data class RegisterRequest(
     @field:NotBlank(message = "Email é obrigatório")
     @field:Email(message = "Email inválido")
     val email: String,
-
     @field:NotBlank(message = "Nome é obrigatório")
     @field:Size(max = 255, message = "Nome deve ter no máximo 255 caracteres")
     val name: String,
-
     @field:NotBlank(message = "Senha é obrigatória")
     @field:Size(min = 8, max = 72, message = "Senha deve ter entre 8 e 72 caracteres")
     val password: String,
-
     val vertical: Vertical = Vertical.GENERAL
 )
 
@@ -27,7 +24,6 @@ data class LoginRequest(
     @field:NotBlank(message = "Email é obrigatório")
     @field:Email(message = "Email inválido")
     val email: String,
-
     @field:NotBlank(message = "Senha é obrigatória")
     val password: String
 )

@@ -11,7 +11,6 @@ import java.util.UUID
 class FormLinkPersistenceAdapter(
     private val formLinkJpaRepository: FormLinkJpaRepository
 ) : FormLinkPersistencePort {
-
     override fun save(formLink: FormLink): FormLink {
         val entity = formLinkJpaRepository.findById(formLink.id).orElse(null)
             ?: FormLinkJpaEntity().apply { id = formLink.id }
@@ -33,6 +32,13 @@ class FormLinkPersistenceAdapter(
         formLinkJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
 
     private fun FormLinkJpaEntity.toDomain() = FormLink(
-        id, formId, customerId, createdBy, status, expiresAt, createdAt, updatedAt
+        id,
+        formId,
+        customerId,
+        createdBy,
+        status,
+        expiresAt,
+        createdAt,
+        updatedAt
     )
 }

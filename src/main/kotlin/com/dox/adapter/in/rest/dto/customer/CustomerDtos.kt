@@ -35,14 +35,11 @@ data class CustomerEventRequest(
     @field:NotBlank(message = "Tipo é obrigatório")
     @field:Size(max = 100, message = "Tipo deve ter no máximo 100 caracteres")
     val type: String,
-
     @field:NotBlank(message = "Título é obrigatório")
     @field:Size(max = 255, message = "Título deve ter no máximo 255 caracteres")
     val title: String,
-
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
-
     @field:NotNull(message = "Data é obrigatória")
     val date: LocalDateTime
 )

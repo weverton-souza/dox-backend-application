@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam
 @Tag(name = "Eventos do Calendário (Prontuário)", description = "Eventos de prontuário para visualização no calendário")
 @RequestMapping("/events")
 interface CustomerCalendarEventResource : BaseResource {
-
     @Operation(summary = "Listar eventos de prontuário por período")
     @GetMapping
     fun findByDateRange(

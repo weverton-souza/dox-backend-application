@@ -20,7 +20,6 @@ import java.util.UUID
 class TemplateResourceImpl(
     private val templateUseCase: TemplateUseCase
 ) : TemplateResource {
-
     override fun getReportTemplates(): ResponseEntity<List<ReportTemplateResponse>> =
         responseEntity(templateUseCase.getAllReportTemplates().map { it.toResponse() })
 
@@ -47,9 +46,12 @@ class TemplateResourceImpl(
         responseEntity(
             templateUseCase.saveScoreTableTemplate(
                 ScoreTableTemplate(
-                    name = request.name, description = request.description,
-                    instrumentName = request.instrumentName, category = request.category,
-                    columns = request.columns, rows = request.rows
+                    name = request.name,
+                    description = request.description,
+                    instrumentName = request.instrumentName,
+                    category = request.category,
+                    columns = request.columns,
+                    rows = request.rows
                 )
             ).toResponse(),
             HttpStatus.CREATED
@@ -67,8 +69,10 @@ class TemplateResourceImpl(
         responseEntity(
             templateUseCase.saveChartTemplate(
                 ChartTemplate(
-                    name = request.name, description = request.description,
-                    instrumentName = request.instrumentName, category = request.category,
+                    name = request.name,
+                    description = request.description,
+                    instrumentName = request.instrumentName,
+                    category = request.category,
                     data = request.data
                 )
             ).toResponse(),

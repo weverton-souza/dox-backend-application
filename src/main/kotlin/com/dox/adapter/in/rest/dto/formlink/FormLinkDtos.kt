@@ -9,10 +9,8 @@ import java.util.UUID
 data class CreateFormLinkRequest(
     @field:NotNull(message = "ID do formulário é obrigatório")
     val formId: UUID,
-
     @field:NotNull(message = "ID do cliente é obrigatório")
     val customerId: UUID,
-
     @field:Min(value = 1, message = "Expiração deve ser de pelo menos 1 hora")
     val expiresInHours: Long = 72
 )

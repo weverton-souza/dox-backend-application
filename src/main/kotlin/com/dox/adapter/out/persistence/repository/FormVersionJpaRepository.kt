@@ -6,6 +6,8 @@ import java.util.UUID
 
 interface FormVersionJpaRepository : JpaRepository<FormVersionJpaEntity, UUID> {
     fun findByFormId(formId: UUID): List<FormVersionJpaEntity>
+
     fun findByFormIdAndVersion(formId: UUID, version: Int): FormVersionJpaEntity?
+
     fun findByFormIdIn(formIds: Set<UUID>): List<FormVersionJpaEntity>
 }

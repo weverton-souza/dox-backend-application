@@ -15,7 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val authTokenPort: AuthTokenPort
 ) : OncePerRequestFilter() {
-
     companion object {
         private val PUBLIC_PATHS = listOf("/auth/login", "/auth/register", "/auth/refresh", "/public/")
     }

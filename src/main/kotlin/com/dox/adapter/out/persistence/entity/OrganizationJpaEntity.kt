@@ -21,21 +21,16 @@ class OrganizationJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)
     var tenant: TenantJpaEntity = TenantJpaEntity(),
-
     @Column(name = "name", nullable = false)
     var name: String = "",
-
     @Column(name = "description")
     var description: String? = null,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

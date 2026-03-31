@@ -39,7 +39,6 @@ class FullReportGenerationService(
     private val planningParserPort: AiPlanningParserPort,
     private val aiConfigPort: AiConfigPort
 ) {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     fun generateFullReport(
@@ -93,7 +92,8 @@ class FullReportGenerationService(
             val plan = buildGenerationPlan(tenant.vertical, sectionTitles, command, quota.model)
             val planMap = plan.sections.associateBy { it.title }
 
-            log.info("Generation plan: {} sections — full={}, partial={}, skip={}",
+            log.info(
+                "Generation plan: {} sections — full={}, partial={}, skip={}",
                 sectionTitles.size,
                 plan.sections.count { it.status == "full" },
                 plan.sections.count { it.status == "partial" },
@@ -108,10 +108,15 @@ class FullReportGenerationService(
                     skippedCount++
                     val warningMessage = sectionPlan.warning ?: "Dados insuficientes para gerar esta seção"
                     applyBlockContent(command.reportId, block, warningMessage, skipped = true)
-                    onSectionProgress(SectionProgressEvent(
-                        sectionType = sectionType, index = index + 1, total = total,
-                        status = "skipped", message = warningMessage
-                    ))
+                    onSectionProgress(
+                        SectionProgressEvent(
+                            sectionType = sectionType,
+                            index = index + 1,
+                            total = total,
+                            status = "skipped",
+                            message = warningMessage
+                        )
+                    )
                     continue
                 }
 
@@ -128,7 +133,9 @@ class FullReportGenerationService(
                     )
 
                     val (systemPrompt, userPrompt) = aiGenerationService.buildGenerationContext(
-                        command.reportId, sectionCommand, resolvedFormResponseIds
+                        command.reportId,
+                        sectionCommand,
+                        resolvedFormResponseIds
                     )
 
                     val finalUserPrompt = if (sectionPlan.status == "partial" && sectionPlan.warning != null) {
@@ -144,10 +151,15 @@ class FullReportGenerationService(
                         skippedCount++
                         val warningMessage = sanitizedText.removePrefix("[DADOS_INSUFICIENTES]:").trim()
                         applyBlockContent(command.reportId, block, warningMessage, skipped = true)
-                        onSectionProgress(SectionProgressEvent(
-                            sectionType = sectionType, index = index + 1, total = total,
-                            status = "skipped", message = warningMessage
-                        ))
+                        onSectionProgress(
+                            SectionProgressEvent(
+                                sectionType = sectionType,
+                                index = index + 1,
+                                total = total,
+                                status = "skipped",
+                                message = warningMessage
+                            )
+                        )
                         continue
                     }
 
@@ -178,13 +190,18 @@ class FullReportGenerationService(
                     totalCostBrl = totalCostBrl.add(costBrl)
                     completedCount++
 
-                    onSectionProgress(SectionProgressEvent(
-                        sectionType = sectionType, index = index + 1, total = total,
-                        status = "completed", text = cleanedText,
-                        generationId = result.generationId.toString(),
-                        tokensUsed = result.inputTokens + result.outputTokens,
-                        warning = sectionPlan.warning
-                    ))
+                    onSectionProgress(
+                        SectionProgressEvent(
+                            sectionType = sectionType,
+                            index = index + 1,
+                            total = total,
+                            status = "completed",
+                            text = cleanedText,
+                            generationId = result.generationId.toString(),
+                            tokensUsed = result.inputTokens + result.outputTokens,
+                            warning = sectionPlan.warning
+                        )
+                    )
                 } catch (e: Exception) {
                     if (e is BusinessException && e.message?.contains("Plano do Assistente") == true) throw e
 
@@ -199,10 +216,15 @@ class FullReportGenerationService(
                         errorMessage = e.message?.take(500)
                     )
 
-                    onSectionProgress(SectionProgressEvent(
-                        sectionType = sectionType, index = index + 1, total = total,
-                        status = "error", message = e.message?.take(200) ?: "Erro desconhecido"
-                    ))
+                    onSectionProgress(
+                        SectionProgressEvent(
+                            sectionType = sectionType,
+                            index = index + 1,
+                            total = total,
+                            status = "error",
+                            message = e.message?.take(200) ?: "Erro desconhecido"
+                        )
+                    )
                 }
             }
 
@@ -220,15 +242,20 @@ class FullReportGenerationService(
                 aiGenerationSourcePort.saveAll(sources)
             }
 
-            onSectionProgress(SectionProgressEvent(
-                sectionType = "_complete", index = total, total = total, status = "done",
-                message = GenerationCompleteEvent(
-                    completedCount = completedCount,
-                    failedCount = failedCount,
-                    totalTokens = totalTokens,
-                    totalCostBrl = totalCostBrl.setScale(4, RoundingMode.HALF_UP).toPlainString()
-                ).toString()
-            ))
+            onSectionProgress(
+                SectionProgressEvent(
+                    sectionType = "_complete",
+                    index = total,
+                    total = total,
+                    status = "done",
+                    message = GenerationCompleteEvent(
+                        completedCount = completedCount,
+                        failedCount = failedCount,
+                        totalTokens = totalTokens,
+                        totalCostBrl = totalCostBrl.setScale(4, RoundingMode.HALF_UP).toPlainString()
+                    ).toString()
+                )
+            )
         } finally {
             semaphore.release()
         }

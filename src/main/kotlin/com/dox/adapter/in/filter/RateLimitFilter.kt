@@ -25,7 +25,6 @@ class RateLimitFilter(
     @param:Value("\${TRUSTED_PROXIES:}")
     trustedProxiesConfig: String
 ) : OncePerRequestFilter() {
-
     private val trustedProxies: Set<String> = trustedProxiesConfig
         .split(",")
         .map { it.trim() }

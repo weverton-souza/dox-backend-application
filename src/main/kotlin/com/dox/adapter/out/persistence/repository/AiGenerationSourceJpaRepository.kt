@@ -6,5 +6,6 @@ import java.util.UUID
 
 interface AiGenerationSourceJpaRepository : JpaRepository<AiGenerationSourceJpaEntity, UUID> {
     fun findByReportId(reportId: UUID): List<AiGenerationSourceJpaEntity>
+
     fun findByGenerationId(generationId: UUID): List<AiGenerationSourceJpaEntity>
 }

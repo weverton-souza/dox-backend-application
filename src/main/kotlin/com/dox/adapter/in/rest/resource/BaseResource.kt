@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity
     ]
 )
 interface BaseResource {
-
     fun <T> responseEntity(body: T, status: HttpStatus = HttpStatus.OK): ResponseEntity<T> =
         ResponseEntity.status(status).body(body)
 

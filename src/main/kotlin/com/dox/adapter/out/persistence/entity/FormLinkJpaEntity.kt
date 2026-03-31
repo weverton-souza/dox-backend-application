@@ -21,27 +21,20 @@ class FormLinkJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "form_id", nullable = false)
     var formId: UUID = UUID.randomUUID(),
-
     @Column(name = "customer_id", nullable = false)
     var customerId: UUID = UUID.randomUUID(),
-
     @Column(name = "created_by", nullable = false)
     var createdBy: UUID = UUID.randomUUID(),
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
     var status: FormLinkStatus = FormLinkStatus.PENDING,
-
     @Column(name = "expires_at", nullable = false)
     var expiresAt: LocalDateTime = LocalDateTime.now(),
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

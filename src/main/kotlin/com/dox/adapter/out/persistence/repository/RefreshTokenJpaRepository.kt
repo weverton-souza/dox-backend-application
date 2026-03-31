@@ -7,6 +7,8 @@ import java.util.UUID
 
 interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenJpaEntity, UUID> {
     fun findByTokenHash(tokenHash: String): RefreshTokenJpaEntity?
+
     fun deleteByUserId(userId: UUID)
+
     fun deleteByExpiresAtBefore(dateTime: LocalDateTime)
 }

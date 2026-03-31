@@ -18,17 +18,13 @@ class FormJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-
     @Column(name = "linked_template_id")
     var linkedTemplateId: UUID? = null,
-
     @Column(name = "current_version", nullable = false)
     var currentVersion: Int = 1,
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
-
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null

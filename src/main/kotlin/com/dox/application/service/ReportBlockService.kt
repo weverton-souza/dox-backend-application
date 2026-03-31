@@ -8,7 +8,6 @@ import java.util.UUID
 class ReportBlockService(
     private val reportPersistencePort: ReportPersistencePort
 ) {
-
     fun extractSectionType(block: Map<String, Any?>): String {
         val data = block["data"] as? Map<*, *> ?: return "Seção"
         val title = data["title"]?.toString()
@@ -54,9 +53,9 @@ class ReportBlockService(
 
         val nextBlock = report.blocks.getOrNull(sectionIndex + 1)
         val nextData = nextBlock?.get("data") as? Map<*, *>
-        val isExistingAiBlock = nextBlock != null
-            && (nextBlock["generatedByAi"] == true || nextBlock["skippedByAi"] == true)
-            && nextData?.get("title")?.toString().isNullOrBlank()
+        val isExistingAiBlock = nextBlock != null &&
+            (nextBlock["generatedByAi"] == true || nextBlock["skippedByAi"] == true) &&
+            nextData?.get("title")?.toString().isNullOrBlank()
 
         if (isExistingAiBlock) {
             val updatedBlocks = report.blocks.mapIndexed { index, block ->
@@ -113,11 +112,13 @@ class ReportBlockService(
     private fun textToSlateNodes(text: String): List<Map<String, Any>> {
         val paragraphs = text.split("\n\n").filter { it.isNotBlank() }
         if (paragraphs.isEmpty()) {
-            return listOf(mapOf(
-                "id" to generateSlateId(),
-                "type" to "p",
-                "children" to listOf(mapOf("text" to ""))
-            ))
+            return listOf(
+                mapOf(
+                    "id" to generateSlateId(),
+                    "type" to "p",
+                    "children" to listOf(mapOf("text" to ""))
+                )
+            )
         }
         return paragraphs.map { paragraph ->
             mapOf(

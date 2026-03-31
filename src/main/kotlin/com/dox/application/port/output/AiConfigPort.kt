@@ -10,8 +10,12 @@ data class AiCostConfig(
 
 interface AiConfigPort {
     fun isEnabled(): Boolean
+
     fun defaultModel(): String
+
     fun concurrencyLimit(): Int
+
     fun regenerationLimit(): Int
+
     fun costConfig(): AiCostConfig
 }

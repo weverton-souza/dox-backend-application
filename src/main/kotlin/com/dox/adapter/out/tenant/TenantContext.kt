@@ -13,8 +13,11 @@ object TenantContext {
     fun clear() = currentTenant.remove()
 
     fun convertToSchemaName(tenantId: String): String =
-        if (tenantId == TenancyConstant.PUBLIC_SCHEMA) TenancyConstant.PUBLIC_SCHEMA
-        else "_${tenantId.replace("-", "")}"
+        if (tenantId == TenancyConstant.PUBLIC_SCHEMA) {
+            TenancyConstant.PUBLIC_SCHEMA
+        } else {
+            "_${tenantId.replace("-", "")}"
+        }
 
     fun <T> withTenantContext(tenantId: UUID, block: () -> T): T {
         setTenantId(convertToSchemaName(tenantId.toString()))

@@ -17,7 +17,6 @@ import javax.crypto.SecretKey
 class JwtAuthTokenAdapter(
     private val securityProperties: SecurityProperties
 ) : AuthTokenPort {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     private val key: SecretKey by lazy {
