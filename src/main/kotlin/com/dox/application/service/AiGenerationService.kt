@@ -218,8 +218,7 @@ class AiGenerationService(
 
         val resolvedIds = formResponseIds
             ?: command.formResponseIds
-            ?: listOfNotNull(command.formResponseId)
-            ?: listOfNotNull(report.formResponseId)
+            ?: emptyList()
 
         val formResponses = if (resolvedIds.isNotEmpty()) {
             formPersistencePort.findResponsesByIds(resolvedIds)
@@ -227,27 +226,32 @@ class AiGenerationService(
             emptyList()
         }
 
-        if (formResponses.isEmpty()) {
-            throw BusinessException("Nenhum questionário respondido vinculado a este relatório. Vincule um questionário antes de gerar com o Assistente.")
+        val hasQuantitativeData = !command.quantitativeContext.isNullOrBlank() ||
+            (command.quantitativeData?.tables?.any { it.dataStatus != "empty" } == true) ||
+            (command.quantitativeData?.charts?.any { it.dataStatus != "empty" } == true)
+
+        if (formResponses.isEmpty() && !hasQuantitativeData) {
+            throw BusinessException("Nenhum questionário respondido ou dado quantitativo vinculado a este relatório.")
         }
 
-        log.info("AI generation context: formResponseIds={}, totalAnswers={}", resolvedIds, formResponses.sumOf { it.answers.size })
+        log.info("AI generation context: section={}, formResponseIds={}, totalAnswers={}, hasQuantitative={}",
+            command.sectionType, resolvedIds.size, formResponses.sumOf { it.answers.size }, hasQuantitativeData)
 
-        val customer = report.customerId?.let { customerPersistencePort.findById(it) }
+        val customer = if (command.includeCustomerData) report.customerId?.let { customerPersistencePort.findById(it) } else null
         val professional = professionalPersistencePort.find()
-        val template = findLinkedTemplate(formResponses.first().formId)
+        val template = if (formResponses.isNotEmpty()) findLinkedTemplate(formResponses.first().formId) else null
 
         val systemPrompt = systemPromptPort.build(tenant.vertical)
         val contextPrompt = sectionPromptPort.buildContext(
-            customer, formResponses, template, professional, command.quantitativeData
+            customer, formResponses, template, professional, command.quantitativeData, command.quantitativeContext
         )
 
         val userPrompt = if (!command.previousSections.isNullOrEmpty()) {
             contextPrompt + "\n\n" + sectionPromptPort.buildUserPromptWithContext(
-                command.sectionType, command.previousSections, tenant.vertical
+                command.sectionType, command.previousSections, tenant.vertical, command.instruction
             )
         } else {
-            contextPrompt + "\n\n" + sectionPromptPort.buildUserPrompt(command.sectionType, tenant.vertical)
+            contextPrompt + "\n\n" + sectionPromptPort.buildUserPrompt(command.sectionType, tenant.vertical, command.instruction)
         }
 
         return Pair(systemPrompt, userPrompt)

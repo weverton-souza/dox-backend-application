@@ -23,6 +23,7 @@ data class ScoreTableTemplate(
     val category: String? = null,
     val columns: List<Map<String, Any?>> = emptyList(),
     val rows: List<Map<String, Any?>> = emptyList(),
+    val footnote: List<Map<String, Any?>>? = null,
     val isDefault: Boolean = false,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null

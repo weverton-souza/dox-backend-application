@@ -10,6 +10,10 @@ class HtmlSanitizingDeserializer : StringDeserializer() {
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): String? {
         val value = super.deserialize(p, ctxt) ?: return null
-        return Jsoup.clean(value, Safelist.none())
+        val cleaned = Jsoup.clean(value, Safelist.none())
+        return cleaned
+            .replace("&gt;", ">")
+            .replace("&lt;", "<")
+            .replace("&amp;", "&")
     }
 }

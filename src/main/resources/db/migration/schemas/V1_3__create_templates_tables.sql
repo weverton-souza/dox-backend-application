@@ -16,6 +16,7 @@ CREATE TABLE score_table_templates (
     category        VARCHAR(255),
     columns         JSONB     NOT NULL DEFAULT '[]'::JSONB,
     rows            JSONB     NOT NULL DEFAULT '[]'::JSONB,
+    footnote        JSONB,
     is_default      BOOLEAN   NOT NULL DEFAULT FALSE,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW()

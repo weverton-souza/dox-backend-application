@@ -99,11 +99,18 @@ data class AiStatusResponse(
     val model: String?
 )
 
+data class SectionInstructionRequest(
+    val sectionTitle: String,
+    val instruction: String? = null
+)
+
 data class GenerateFullReportRequest(
     val formResponseId: UUID? = null,
     val formResponseIds: List<UUID>? = null,
     val quantitativeData: QuantitativeDataRequest? = null,
-    val selectedSections: List<String>? = null
+    val quantitativeContext: String? = null,
+    val selectedSections: List<SectionInstructionRequest>? = null,
+    val includeCustomerData: Boolean = true
 )
 
 data class ReviewTextRequest(

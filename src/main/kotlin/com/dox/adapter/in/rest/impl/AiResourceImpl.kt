@@ -66,15 +66,22 @@ class AiResourceImpl(
             )
         }
 
-        val resolvedFormResponseIds = request.formResponseIds
-            ?: listOfNotNull(request.formResponseId)
+        val resolvedFormResponseIds = request.formResponseIds ?: emptyList()
+
+        val selectedSectionTitles = request.selectedSections?.map { it.sectionTitle }
+        val sectionInstructions = request.selectedSections
+            ?.filter { !it.instruction.isNullOrBlank() }
+            ?.associate { it.sectionTitle to it.instruction }
+            ?: emptyMap()
 
         val command = GenerateFullReportCommand(
             reportId = id,
-            formResponseId = request.formResponseId,
-            formResponseIds = resolvedFormResponseIds.ifEmpty { null },
+            formResponseIds = resolvedFormResponseIds,
+            includeCustomerData = request.includeCustomerData,
             quantitativeData = quantitativeData,
-            selectedSections = request.selectedSections
+            quantitativeContext = request.quantitativeContext,
+            selectedSections = selectedSectionTitles,
+            sectionInstructions = sectionInstructions
         )
 
         sseExecutor.submit {

@@ -85,7 +85,7 @@ class TemplateResourceImpl(
     )
 
     private fun ScoreTableTemplate.toResponse() = ScoreTableTemplateResponse(
-        id, name, description, instrumentName, category, columns, rows, isDefault, createdAt, updatedAt
+        id, name, description, instrumentName, category, columns, rows, footnote, isDefault, createdAt, updatedAt
     )
 
     private fun ChartTemplate.toResponse() = ChartTemplateResponse(

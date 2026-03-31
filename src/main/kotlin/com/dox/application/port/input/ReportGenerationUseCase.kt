@@ -17,7 +17,10 @@ data class GenerateSectionCommand(
     val formResponseId: UUID? = null,
     val formResponseIds: List<UUID>? = null,
     val previousSections: List<PreviousSectionContext>? = null,
-    val quantitativeData: QuantitativeDataPayload? = null
+    val quantitativeData: QuantitativeDataPayload? = null,
+    val quantitativeContext: String? = null,
+    val instruction: String? = null,
+    val includeCustomerData: Boolean = true
 )
 
 data class RegenerateSectionCommand(
@@ -36,10 +39,12 @@ data class ReviewTextCommand(
 
 data class GenerateFullReportCommand(
     val reportId: UUID,
-    val formResponseId: UUID? = null,
     val formResponseIds: List<UUID>? = null,
     val quantitativeData: QuantitativeDataPayload? = null,
-    val selectedSections: List<String>? = null
+    val quantitativeContext: String? = null,
+    val selectedSections: List<String>? = null,
+    val sectionInstructions: Map<String, String?> = emptyMap(),
+    val includeCustomerData: Boolean = true
 )
 
 data class QuantitativeDataPayload(

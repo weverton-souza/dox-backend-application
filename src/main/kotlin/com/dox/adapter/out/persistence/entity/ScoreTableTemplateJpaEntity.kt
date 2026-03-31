@@ -41,6 +41,10 @@ class ScoreTableTemplateJpaEntity(
     @Column(name = "rows", columnDefinition = "jsonb")
     var rows: List<Map<String, Any?>> = emptyList(),
 
+    @Type(JsonType::class)
+    @Column(name = "footnote", columnDefinition = "jsonb")
+    var footnote: List<Map<String, Any?>>? = null,
+
     @Column(name = "is_default")
     var isDefault: Boolean = false,
 
