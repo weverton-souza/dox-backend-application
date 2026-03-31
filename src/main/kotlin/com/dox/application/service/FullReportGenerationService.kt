@@ -55,9 +55,7 @@ class FullReportGenerationService(
             val report = reportPersistencePort.findById(command.reportId)
                 ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
 
-            val resolvedFormResponseIds = command.formResponseIds?.map { it }
-                ?: listOfNotNull(command.formResponseId)
-                    .ifEmpty { listOfNotNull(report.formResponseId) }
+            val resolvedFormResponseIds = command.formResponseIds ?: emptyList()
 
             val fillableBlocks = report.blocks
                 .filter { block ->
@@ -121,14 +119,16 @@ class FullReportGenerationService(
                     val sectionCommand = GenerateSectionCommand(
                         reportId = command.reportId,
                         sectionType = sectionType,
-                        formResponseId = command.formResponseId,
-                        formResponseIds = resolvedFormResponseIds.ifEmpty { null },
+                        formResponseIds = resolvedFormResponseIds,
                         previousSections = previousSections.toList(),
-                        quantitativeData = command.quantitativeData
+                        quantitativeData = command.quantitativeData,
+                        quantitativeContext = command.quantitativeContext,
+                        instruction = command.sectionInstructions[sectionType],
+                        includeCustomerData = command.includeCustomerData
                     )
 
                     val (systemPrompt, userPrompt) = aiGenerationService.buildGenerationContext(
-                        command.reportId, sectionCommand, resolvedFormResponseIds.ifEmpty { null }
+                        command.reportId, sectionCommand, resolvedFormResponseIds
                     )
 
                     val finalUserPrompt = if (sectionPlan.status == "partial" && sectionPlan.warning != null) {
@@ -151,6 +151,13 @@ class FullReportGenerationService(
                         continue
                     }
 
+                    val insufficientIdx = sanitizedText.indexOf("[DADOS_INSUFICIENTES]")
+                    val cleanedText = if (insufficientIdx >= 0) {
+                        sanitizedText.substring(0, insufficientIdx).trim()
+                    } else {
+                        sanitizedText
+                    }
+
                     val costBrl = aiGenerationService.calculateCost(result)
 
                     aiGenerationService.recordUsage(
@@ -161,10 +168,10 @@ class FullReportGenerationService(
                         costBrl = costBrl
                     )
 
-                    applyBlockContent(command.reportId, block, sanitizedText)
+                    applyBlockContent(command.reportId, block, cleanedText)
 
                     previousSections.add(
-                        PreviousSectionContext(sectionType, summarizeForContext(sectionType, sanitizedText))
+                        PreviousSectionContext(sectionType, summarizeForContext(sectionType, cleanedText))
                     )
 
                     totalTokens += result.inputTokens + result.outputTokens
@@ -173,7 +180,7 @@ class FullReportGenerationService(
 
                     onSectionProgress(SectionProgressEvent(
                         sectionType = sectionType, index = index + 1, total = total,
-                        status = "completed", text = sanitizedText,
+                        status = "completed", text = cleanedText,
                         generationId = result.generationId.toString(),
                         tokensUsed = result.inputTokens + result.outputTokens,
                         warning = sectionPlan.warning
@@ -244,8 +251,8 @@ class FullReportGenerationService(
     ): GenerationPlan {
         try {
             val report = reportPersistencePort.findById(command.reportId) ?: return defaultPlan(sectionTitles)
-            val formResponseId = command.formResponseId ?: report.formResponseId
-            val formResponse = formResponseId?.let { formPersistencePort.findResponseById(it) }
+            val firstFormResponseId = command.formResponseIds?.firstOrNull() ?: report.formResponseId
+            val formResponse = firstFormResponseId?.let { formPersistencePort.findResponseById(it) }
 
             val dataSummary = buildDataSummary(formResponse, command)
             val titlesText = sectionTitles.mapIndexed { i, t -> "${i + 1}. $t" }.joinToString("\n")

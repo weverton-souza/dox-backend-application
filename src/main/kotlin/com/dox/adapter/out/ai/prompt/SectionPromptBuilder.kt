@@ -43,7 +43,8 @@ class SectionPromptBuilder(
         formResponses: List<FormResponse>?,
         template: ReportTemplate?,
         professional: ProfessionalSettings?,
-        quantitativeData: QuantitativeDataPayload?
+        quantitativeData: QuantitativeDataPayload?,
+        quantitativeContext: String?
     ): String {
         val parts = mutableListOf<String>()
 
@@ -63,41 +64,48 @@ class SectionPromptBuilder(
             }
         }
         professional?.let { parts.add(buildProfessionalSection(it)) }
-        quantitativeData?.let {
-            val section = buildQuantitativeDataSection(it)
-            if (section.isNotBlank()) parts.add(section)
+
+        if (!quantitativeContext.isNullOrBlank()) {
+            parts.add("## Dados quantitativos do laudo\n\n${promptSanitizer.sanitize(quantitativeContext)}")
+        } else {
+            quantitativeData?.let {
+                val section = buildQuantitativeDataSection(it)
+                if (section.isNotBlank()) parts.add(section)
+            }
         }
 
         return parts.joinToString("\n\n")
     }
 
-    override fun buildUserPrompt(sectionType: String, vertical: Vertical?): String {
-        val instruction = resolveInstruction("section_prompt", vertical)
-        if (instruction != null) {
-            return instruction.replace("{{SECTION_TYPE}}", sectionType)
+    override fun buildUserPrompt(sectionType: String, vertical: Vertical?, instruction: String?): String {
+        val dbInstruction = resolveInstruction("section_prompt", vertical)
+        val basePrompt = if (dbInstruction != null) {
+            dbInstruction.replace("{{SECTION_TYPE}}", sectionType)
+        } else {
+            """Com base nos dados acima, elabore a seção "$sectionType" do laudo. Use APENAS os dados das respostas do formulário e dados quantitativos fornecidos acima para compor o texto. Cada afirmação deve ter fundamentação direta nos dados disponíveis. Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação."""
         }
-        return """Com base nos dados acima, elabore a seção "$sectionType" do laudo. Use APENAS os dados das respostas do formulário e dados quantitativos fornecidos acima para compor o texto. Cada afirmação deve ter fundamentação direta nos dados disponíveis. Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação."""
+        return appendProfessionalInstruction(basePrompt, instruction)
     }
 
     override fun buildUserPromptWithContext(
         sectionType: String,
         previousSections: List<PreviousSectionContext>,
-        vertical: Vertical?
+        vertical: Vertical?,
+        instruction: String?
     ): String {
-        if (previousSections.isEmpty()) return buildUserPrompt(sectionType, vertical)
+        if (previousSections.isEmpty()) return buildUserPrompt(sectionType, vertical, instruction)
 
         val contextBlock = previousSections.joinToString("\n\n") { prev ->
             "### ${prev.sectionType}\n${prev.summary}"
         }
 
-        val instruction = resolveInstruction("section_prompt_with_context", vertical)
-        if (instruction != null) {
-            return instruction
+        val dbInstruction = resolveInstruction("section_prompt_with_context", vertical)
+        val basePrompt = if (dbInstruction != null) {
+            dbInstruction
                 .replace("{{SECTION_TYPE}}", sectionType)
                 .replace("{{PREVIOUS_SECTIONS}}", contextBlock)
-        }
-
-        return """
+        } else {
+            """
             |## Seções já escritas neste laudo (mantenha coerência e não repita informações)
             |
             |$contextBlock
@@ -105,7 +113,20 @@ class SectionPromptBuilder(
             |---
             |
             |Com base nos dados acima e nas seções já escritas, elabore a seção "$sectionType" do laudo. Use os dados das respostas do formulário e dados quantitativos para compor o texto. Mantenha coerência com as seções anteriores. Cada afirmação deve ter fundamentação direta nos dados disponíveis. Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação.
-        """.trimMargin()
+            """.trimMargin()
+        }
+        return appendProfessionalInstruction(basePrompt, instruction)
+    }
+
+    private fun appendProfessionalInstruction(basePrompt: String, instruction: String?): String {
+        if (instruction.isNullOrBlank()) return basePrompt
+        val sanitized = promptSanitizer.sanitize(instruction)
+        return """$basePrompt
+
+INSTRUÇÃO DO PROFISSIONAL PARA ESTA SEÇÃO:
+$sanitized
+
+Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos dados fornecidos."""
     }
 
     private fun resolveInstruction(type: String, vertical: Vertical?): String? {

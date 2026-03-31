@@ -15,14 +15,16 @@ interface AiSectionPromptPort {
         formResponses: List<FormResponse>?,
         template: ReportTemplate?,
         professional: ProfessionalSettings?,
-        quantitativeData: QuantitativeDataPayload? = null
+        quantitativeData: QuantitativeDataPayload? = null,
+        quantitativeContext: String? = null
     ): String
 
-    fun buildUserPrompt(sectionType: String, vertical: Vertical? = null): String
+    fun buildUserPrompt(sectionType: String, vertical: Vertical? = null, instruction: String? = null): String
 
     fun buildUserPromptWithContext(
         sectionType: String,
         previousSections: List<PreviousSectionContext>,
-        vertical: Vertical? = null
+        vertical: Vertical? = null,
+        instruction: String? = null
     ): String
 }
