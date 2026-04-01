@@ -33,5 +33,5 @@ class TenantJpaEntity(
     var vertical: Vertical = Vertical.GENERAL,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null,
 )

@@ -14,5 +14,5 @@ data class CustomerFile(
     val fileSizeBytes: Long? = null,
     val uploadedBy: UUID? = null,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

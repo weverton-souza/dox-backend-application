@@ -14,7 +14,10 @@ interface ContentLibraryJpaRepository : JpaRepository<ContentLibraryJpaEntity, U
             "OR LOWER(e.tags) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "AND (:type IS NULL OR e.type = :type) ORDER BY e.type, e.title",
     )
-    fun search(query: String, type: String? = null): List<ContentLibraryJpaEntity>
+    fun search(
+        query: String,
+        type: String? = null,
+    ): List<ContentLibraryJpaEntity>
 
     fun findByTypeOrderByTitleAsc(type: String): List<ContentLibraryJpaEntity>
 

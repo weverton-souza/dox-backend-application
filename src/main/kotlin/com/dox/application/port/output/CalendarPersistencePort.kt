@@ -18,7 +18,10 @@ interface CalendarPersistencePort {
 
     fun findEventById(id: UUID): CalendarEvent?
 
-    fun findEventsByDateRange(from: OffsetDateTime, to: OffsetDateTime): List<CalendarEvent>
+    fun findEventsByDateRange(
+        from: OffsetDateTime,
+        to: OffsetDateTime,
+    ): List<CalendarEvent>
 
     fun deleteEvent(id: UUID)
 }

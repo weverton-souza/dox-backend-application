@@ -33,70 +33,70 @@ interface ReportResource : BaseResource {
                 `in` = ParameterIn.QUERY,
                 description = "Número da página (iniciando em 0)",
                 example = "0",
-                required = false
+                required = false,
             ),
             Parameter(
                 name = "pageSize",
                 `in` = ParameterIn.QUERY,
                 description = "Quantidade de itens por página",
                 example = "15",
-                required = false
+                required = false,
             ),
-            Parameter(name = "parameters", `in` = ParameterIn.QUERY, hidden = true)
-        ]
+            Parameter(name = "parameters", `in` = ParameterIn.QUERY, hidden = true),
+        ],
     )
     @GetMapping
     fun findAll(
-        @Parameter(hidden = true) @RequestParam parameters: Map<String, Any>
+        @Parameter(hidden = true) @RequestParam parameters: Map<String, Any>,
     ): ResponseEntity<Page<ReportResponse>>
 
     @Operation(summary = "Criar relatório")
     @PostMapping
     fun create(
-        @Valid @RequestBody request: ReportRequest
+        @Valid @RequestBody request: ReportRequest,
     ): ResponseEntity<ReportResponse>
 
     @Operation(summary = "Buscar relatório por ID")
     @GetMapping("/{id}")
     fun findById(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<ReportResponse>
 
     @Operation(summary = "Atualizar relatório")
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: ReportRequest
+        @Valid @RequestBody request: ReportRequest,
     ): ResponseEntity<ReportResponse>
 
     @Operation(summary = "Excluir relatório (soft delete)")
     @DeleteMapping("/{id}")
     fun delete(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 
     @Operation(summary = "Relatórios de um cliente")
     @GetMapping("/customer/{customerId}")
     fun findByCustomerId(
-        @PathVariable customerId: UUID
+        @PathVariable customerId: UUID,
     ): ResponseEntity<List<ReportResponse>>
 
     @Operation(summary = "Dados do relatório para exportação (somente finalizado)")
     @GetMapping("/{id}/export-data")
     fun getExportData(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<ReportResponse>
 
     @Operation(summary = "Listar versões de um relatório")
     @GetMapping("/{id}/versions")
     fun getVersions(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<List<ReportVersionResponse>>
 
     @Operation(summary = "Criar versão (snapshot) de um relatório")
     @PostMapping("/{id}/versions")
     fun createVersion(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: ReportVersionRequest
+        @Valid @RequestBody request: ReportVersionRequest,
     ): ResponseEntity<ReportVersionResponse>
 }

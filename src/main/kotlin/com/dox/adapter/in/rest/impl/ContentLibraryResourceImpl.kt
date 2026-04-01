@@ -14,14 +14,18 @@ import java.util.UUID
 
 @RestController
 class ContentLibraryResourceImpl(
-    private val contentLibraryUseCase: ContentLibraryUseCase
+    private val contentLibraryUseCase: ContentLibraryUseCase,
 ) : ContentLibraryResource {
-    override fun findAll(query: String?, type: String?): ResponseEntity<List<ContentLibraryResponse>> {
-        val entries = when {
-            !query.isNullOrBlank() -> contentLibraryUseCase.search(query, type)
-            !type.isNullOrBlank() -> contentLibraryUseCase.findByType(type)
-            else -> contentLibraryUseCase.findAll()
-        }
+    override fun findAll(
+        query: String?,
+        type: String?,
+    ): ResponseEntity<List<ContentLibraryResponse>> {
+        val entries =
+            when {
+                !query.isNullOrBlank() -> contentLibraryUseCase.search(query, type)
+                !type.isNullOrBlank() -> contentLibraryUseCase.findByType(type)
+                else -> contentLibraryUseCase.findAll()
+            }
         return responseEntity(entries.map { it.toResponse() })
     }
 
@@ -36,21 +40,24 @@ class ContentLibraryResourceImpl(
                     instrument = request.instrument,
                     authors = request.authors,
                     year = request.year,
-                    tags = request.tags
-                )
+                    tags = request.tags,
+                ),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
-    override fun update(id: UUID, request: ContentLibraryRequest): ResponseEntity<ContentLibraryResponse> =
+    override fun update(
+        id: UUID,
+        request: ContentLibraryRequest,
+    ): ResponseEntity<ContentLibraryResponse> =
         responseEntity(
             contentLibraryUseCase.update(
                 UpdateContentLibraryCommand(
                     id = id, title = request.title, content = request.content, type = request.type,
                     category = request.category, instrument = request.instrument,
-                    authors = request.authors, year = request.year, tags = request.tags
-                )
-            ).toResponse()
+                    authors = request.authors, year = request.year, tags = request.tags,
+                ),
+            ).toResponse(),
         )
 
     override fun delete(id: UUID): ResponseEntity<Void> {
@@ -58,9 +65,10 @@ class ContentLibraryResourceImpl(
         return noContent()
     }
 
-    private fun ContentLibraryEntry.toResponse() = ContentLibraryResponse(
-        id = id, title = title, content = content, type = type, category = category,
-        instrument = instrument, authors = authors, year = year, tags = tags,
-        createdAt = createdAt, updatedAt = updatedAt
-    )
+    private fun ContentLibraryEntry.toResponse() =
+        ContentLibraryResponse(
+            id = id, title = title, content = content, type = type, category = category,
+            instrument = instrument, authors = authors, year = year, tags = tags,
+            createdAt = createdAt, updatedAt = updatedAt,
+        )
 }

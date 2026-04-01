@@ -15,7 +15,7 @@ data class Report(
     val blocks: List<Map<String, Any?>> = emptyList(),
     val deleted: Boolean = false,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )
 
 data class ReportVersion(
@@ -26,5 +26,5 @@ data class ReportVersion(
     val customerName: String? = null,
     val blocks: List<Map<String, Any?>> = emptyList(),
     val type: String = "manual",
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
 )

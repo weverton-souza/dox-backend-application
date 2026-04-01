@@ -25,5 +25,5 @@ data class CalendarEvent(
     val googleEventId: String? = null,
     val iCalUID: String? = null,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

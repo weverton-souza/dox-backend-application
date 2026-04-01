@@ -12,5 +12,5 @@ data class AiQuota(
     val overagePriceCents: Int = 0,
     val enabled: Boolean = false,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

@@ -13,20 +13,20 @@ data class CreateReportCommand(
     val formResponseId: UUID? = null,
     val templateId: UUID? = null,
     val isStructureLocked: Boolean = false,
-    val blocks: List<Map<String, Any?>> = emptyList()
+    val blocks: List<Map<String, Any?>> = emptyList(),
 )
 
 data class UpdateReportCommand(
     val id: UUID,
     val status: ReportStatus? = null,
     val customerName: String? = null,
-    val blocks: List<Map<String, Any?>>? = null
+    val blocks: List<Map<String, Any?>>? = null,
 )
 
 data class CreateVersionCommand(
     val reportId: UUID,
     val description: String? = null,
-    val type: String = "manual"
+    val type: String = "manual",
 )
 
 interface ReportUseCase {

@@ -25,5 +25,5 @@ abstract class AbstractJpaEntity(
     @Column(name = "updated_at")
     open var updatedAt: LocalDateTime? = null,
     @Column(name = "deleted")
-    open var deleted: Boolean = false
+    open var deleted: Boolean = false,
 )

@@ -10,7 +10,7 @@ import java.util.UUID
 
 @Component
 class UserPersistenceAdapter(
-    private val userJpaRepository: UserJpaRepository
+    private val userJpaRepository: UserJpaRepository,
 ) : UserPersistencePort {
     override fun save(user: User): User {
         val entity = userJpaRepository.findByEmail(user.email) ?: UserJpaEntity()
@@ -24,22 +24,20 @@ class UserPersistenceAdapter(
         return userJpaRepository.save(entity).toDomain()
     }
 
-    override fun findById(id: UUID): User? =
-        userJpaRepository.findById(id).orElse(null)?.toDomain()
+    override fun findById(id: UUID): User? = userJpaRepository.findById(id).orElse(null)?.toDomain()
 
-    override fun findByEmail(email: String): User? =
-        userJpaRepository.findByEmail(email)?.toDomain()
+    override fun findByEmail(email: String): User? = userJpaRepository.findByEmail(email)?.toDomain()
 
-    override fun existsByEmail(email: String): Boolean =
-        userJpaRepository.existsByEmail(email)
+    override fun existsByEmail(email: String): Boolean = userJpaRepository.existsByEmail(email)
 
-    private fun UserJpaEntity.toDomain() = User(
-        id = id,
-        email = email,
-        name = name,
-        passwordHash = passwordHash,
-        personalTenantId = personalTenant?.id,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    private fun UserJpaEntity.toDomain() =
+        User(
+            id = id,
+            email = email,
+            name = name,
+            passwordHash = passwordHash,
+            personalTenantId = personalTenant?.id,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+        )
 }

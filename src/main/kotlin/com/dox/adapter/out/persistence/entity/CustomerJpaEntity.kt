@@ -11,5 +11,5 @@ import org.hibernate.annotations.Type
 class CustomerJpaEntity(
     @Type(JsonType::class)
     @Column(name = "data", columnDefinition = "jsonb")
-    var data: Map<String, Any?> = emptyMap()
+    var data: Map<String, Any?> = emptyMap(),
 ) : AbstractJpaEntity()

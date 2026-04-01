@@ -11,9 +11,12 @@ import java.util.UUID
 
 @RestController
 class CalendarEventResourceImpl(
-    private val calendarUseCase: CalendarUseCase
+    private val calendarUseCase: CalendarUseCase,
 ) : CalendarEventResource {
-    override fun findByDateRange(from: OffsetDateTime, to: OffsetDateTime): ResponseEntity<List<CalendarEventResponse>> {
+    override fun findByDateRange(
+        from: OffsetDateTime,
+        to: OffsetDateTime,
+    ): ResponseEntity<List<CalendarEventResponse>> {
         val enrichedEvents = calendarUseCase.findEnrichedEventsByDateRange(from, to)
         return responseEntity(enrichedEvents.map { it.toResponse() })
     }
@@ -24,7 +27,10 @@ class CalendarEventResourceImpl(
         return responseEntity(enriched.toResponse(), HttpStatus.CREATED)
     }
 
-    override fun update(id: UUID, request: CalendarEventRequest): ResponseEntity<CalendarEventResponse> {
+    override fun update(
+        id: UUID,
+        request: CalendarEventRequest,
+    ): ResponseEntity<CalendarEventResponse> {
         val event = calendarUseCase.updateEvent(request.toUpdateCommand(id))
         val enriched = calendarUseCase.enrichEvent(event)
         return responseEntity(enriched.toResponse())
@@ -35,38 +41,40 @@ class CalendarEventResourceImpl(
         return noContent()
     }
 
-    private fun CalendarEventRequest.toCommand() = CreateCalendarEventCommand(
-        summary = summary,
-        description = description,
-        location = location,
-        startDate = start.date,
-        startDateTime = start.dateTime,
-        startTimeZone = start.timeZone,
-        endDate = end.date,
-        endDateTime = end.dateTime,
-        endTimeZone = end.timeZone,
-        allDay = allDay,
-        tagId = tagId,
-        customerId = customerId,
-        status = status
-    )
+    private fun CalendarEventRequest.toCommand() =
+        CreateCalendarEventCommand(
+            summary = summary,
+            description = description,
+            location = location,
+            startDate = start.date,
+            startDateTime = start.dateTime,
+            startTimeZone = start.timeZone,
+            endDate = end.date,
+            endDateTime = end.dateTime,
+            endTimeZone = end.timeZone,
+            allDay = allDay,
+            tagId = tagId,
+            customerId = customerId,
+            status = status,
+        )
 
-    private fun CalendarEventRequest.toUpdateCommand(id: UUID) = UpdateCalendarEventCommand(
-        id = id,
-        summary = summary,
-        description = description,
-        location = location,
-        startDate = start.date,
-        startDateTime = start.dateTime,
-        startTimeZone = start.timeZone,
-        endDate = end.date,
-        endDateTime = end.dateTime,
-        endTimeZone = end.timeZone,
-        allDay = allDay,
-        tagId = tagId,
-        customerId = customerId,
-        status = status
-    )
+    private fun CalendarEventRequest.toUpdateCommand(id: UUID) =
+        UpdateCalendarEventCommand(
+            id = id,
+            summary = summary,
+            description = description,
+            location = location,
+            startDate = start.date,
+            startDateTime = start.dateTime,
+            startTimeZone = start.timeZone,
+            endDate = end.date,
+            endDateTime = end.dateTime,
+            endTimeZone = end.timeZone,
+            allDay = allDay,
+            tagId = tagId,
+            customerId = customerId,
+            status = status,
+        )
 
     private fun EnrichedCalendarEvent.toResponse(): CalendarEventResponse {
         val e = event
@@ -89,7 +97,7 @@ class CalendarEventResourceImpl(
             googleEventId = e.googleEventId,
             iCalUID = e.iCalUID,
             createdAt = e.createdAt,
-            updatedAt = e.updatedAt
+            updatedAt = e.updatedAt,
         )
     }
 }

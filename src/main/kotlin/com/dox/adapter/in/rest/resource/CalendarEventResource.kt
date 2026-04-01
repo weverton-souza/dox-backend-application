@@ -17,25 +17,25 @@ interface CalendarEventResource : BaseResource {
     @GetMapping
     fun findByDateRange(
         @RequestParam from: OffsetDateTime,
-        @RequestParam to: OffsetDateTime
+        @RequestParam to: OffsetDateTime,
     ): ResponseEntity<List<CalendarEventResponse>>
 
     @Operation(summary = "Criar evento")
     @PostMapping
     fun create(
-        @Valid @RequestBody request: CalendarEventRequest
+        @Valid @RequestBody request: CalendarEventRequest,
     ): ResponseEntity<CalendarEventResponse>
 
     @Operation(summary = "Atualizar evento")
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: CalendarEventRequest
+        @Valid @RequestBody request: CalendarEventRequest,
     ): ResponseEntity<CalendarEventResponse>
 
     @Operation(summary = "Excluir evento")
     @DeleteMapping("/{id}")
     fun delete(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 }

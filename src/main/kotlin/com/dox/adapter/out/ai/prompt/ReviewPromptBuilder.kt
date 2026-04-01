@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ReviewPromptBuilder(
-    private val promptSanitizer: PromptSanitizer
+    private val promptSanitizer: PromptSanitizer,
 ) : AiReviewPromptPort {
     companion object {
         private val VALID_ACTIONS = setOf("corrigir", "melhorar", "resumir", "expandir")
@@ -43,18 +43,19 @@ class ReviewPromptBuilder(
         action: String,
         sectionType: String?,
         instruction: String?,
-        formResponses: List<FormResponse>?
+        formResponses: List<FormResponse>?,
     ): String {
         val validAction = if (action in VALID_ACTIONS) action else "melhorar"
         val parts = mutableListOf<String>()
 
-        val actionInstruction = when (validAction) {
-            "corrigir" -> "Corrija erros gramaticais, ortográficos e de pontuação no texto abaixo. Mantenha o conteúdo e estilo intactos."
-            "melhorar" -> "Melhore a qualidade, clareza e fluidez do texto abaixo. Mantenha todas as informações originais, mas torne a redação mais técnica e profissional."
-            "resumir" -> "Resuma o texto abaixo de forma concisa, mantendo as informações mais relevantes e a linguagem técnica."
-            "expandir" -> "Expanda o texto abaixo com mais detalhes e profundidade, mantendo coerência com as informações originais."
-            else -> "Melhore a qualidade do texto abaixo."
-        }
+        val actionInstruction =
+            when (validAction) {
+                "corrigir" -> "Corrija erros gramaticais, ortográficos e de pontuação no texto abaixo. Mantenha o conteúdo e estilo intactos."
+                "melhorar" -> "Melhore a qualidade, clareza e fluidez do texto abaixo. Mantenha todas as informações originais, mas torne a redação mais técnica e profissional."
+                "resumir" -> "Resuma o texto abaixo de forma concisa, mantendo as informações mais relevantes e a linguagem técnica."
+                "expandir" -> "Expanda o texto abaixo com mais detalhes e profundidade, mantendo coerência com as informações originais."
+                else -> "Melhore a qualidade do texto abaixo."
+            }
 
         parts.add(actionInstruction)
 
@@ -70,17 +71,18 @@ class ReviewPromptBuilder(
             parts.add("## Dados de referência (use para enriquecer e fundamentar o texto)")
             val sorted = formResponses.sortedBy { it.createdAt }
             sorted.forEach { response ->
-                val answers = response.answers.joinToString("\n") { answer ->
-                    val label = answer["label"]?.toString() ?: answer["fieldId"]?.toString() ?: ""
-                    val value = answer["value"]?.toString() ?: ""
-                    "- ${promptSanitizer.sanitize(label)}: ${promptSanitizer.sanitize(value)}"
-                }
+                val answers =
+                    response.answers.joinToString("\n") { answer ->
+                        val label = answer["label"]?.toString() ?: answer["fieldId"]?.toString() ?: ""
+                        val value = answer["value"]?.toString() ?: ""
+                        "- ${promptSanitizer.sanitize(label)}: ${promptSanitizer.sanitize(value)}"
+                    }
                 val date = response.createdAt?.toLocalDate()?.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
                 parts.add("### Respostas ($date)\n$answers")
             }
             if (validAction == "melhorar" || validAction == "expandir") {
                 parts.add(
-                    "**Use os dados acima para fundamentar e enriquecer o texto. Cada nova informação adicionada deve ter base direta nos dados fornecidos.**"
+                    "**Use os dados acima para fundamentar e enriquecer o texto. Cada nova informação adicionada deve ter base direta nos dados fornecidos.**",
                 )
             }
         }
@@ -90,37 +92,39 @@ class ReviewPromptBuilder(
         return parts.joinToString("\n\n")
     }
 
-    private fun roleForVertical(vertical: Vertical): String = when (vertical) {
-        Vertical.HEALTH -> "profissional de saúde"
-        Vertical.LEGAL -> "profissional jurídico"
-        Vertical.EDUCATION -> "profissional de educação"
-        Vertical.ENGINEERING -> "engenheiro"
-        Vertical.ACCOUNTING -> "contador"
-        Vertical.ENVIRONMENT -> "profissional de meio ambiente"
-        Vertical.SAFETY -> "profissional de segurança do trabalho"
-        Vertical.TECHNOLOGY -> "profissional de tecnologia"
-        Vertical.NUTRITION -> "nutricionista"
-        Vertical.VETERINARY -> "médico veterinário"
-        Vertical.FORENSICS -> "perito forense"
-        Vertical.SOCIAL_WORK -> "assistente social"
-        Vertical.AGRONOMY -> "agrônomo"
-        Vertical.GENERAL -> "profissional especialista"
-    }
+    private fun roleForVertical(vertical: Vertical): String =
+        when (vertical) {
+            Vertical.HEALTH -> "profissional de saúde"
+            Vertical.LEGAL -> "profissional jurídico"
+            Vertical.EDUCATION -> "profissional de educação"
+            Vertical.ENGINEERING -> "engenheiro"
+            Vertical.ACCOUNTING -> "contador"
+            Vertical.ENVIRONMENT -> "profissional de meio ambiente"
+            Vertical.SAFETY -> "profissional de segurança do trabalho"
+            Vertical.TECHNOLOGY -> "profissional de tecnologia"
+            Vertical.NUTRITION -> "nutricionista"
+            Vertical.VETERINARY -> "médico veterinário"
+            Vertical.FORENSICS -> "perito forense"
+            Vertical.SOCIAL_WORK -> "assistente social"
+            Vertical.AGRONOMY -> "agrônomo"
+            Vertical.GENERAL -> "profissional especialista"
+        }
 
-    private fun Vertical.displayName(): String = when (this) {
-        Vertical.HEALTH -> "saúde"
-        Vertical.LEGAL -> "direito"
-        Vertical.EDUCATION -> "educação"
-        Vertical.ENGINEERING -> "engenharia"
-        Vertical.ACCOUNTING -> "contabilidade"
-        Vertical.ENVIRONMENT -> "meio ambiente"
-        Vertical.SAFETY -> "segurança do trabalho"
-        Vertical.TECHNOLOGY -> "tecnologia"
-        Vertical.NUTRITION -> "nutrição"
-        Vertical.VETERINARY -> "veterinária"
-        Vertical.FORENSICS -> "ciências forenses"
-        Vertical.SOCIAL_WORK -> "serviço social"
-        Vertical.AGRONOMY -> "agronomia"
-        Vertical.GENERAL -> "geral"
-    }
+    private fun Vertical.displayName(): String =
+        when (this) {
+            Vertical.HEALTH -> "saúde"
+            Vertical.LEGAL -> "direito"
+            Vertical.EDUCATION -> "educação"
+            Vertical.ENGINEERING -> "engenharia"
+            Vertical.ACCOUNTING -> "contabilidade"
+            Vertical.ENVIRONMENT -> "meio ambiente"
+            Vertical.SAFETY -> "segurança do trabalho"
+            Vertical.TECHNOLOGY -> "tecnologia"
+            Vertical.NUTRITION -> "nutrição"
+            Vertical.VETERINARY -> "veterinária"
+            Vertical.FORENSICS -> "ciências forenses"
+            Vertical.SOCIAL_WORK -> "serviço social"
+            Vertical.AGRONOMY -> "agronomia"
+            Vertical.GENERAL -> "geral"
+        }
 }

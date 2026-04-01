@@ -20,7 +20,7 @@ data class ContentLibraryRequest(
     val authors: String? = null,
     val year: Int? = null,
     @field:Size(max = 500, message = "Tags deve ter no máximo 500 caracteres")
-    val tags: String? = null
+    val tags: String? = null,
 )
 
 data class ContentLibraryResponse(
@@ -34,5 +34,5 @@ data class ContentLibraryResponse(
     val year: Int?,
     val tags: String?,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )

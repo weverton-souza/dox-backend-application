@@ -12,22 +12,25 @@ import org.springframework.http.ResponseEntity
         ApiResponse(responseCode = "401", description = "Não autenticado"),
         ApiResponse(responseCode = "403", description = "Sem permissão"),
         ApiResponse(responseCode = "404", description = "Recurso não encontrado"),
-        ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    ]
+        ApiResponse(responseCode = "500", description = "Erro interno do servidor"),
+    ],
 )
 interface BaseResource {
-    fun <T> responseEntity(body: T, status: HttpStatus = HttpStatus.OK): ResponseEntity<T> =
-        ResponseEntity.status(status).body(body)
+    fun <T> responseEntity(
+        body: T,
+        status: HttpStatus = HttpStatus.OK,
+    ): ResponseEntity<T> = ResponseEntity.status(status).body(body)
 
-    fun noContent(): ResponseEntity<Void> =
-        ResponseEntity.noContent().build()
+    fun noContent(): ResponseEntity<Void> = ResponseEntity.noContent().build()
 
     fun retrievePageableParameter(parameters: Map<String, Any>): PageRequest {
-        val pageNumber = parameters["pageNumber"]
-            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+        val pageNumber =
+            parameters["pageNumber"]
+                ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull()?.coerceAtLeast(0) ?: 0
 
-        val pageSize = parameters["pageSize"]
-            ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull()?.coerceIn(1, MAX_PAGE_SIZE) ?: DEFAULT_PAGE_SIZE
+        val pageSize =
+            parameters["pageSize"]
+                ?.toString()?.takeIf { it.isNotBlank() }?.toIntOrNull()?.coerceIn(1, MAX_PAGE_SIZE) ?: DEFAULT_PAGE_SIZE
 
         return PageRequest.of(pageNumber, pageSize)
     }

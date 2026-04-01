@@ -8,7 +8,7 @@ data class Customer(
     val data: Map<String, Any?> = emptyMap(),
     val deleted: Boolean = false,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 ) {
     fun displayName(): String? = data["name"] as? String
 }
@@ -18,7 +18,7 @@ data class CustomerNote(
     val customerId: UUID,
     val content: String,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )
 
 data class CustomerEvent(
@@ -28,5 +28,5 @@ data class CustomerEvent(
     val title: String,
     val description: String? = null,
     val date: LocalDateTime,
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
 )

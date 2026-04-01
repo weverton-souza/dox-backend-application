@@ -16,6 +16,6 @@ interface CustomerCalendarEventResource : BaseResource {
     @GetMapping
     fun findByDateRange(
         @RequestParam from: OffsetDateTime,
-        @RequestParam to: OffsetDateTime
+        @RequestParam to: OffsetDateTime,
     ): ResponseEntity<List<CustomerCalendarEventResponse>>
 }

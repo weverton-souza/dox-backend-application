@@ -23,7 +23,7 @@ class AiUsageService(
     private val aiUsagePort: AiUsagePort,
     private val aiQuotaPort: AiQuotaPort,
     private val aiGenerationSourcePort: AiGenerationSourcePersistencePort,
-    private val aiConfigPort: AiConfigPort
+    private val aiConfigPort: AiConfigPort,
 ) {
     fun getUsageSummary(command: GetAiUsageCommand): AiUsageSummary {
         val userId = ContextHolder.getUserIdOrThrow()
@@ -40,7 +40,7 @@ class AiUsageService(
             overage = overage,
             overageCostCents = overageCostCents,
             quota = quota,
-            alertLevel = resolveAlertLevel(used, limit)
+            alertLevel = resolveAlertLevel(used, limit),
         )
     }
 
@@ -49,21 +49,20 @@ class AiUsageService(
         return aiUsagePort.findByProfessionalAndMonth(userId, command.month, command.year)
     }
 
-    fun getUsageByReport(reportId: UUID): List<AiUsage> =
-        aiUsagePort.findByReportId(reportId)
+    fun getUsageByReport(reportId: UUID): List<AiUsage> = aiUsagePort.findByReportId(reportId)
 
-    fun getQuota(): AiQuota? =
-        aiQuotaPort.findQuota()
+    fun getQuota(): AiQuota? = aiQuotaPort.findQuota()
 
     fun updateQuota(command: UpdateAiQuotaCommand): AiQuota {
         val existing = aiQuotaPort.findQuota() ?: AiQuota()
-        val updated = existing.copy(
-            aiTier = command.aiTier?.let { AiTier.valueOf(it) } ?: existing.aiTier,
-            model = command.model ?: existing.model,
-            monthlyLimit = command.monthlyLimit ?: existing.monthlyLimit,
-            overagePriceCents = command.overagePriceCents ?: existing.overagePriceCents,
-            enabled = command.enabled ?: existing.enabled
-        )
+        val updated =
+            existing.copy(
+                aiTier = command.aiTier?.let { AiTier.valueOf(it) } ?: existing.aiTier,
+                model = command.model ?: existing.model,
+                monthlyLimit = command.monthlyLimit ?: existing.monthlyLimit,
+                overagePriceCents = command.overagePriceCents ?: existing.overagePriceCents,
+                enabled = command.enabled ?: existing.enabled,
+            )
         return aiQuotaPort.save(updated)
     }
 
@@ -73,20 +72,22 @@ class AiUsageService(
         return AiStatus(
             available = available,
             tierName = quota?.aiTier?.name,
-            model = quota?.model
+            model = quota?.model,
         )
     }
 
-    fun getGenerationSources(reportId: UUID): List<AiGenerationSource> =
-        aiGenerationSourcePort.findByReportId(reportId)
+    fun getGenerationSources(reportId: UUID): List<AiGenerationSource> = aiGenerationSourcePort.findByReportId(reportId)
 
     fun getRegenerationInfo(reportId: UUID): RegenerationInfo =
         RegenerationInfo(
             used = aiUsagePort.countByReportId(reportId),
-            limit = aiConfigPort.regenerationLimit()
+            limit = aiConfigPort.regenerationLimit(),
         )
 
-    private fun resolveAlertLevel(used: Int, limit: Int): AlertLevel? {
+    private fun resolveAlertLevel(
+        used: Int,
+        limit: Int,
+    ): AlertLevel? {
         if (limit <= 0) return null
         return when {
             used > limit -> AlertLevel.OVERAGE

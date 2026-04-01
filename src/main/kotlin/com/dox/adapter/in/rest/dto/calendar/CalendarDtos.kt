@@ -16,7 +16,7 @@ data class EventTagRequest(
     val name: String,
     @field:NotBlank(message = "Cor é obrigatória")
     @field:Pattern(regexp = "^#[0-9a-fA-F]{6}$", message = "Cor deve ser um código hexadecimal válido (ex: #FF5733)")
-    val color: String
+    val color: String,
 )
 
 data class EventTagResponse(
@@ -24,19 +24,19 @@ data class EventTagResponse(
     val name: String,
     val color: String,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class EventDateTimeRequest(
     val date: LocalDate? = null,
     val dateTime: OffsetDateTime? = null,
-    val timeZone: String? = null
+    val timeZone: String? = null,
 )
 
 data class EventDateTimeResponse(
     val date: LocalDate? = null,
     val dateTime: OffsetDateTime? = null,
-    val timeZone: String? = null
+    val timeZone: String? = null,
 )
 
 data class CalendarEventRequest(
@@ -57,7 +57,7 @@ data class CalendarEventRequest(
     val tagId: UUID? = null,
     val customerId: UUID? = null,
     @field:Pattern(regexp = "^(tentative|confirmed|cancelled)$", message = "Status deve ser tentative, confirmed ou cancelled")
-    val status: String = "confirmed"
+    val status: String = "confirmed",
 )
 
 data class CalendarEventResponse(
@@ -78,5 +78,5 @@ data class CalendarEventResponse(
     val googleEventId: String?,
     val iCalUID: String?,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )

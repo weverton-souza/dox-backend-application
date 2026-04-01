@@ -13,7 +13,7 @@ data class FormLink(
     val status: FormLinkStatus = FormLinkStatus.PENDING,
     val expiresAt: LocalDateTime,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 ) {
     fun isExpired(): Boolean = expiresAt.isExpired()
 }

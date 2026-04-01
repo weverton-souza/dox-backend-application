@@ -9,5 +9,8 @@ interface OrganizationMemberJpaRepository : JpaRepository<OrganizationMemberJpaE
 
     fun findByOrganizationId(organizationId: UUID): List<OrganizationMemberJpaEntity>
 
-    fun existsByOrganizationIdAndUserId(organizationId: UUID, userId: UUID): Boolean
+    fun existsByOrganizationIdAndUserId(
+        organizationId: UUID,
+        userId: UUID,
+    ): Boolean
 }

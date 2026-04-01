@@ -12,5 +12,5 @@ data class AiGenerationSource(
     val sourceLabel: String? = null,
     val included: Boolean = true,
     val displayOrder: Int = 0,
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
 )

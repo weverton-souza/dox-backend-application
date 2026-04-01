@@ -13,7 +13,7 @@ import java.util.UUID
 
 @RestController
 class FormLinkResourceImpl(
-    private val formLinkUseCase: FormLinkUseCase
+    private val formLinkUseCase: FormLinkUseCase,
 ) : FormLinkResource {
     override fun create(request: CreateFormLinkRequest): ResponseEntity<FormLinkResponse> =
         responseEntity(
@@ -21,18 +21,19 @@ class FormLinkResourceImpl(
                 CreateFormLinkCommand(
                     formId = request.formId,
                     customerId = request.customerId,
-                    expiresInHours = request.expiresInHours
-                )
+                    expiresInHours = request.expiresInHours,
+                ),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
     override fun findAll(customerId: UUID?): ResponseEntity<List<FormLinkResponse>> {
-        val links = if (customerId != null) {
-            formLinkUseCase.findFormLinksByCustomer(customerId)
-        } else {
-            formLinkUseCase.findFormLinksByTenant()
-        }
+        val links =
+            if (customerId != null) {
+                formLinkUseCase.findFormLinksByCustomer(customerId)
+            } else {
+                formLinkUseCase.findFormLinksByTenant()
+            }
         return responseEntity(links.map { it.toResponse() })
     }
 
@@ -41,14 +42,15 @@ class FormLinkResourceImpl(
         return noContent()
     }
 
-    private fun FormLinkWithToken.toResponse() = FormLinkResponse(
-        formLink.id,
-        token,
-        formLink.formId,
-        formLink.customerId,
-        formLink.status,
-        formLink.expiresAt,
-        formLink.createdAt,
-        formLink.updatedAt
-    )
+    private fun FormLinkWithToken.toResponse() =
+        FormLinkResponse(
+            formLink.id,
+            token,
+            formLink.formId,
+            formLink.customerId,
+            formLink.status,
+            formLink.expiresAt,
+            formLink.createdAt,
+            formLink.updatedAt,
+        )
 }

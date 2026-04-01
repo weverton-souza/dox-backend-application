@@ -21,6 +21,6 @@ interface ProfessionalResource : BaseResource {
     @Operation(summary = "Atualizar configurações profissionais")
     @PutMapping
     fun update(
-        @Valid @RequestBody request: ProfessionalRequest
+        @Valid @RequestBody request: ProfessionalRequest,
     ): ResponseEntity<ProfessionalResponse>
 }

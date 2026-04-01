@@ -12,7 +12,7 @@ data class ReportTemplate(
     val isLocked: Boolean = false,
     val isMaster: Boolean = false,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )
 
 data class ScoreTableTemplate(
@@ -26,7 +26,7 @@ data class ScoreTableTemplate(
     val footnote: List<Map<String, Any?>>? = null,
     val isDefault: Boolean = false,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )
 
 data class ChartTemplate(
@@ -38,5 +38,5 @@ data class ChartTemplate(
     val data: Map<String, Any?> = emptyMap(),
     val isDefault: Boolean = false,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

@@ -9,5 +9,5 @@ data class OrganizationMember(
     val organizationId: UUID,
     val userId: UUID,
     val role: MemberRole,
-    val joinedAt: LocalDateTime? = null
+    val joinedAt: LocalDateTime? = null,
 )

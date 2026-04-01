@@ -11,20 +11,20 @@ import java.util.UUID
 
 @Component
 class RefreshTokenPersistenceAdapter(
-    private val refreshTokenJpaRepository: RefreshTokenJpaRepository
+    private val refreshTokenJpaRepository: RefreshTokenJpaRepository,
 ) : RefreshTokenPersistencePort {
     override fun save(refreshToken: RefreshToken): RefreshToken {
-        val entity = RefreshTokenJpaEntity().apply {
-            id = refreshToken.id
-            userId = refreshToken.userId
-            tokenHash = refreshToken.tokenHash
-            expiresAt = refreshToken.expiresAt
-        }
+        val entity =
+            RefreshTokenJpaEntity().apply {
+                id = refreshToken.id
+                userId = refreshToken.userId
+                tokenHash = refreshToken.tokenHash
+                expiresAt = refreshToken.expiresAt
+            }
         return refreshTokenJpaRepository.save(entity).toDomain()
     }
 
-    override fun findByTokenHash(tokenHash: String): RefreshToken? =
-        refreshTokenJpaRepository.findByTokenHash(tokenHash)?.toDomain()
+    override fun findByTokenHash(tokenHash: String): RefreshToken? = refreshTokenJpaRepository.findByTokenHash(tokenHash)?.toDomain()
 
     @Transactional
     override fun deleteByUserId(userId: UUID) {
@@ -36,11 +36,12 @@ class RefreshTokenPersistenceAdapter(
         refreshTokenJpaRepository.deleteByExpiresAtBefore(LocalDateTime.now())
     }
 
-    private fun RefreshTokenJpaEntity.toDomain() = RefreshToken(
-        id = id,
-        userId = userId,
-        tokenHash = tokenHash,
-        expiresAt = expiresAt,
-        createdAt = createdAt
-    )
+    private fun RefreshTokenJpaEntity.toDomain() =
+        RefreshToken(
+            id = id,
+            userId = userId,
+            tokenHash = tokenHash,
+            expiresAt = expiresAt,
+            createdAt = createdAt,
+        )
 }

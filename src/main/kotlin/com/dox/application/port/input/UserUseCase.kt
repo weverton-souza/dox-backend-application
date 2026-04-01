@@ -6,12 +6,12 @@ data class UserInfo(
     val id: UUID,
     val email: String,
     val name: String,
-    val personalTenantId: UUID?
+    val personalTenantId: UUID?,
 )
 
 data class UpdateUserCommand(
     val userId: UUID,
-    val name: String
+    val name: String,
 )
 
 interface UserUseCase {

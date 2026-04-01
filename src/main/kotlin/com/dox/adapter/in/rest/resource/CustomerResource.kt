@@ -35,80 +35,80 @@ interface CustomerResource : BaseResource {
                 `in` = ParameterIn.QUERY,
                 description = "Número da página (iniciando em 0)",
                 example = "0",
-                required = false
+                required = false,
             ),
             Parameter(
                 name = "pageSize",
                 `in` = ParameterIn.QUERY,
                 description = "Quantidade de itens por página",
                 example = "15",
-                required = false
+                required = false,
             ),
             Parameter(name = "search", `in` = ParameterIn.QUERY, description = "Busca por nome ou CPF", required = false),
-            Parameter(name = "parameters", `in` = ParameterIn.QUERY, hidden = true)
-        ]
+            Parameter(name = "parameters", `in` = ParameterIn.QUERY, hidden = true),
+        ],
     )
     @GetMapping
     fun findAll(
-        @Parameter(hidden = true) @RequestParam parameters: Map<String, Any>
+        @Parameter(hidden = true) @RequestParam parameters: Map<String, Any>,
     ): ResponseEntity<Page<CustomerResponse>>
 
     @Operation(summary = "Criar cliente")
     @PostMapping
     fun create(
-        @Valid @RequestBody request: CustomerRequest
+        @Valid @RequestBody request: CustomerRequest,
     ): ResponseEntity<CustomerResponse>
 
     @Operation(summary = "Buscar cliente por ID")
     @GetMapping("/{id}")
     fun findById(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<CustomerResponse>
 
     @Operation(summary = "Atualizar cliente")
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: CustomerRequest
+        @Valid @RequestBody request: CustomerRequest,
     ): ResponseEntity<CustomerResponse>
 
     @Operation(summary = "Excluir cliente (soft delete)")
     @DeleteMapping("/{id}")
     fun delete(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 
     @Operation(summary = "Listar notas do cliente")
     @GetMapping("/{id}/notes")
     fun getNotes(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<List<CustomerNoteResponse>>
 
     @Operation(summary = "Adicionar nota ao cliente")
     @PostMapping("/{id}/notes")
     fun addNote(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: CustomerNoteRequest
+        @Valid @RequestBody request: CustomerNoteRequest,
     ): ResponseEntity<CustomerNoteResponse>
 
     @Operation(summary = "Excluir nota")
     @DeleteMapping("/{id}/notes/{noteId}")
     fun deleteNote(
         @PathVariable id: UUID,
-        @PathVariable noteId: UUID
+        @PathVariable noteId: UUID,
     ): ResponseEntity<Void>
 
     @Operation(summary = "Listar eventos do cliente")
     @GetMapping("/{id}/events")
     fun getEvents(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<List<CustomerEventResponse>>
 
     @Operation(summary = "Adicionar evento ao cliente")
     @PostMapping("/{id}/events")
     fun addEvent(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: CustomerEventRequest
+        @Valid @RequestBody request: CustomerEventRequest,
     ): ResponseEntity<CustomerEventResponse>
 
     @Operation(summary = "Atualizar evento do cliente")
@@ -116,13 +116,13 @@ interface CustomerResource : BaseResource {
     fun updateEvent(
         @PathVariable id: UUID,
         @PathVariable eventId: UUID,
-        @Valid @RequestBody request: CustomerEventRequest
+        @Valid @RequestBody request: CustomerEventRequest,
     ): ResponseEntity<CustomerEventResponse>
 
     @Operation(summary = "Excluir evento")
     @DeleteMapping("/{id}/events/{eventId}")
     fun deleteEvent(
         @PathVariable id: UUID,
-        @PathVariable eventId: UUID
+        @PathVariable eventId: UUID,
     ): ResponseEntity<Void>
 }

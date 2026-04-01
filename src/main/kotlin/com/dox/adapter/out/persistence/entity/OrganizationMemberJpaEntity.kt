@@ -29,5 +29,5 @@ class OrganizationMemberJpaEntity(
     var role: MemberRole = MemberRole.MEMBER,
     @CreatedDate
     @Column(name = "joined_at", updatable = false)
-    var joinedAt: LocalDateTime? = null
+    var joinedAt: LocalDateTime? = null,
 )

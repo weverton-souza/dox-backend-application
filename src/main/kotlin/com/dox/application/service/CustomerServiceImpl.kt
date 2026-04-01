@@ -23,7 +23,7 @@ import java.util.UUID
 
 @Service
 class CustomerServiceImpl(
-    private val customerPersistencePort: CustomerPersistencePort
+    private val customerPersistencePort: CustomerPersistencePort,
 ) : CustomerUseCase {
     @Transactional
     override fun create(command: CreateCustomerCommand): Customer {
@@ -35,7 +35,10 @@ class CustomerServiceImpl(
         customerPersistencePort.findById(id)
             ?: throw ResourceNotFoundException("Cliente", id.toString())
 
-    override fun findAll(search: String?, pageable: Pageable): Page<Customer> =
+    override fun findAll(
+        search: String?,
+        pageable: Pageable,
+    ): Page<Customer> =
         if (search.isNullOrBlank()) {
             customerPersistencePort.findAll(pageable)
         } else {
@@ -57,13 +60,12 @@ class CustomerServiceImpl(
         customerPersistencePort.softDelete(id)
     }
 
-    override fun getNotes(customerId: UUID): List<CustomerNote> =
-        customerPersistencePort.findNotesByCustomerId(customerId)
+    override fun getNotes(customerId: UUID): List<CustomerNote> = customerPersistencePort.findNotesByCustomerId(customerId)
 
     @Transactional
     override fun addNote(command: CreateCustomerNoteCommand): CustomerNote =
         customerPersistencePort.saveNote(
-            CustomerNote(customerId = command.customerId, content = command.content)
+            CustomerNote(customerId = command.customerId, content = command.content),
         )
 
     @Transactional
@@ -73,8 +75,7 @@ class CustomerServiceImpl(
         customerPersistencePort.deleteNote(noteId)
     }
 
-    override fun getEvents(customerId: UUID): List<CustomerEvent> =
-        customerPersistencePort.findEventsByCustomerId(customerId)
+    override fun getEvents(customerId: UUID): List<CustomerEvent> = customerPersistencePort.findEventsByCustomerId(customerId)
 
     @Transactional
     override fun addEvent(command: CreateCustomerEventCommand): CustomerEvent =
@@ -84,8 +85,8 @@ class CustomerServiceImpl(
                 type = command.type,
                 title = command.title,
                 description = command.description,
-                date = command.date
-            )
+                date = command.date,
+            ),
         )
 
     @Transactional
@@ -99,8 +100,8 @@ class CustomerServiceImpl(
                 type = command.type,
                 title = command.title,
                 description = command.description,
-                date = command.date
-            )
+                date = command.date,
+            ),
         )
     }
 
@@ -129,13 +130,17 @@ class CustomerServiceImpl(
         return mutable
     }
 
-    override fun findAllEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<Pair<CustomerEvent, String>> {
+    override fun findAllEventsByDateRange(
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): List<Pair<CustomerEvent, String>> {
         val events = customerPersistencePort.findEventsByDateRange(from, to)
         if (events.isEmpty()) return emptyList()
 
         val customerIds = events.map { it.customerId }.toSet()
-        val customerMap = customerPersistencePort.findByIds(customerIds)
-            .associateBy { it.id }
+        val customerMap =
+            customerPersistencePort.findByIds(customerIds)
+                .associateBy { it.id }
 
         return events.map { event ->
             val customerName = customerMap[event.customerId]?.displayName() ?: ""

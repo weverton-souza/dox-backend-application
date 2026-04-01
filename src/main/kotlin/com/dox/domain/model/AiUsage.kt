@@ -22,7 +22,7 @@ data class AiUsage(
     val durationMs: Int = 0,
     val isRegeneration: Boolean = false,
     val regenerationCount: Int = 0,
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
 )
 
 data class TokenSummary(
@@ -30,5 +30,5 @@ data class TokenSummary(
     val totalOutputTokens: Long,
     val totalCacheReadTokens: Long,
     val totalCacheWriteTokens: Long,
-    val totalCostBrl: BigDecimal
+    val totalCostBrl: BigDecimal,
 )

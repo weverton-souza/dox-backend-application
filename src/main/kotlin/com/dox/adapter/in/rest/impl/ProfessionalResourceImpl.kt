@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProfessionalResourceImpl(
-    private val professionalUseCase: ProfessionalUseCase
+    private val professionalUseCase: ProfessionalUseCase,
 ) : ProfessionalResource {
-    override fun get(): ResponseEntity<ProfessionalResponse> =
-        responseEntity(professionalUseCase.get().toResponse())
+    override fun get(): ResponseEntity<ProfessionalResponse> = responseEntity(professionalUseCase.get().toResponse())
 
     override fun update(request: ProfessionalRequest): ResponseEntity<ProfessionalResponse> =
         responseEntity(
@@ -27,12 +26,13 @@ class ProfessionalResourceImpl(
                     instagram = request.instagram,
                     email = request.email,
                     logo = request.logo,
-                    contactItems = request.contactItems
-                )
-            ).toResponse()
+                    contactItems = request.contactItems,
+                ),
+            ).toResponse(),
         )
 
-    private fun ProfessionalSettings.toResponse() = ProfessionalResponse(
-        id, name, crp, specialization, phone, instagram, email, logo, contactItems
-    )
+    private fun ProfessionalSettings.toResponse() =
+        ProfessionalResponse(
+            id, name, crp, specialization, phone, instagram, email, logo, contactItems,
+        )
 }

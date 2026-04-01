@@ -8,5 +8,8 @@ import java.util.UUID
 interface CustomerEventJpaRepository : JpaRepository<CustomerEventJpaEntity, UUID> {
     fun findByCustomerIdOrderByDateDesc(customerId: UUID): List<CustomerEventJpaEntity>
 
-    fun findByDateBetweenOrderByDateAsc(from: LocalDateTime, to: LocalDateTime): List<CustomerEventJpaEntity>
+    fun findByDateBetweenOrderByDateAsc(
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): List<CustomerEventJpaEntity>
 }

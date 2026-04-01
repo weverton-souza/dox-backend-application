@@ -15,5 +15,8 @@ interface OrganizationPersistencePort {
 
     fun saveMember(member: OrganizationMember): OrganizationMember
 
-    fun existsMember(organizationId: UUID, userId: UUID): Boolean
+    fun existsMember(
+        organizationId: UUID,
+        userId: UUID,
+    ): Boolean
 }

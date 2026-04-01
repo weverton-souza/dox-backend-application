@@ -11,6 +11,6 @@ interface AiReviewPromptPort {
         action: String,
         sectionType: String?,
         instruction: String?,
-        formResponses: List<FormResponse>?
+        formResponses: List<FormResponse>?,
     ): String
 }

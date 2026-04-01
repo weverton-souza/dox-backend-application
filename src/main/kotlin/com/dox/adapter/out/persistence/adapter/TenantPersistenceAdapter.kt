@@ -9,31 +9,31 @@ import java.util.UUID
 
 @Component
 class TenantPersistenceAdapter(
-    private val tenantJpaRepository: TenantJpaRepository
+    private val tenantJpaRepository: TenantJpaRepository,
 ) : TenantPersistencePort {
     override fun save(tenant: Tenant): Tenant {
-        val entity = TenantJpaEntity().apply {
-            id = tenant.id
-            schemaName = tenant.schemaName
-            type = tenant.type
-            name = tenant.name
-            vertical = tenant.vertical
-        }
+        val entity =
+            TenantJpaEntity().apply {
+                id = tenant.id
+                schemaName = tenant.schemaName
+                type = tenant.type
+                name = tenant.name
+                vertical = tenant.vertical
+            }
         return tenantJpaRepository.save(entity).toDomain()
     }
 
-    override fun findById(id: UUID): Tenant? =
-        tenantJpaRepository.findById(id).orElse(null)?.toDomain()
+    override fun findById(id: UUID): Tenant? = tenantJpaRepository.findById(id).orElse(null)?.toDomain()
 
-    override fun findBySchemaName(schemaName: String): Tenant? =
-        tenantJpaRepository.findBySchemaName(schemaName)?.toDomain()
+    override fun findBySchemaName(schemaName: String): Tenant? = tenantJpaRepository.findBySchemaName(schemaName)?.toDomain()
 
-    private fun TenantJpaEntity.toDomain() = Tenant(
-        id = id,
-        schemaName = schemaName,
-        type = type,
-        name = name,
-        vertical = vertical,
-        createdAt = createdAt
-    )
+    private fun TenantJpaEntity.toDomain() =
+        Tenant(
+            id = id,
+            schemaName = schemaName,
+            type = type,
+            name = name,
+            vertical = vertical,
+            createdAt = createdAt,
+        )
 }

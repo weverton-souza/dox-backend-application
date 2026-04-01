@@ -11,7 +11,7 @@ data class CreateFormCommand(
     val description: String? = null,
     val fields: List<Map<String, Any?>> = emptyList(),
     val linkedTemplateId: UUID? = null,
-    val fieldMappings: Map<String, Any?> = emptyMap()
+    val fieldMappings: Map<String, Any?> = emptyMap(),
 )
 
 data class UpdateFormCommand(
@@ -20,25 +20,25 @@ data class UpdateFormCommand(
     val description: String? = null,
     val fields: List<Map<String, Any?>> = emptyList(),
     val linkedTemplateId: UUID? = null,
-    val fieldMappings: Map<String, Any?> = emptyMap()
+    val fieldMappings: Map<String, Any?> = emptyMap(),
 )
 
 data class CreateFormResponseCommand(
     val formId: UUID,
     val customerId: UUID? = null,
     val customerName: String? = null,
-    val answers: List<Map<String, Any?>> = emptyList()
+    val answers: List<Map<String, Any?>> = emptyList(),
 )
 
 data class UpdateFormResponseCommand(
     val id: UUID,
     val status: FormResponseStatus? = null,
-    val answers: List<Map<String, Any?>>? = null
+    val answers: List<Map<String, Any?>>? = null,
 )
 
 data class FormWithCurrentVersion(
     val form: Form,
-    val version: FormVersion
+    val version: FormVersion,
 )
 
 interface FormUseCase {
@@ -56,7 +56,10 @@ interface FormUseCase {
 
     fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion>
 
-    fun findVersion(formId: UUID, version: Int): FormVersion
+    fun findVersion(
+        formId: UUID,
+        version: Int,
+    ): FormVersion
 
     fun createResponse(command: CreateFormResponseCommand): FormResponse
 

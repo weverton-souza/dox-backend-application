@@ -29,26 +29,22 @@ class SecurityConfig(
     @param:Value("\${SWAGGER_ENABLED:false}")
     private val swaggerEnabled: Boolean,
     @param:Value("\${dox.hsts.enabled:false}")
-    private val hstsEnabled: Boolean
+    private val hstsEnabled: Boolean,
 ) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun jwtFilterRegistration(filter: JwtAuthenticationFilter): FilterRegistrationBean<JwtAuthenticationFilter> =
-        FilterRegistrationBean(filter).apply { isEnabled = false }
+    fun jwtFilterRegistration(filter: JwtAuthenticationFilter): FilterRegistrationBean<JwtAuthenticationFilter> = FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
-    fun multiTenantFilterRegistration(filter: MultiTenantFilter): FilterRegistrationBean<MultiTenantFilter> =
-        FilterRegistrationBean(filter).apply { isEnabled = false }
+    fun multiTenantFilterRegistration(filter: MultiTenantFilter): FilterRegistrationBean<MultiTenantFilter> = FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
-    fun rateLimitFilterRegistration(filter: RateLimitFilter): FilterRegistrationBean<RateLimitFilter> =
-        FilterRegistrationBean(filter).apply { isEnabled = false }
+    fun rateLimitFilterRegistration(filter: RateLimitFilter): FilterRegistrationBean<RateLimitFilter> = FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
-    fun requestSizeLimitFilterRegistration(filter: RequestSizeLimitFilter): FilterRegistrationBean<RequestSizeLimitFilter> =
-        FilterRegistrationBean(filter).apply { isEnabled = false }
+    fun requestSizeLimitFilterRegistration(filter: RequestSizeLimitFilter): FilterRegistrationBean<RequestSizeLimitFilter> = FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -77,9 +73,7 @@ class SecurityConfig(
         }
     }
 
-    private fun configureAuthorization(
-        auth: org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry,
-    ) {
+    private fun configureAuthorization(auth: org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) {
         auth.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
         auth.requestMatchers(
             "/auth/register",
@@ -87,13 +81,13 @@ class SecurityConfig(
             "/auth/refresh",
             "/public/**",
             "/actuator/health",
-            "/error"
+            "/error",
         ).permitAll()
         if (swaggerEnabled) {
             auth.requestMatchers(
                 "/v3-docs/**",
                 "/swagger-ui/**",
-                "/swagger-ui.html"
+                "/swagger-ui.html",
             ).permitAll()
         }
         auth.anyRequest().authenticated()

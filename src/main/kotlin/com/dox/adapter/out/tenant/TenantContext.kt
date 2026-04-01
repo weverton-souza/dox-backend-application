@@ -19,7 +19,10 @@ object TenantContext {
             "_${tenantId.replace("-", "")}"
         }
 
-    fun <T> withTenantContext(tenantId: UUID, block: () -> T): T {
+    fun <T> withTenantContext(
+        tenantId: UUID,
+        block: () -> T,
+    ): T {
         setTenantId(convertToSchemaName(tenantId.toString()))
         return try {
             block()

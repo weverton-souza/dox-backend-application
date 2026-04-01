@@ -25,13 +25,14 @@ class AiConfig : AiConfigPort {
 
     override fun ssePoolSize(): Int = ssePoolSize
 
-    override fun costConfig(): AiCostConfig = AiCostConfig(
-        sonnetInputPerMillion = cost.sonnetInputPerMillion,
-        sonnetOutputPerMillion = cost.sonnetOutputPerMillion,
-        sonnetCacheReadPerMillion = cost.sonnetCacheReadPerMillion,
-        sonnetCacheWritePerMillion = cost.sonnetCacheWritePerMillion,
-        brlUsdRate = cost.brlUsdRate
-    )
+    override fun costConfig(): AiCostConfig =
+        AiCostConfig(
+            sonnetInputPerMillion = cost.sonnetInputPerMillion,
+            sonnetOutputPerMillion = cost.sonnetOutputPerMillion,
+            sonnetCacheReadPerMillion = cost.sonnetCacheReadPerMillion,
+            sonnetCacheWritePerMillion = cost.sonnetCacheWritePerMillion,
+            brlUsdRate = cost.brlUsdRate,
+        )
 
     class CostConfig {
         var sonnetInputPerMillion: Double = 3.00

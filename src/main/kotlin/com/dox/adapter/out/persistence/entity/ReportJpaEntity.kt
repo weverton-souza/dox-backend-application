@@ -28,5 +28,5 @@ class ReportJpaEntity(
     var isStructureLocked: Boolean = false,
     @Type(JsonType::class)
     @Column(name = "blocks", columnDefinition = "jsonb")
-    var blocks: List<Map<String, Any?>> = emptyList()
+    var blocks: List<Map<String, Any?>> = emptyList(),
 ) : AbstractJpaEntity()

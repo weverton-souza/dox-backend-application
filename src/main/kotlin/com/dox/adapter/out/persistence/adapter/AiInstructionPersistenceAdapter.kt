@@ -9,21 +9,23 @@ import org.springframework.stereotype.Component
 
 @Component
 class AiInstructionPersistenceAdapter(
-    private val repository: AiInstructionJpaRepository
+    private val repository: AiInstructionJpaRepository,
 ) : AiInstructionPort {
-    override fun findActiveByTypeAndVertical(type: String, vertical: Vertical): AiInstruction? =
-        repository.findFirstByTypeAndVerticalAndActiveTrue(type, vertical)?.toDomain()
+    override fun findActiveByTypeAndVertical(
+        type: String,
+        vertical: Vertical,
+    ): AiInstruction? = repository.findFirstByTypeAndVerticalAndActiveTrue(type, vertical)?.toDomain()
 
-    override fun findActiveByType(type: String): AiInstruction? =
-        repository.findFirstByTypeAndVerticalIsNullAndActiveTrue(type)?.toDomain()
+    override fun findActiveByType(type: String): AiInstruction? = repository.findFirstByTypeAndVerticalIsNullAndActiveTrue(type)?.toDomain()
 
-    private fun AiInstructionJpaEntity.toDomain() = AiInstruction(
-        id = id,
-        type = type,
-        vertical = vertical,
-        content = content,
-        active = active,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    private fun AiInstructionJpaEntity.toDomain() =
+        AiInstruction(
+            id = id,
+            type = type,
+            vertical = vertical,
+            content = content,
+            active = active,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+        )
 }

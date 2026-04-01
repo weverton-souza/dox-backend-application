@@ -17,7 +17,7 @@ data class RegisterRequest(
     @field:NotBlank(message = "Senha é obrigatória")
     @field:Size(min = 8, max = 72, message = "Senha deve ter entre 8 e 72 caracteres")
     val password: String,
-    val vertical: Vertical = Vertical.GENERAL
+    val vertical: Vertical = Vertical.GENERAL,
 )
 
 data class LoginRequest(
@@ -25,17 +25,17 @@ data class LoginRequest(
     @field:Email(message = "Email inválido")
     val email: String,
     @field:NotBlank(message = "Senha é obrigatória")
-    val password: String
+    val password: String,
 )
 
 data class RefreshRequest(
     @field:NotBlank(message = "Refresh token é obrigatório")
-    val refreshToken: String
+    val refreshToken: String,
 )
 
 data class SwitchTenantRequest(
     @field:NotNull(message = "Tenant ID é obrigatório")
-    val tenantId: UUID
+    val tenantId: UUID,
 )
 
 data class AuthResponse(
@@ -45,5 +45,5 @@ data class AuthResponse(
     val email: String,
     val name: String,
     val tenantId: UUID,
-    val vertical: Vertical
+    val vertical: Vertical,
 )

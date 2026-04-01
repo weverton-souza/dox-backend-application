@@ -11,5 +11,5 @@ data class Tenant(
     val type: TenantType,
     val name: String,
     val vertical: Vertical = Vertical.GENERAL,
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
 )

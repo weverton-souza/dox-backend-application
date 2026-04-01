@@ -35,5 +35,5 @@ class FormVersionJpaEntity(
     var fieldMappings: Map<String, Any?> = emptyMap(),
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null,
 )

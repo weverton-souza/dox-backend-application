@@ -18,27 +18,27 @@ import java.util.UUID
 class FormPersistenceAdapter(
     private val formJpaRepository: FormJpaRepository,
     private val formVersionJpaRepository: FormVersionJpaRepository,
-    private val formResponseJpaRepository: FormResponseJpaRepository
+    private val formResponseJpaRepository: FormResponseJpaRepository,
 ) : FormPersistencePort {
     override fun saveForm(form: Form): Form {
-        val entity = formJpaRepository.findById(form.id).orElse(null)
-            ?: FormJpaEntity().apply { id = form.id }
+        val entity =
+            formJpaRepository.findById(form.id).orElse(null)
+                ?: FormJpaEntity().apply { id = form.id }
         entity.linkedTemplateId = form.linkedTemplateId
         entity.currentVersion = form.currentVersion
         return formJpaRepository.save(entity).toDomain()
     }
 
-    override fun findFormById(id: UUID): Form? =
-        formJpaRepository.findById(id).orElse(null)?.toDomain()
+    override fun findFormById(id: UUID): Form? = formJpaRepository.findById(id).orElse(null)?.toDomain()
 
-    override fun findAllForms(): List<Form> =
-        formJpaRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt")).map { it.toDomain() }
+    override fun findAllForms(): List<Form> = formJpaRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt")).map { it.toDomain() }
 
     override fun deleteForm(id: UUID) = formJpaRepository.deleteById(id)
 
     override fun saveVersion(version: FormVersion): FormVersion {
-        val entity = formVersionJpaRepository.findById(version.id).orElse(null)
-            ?: FormVersionJpaEntity().apply { id = version.id }
+        val entity =
+            formVersionJpaRepository.findById(version.id).orElse(null)
+                ?: FormVersionJpaEntity().apply { id = version.id }
         entity.formId = version.formId
         entity.version = version.version
         entity.title = version.title
@@ -48,21 +48,21 @@ class FormPersistenceAdapter(
         return formVersionJpaRepository.save(entity).toDomain()
     }
 
-    override fun findVersionById(id: UUID): FormVersion? =
-        formVersionJpaRepository.findById(id).orElse(null)?.toDomain()
+    override fun findVersionById(id: UUID): FormVersion? = formVersionJpaRepository.findById(id).orElse(null)?.toDomain()
 
-    override fun findVersionsByFormId(formId: UUID): List<FormVersion> =
-        formVersionJpaRepository.findByFormId(formId).map { it.toDomain() }
+    override fun findVersionsByFormId(formId: UUID): List<FormVersion> = formVersionJpaRepository.findByFormId(formId).map { it.toDomain() }
 
-    override fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion> =
-        formVersionJpaRepository.findByFormIdIn(formIds).map { it.toDomain() }
+    override fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion> = formVersionJpaRepository.findByFormIdIn(formIds).map { it.toDomain() }
 
-    override fun findVersionByFormIdAndVersion(formId: UUID, version: Int): FormVersion? =
-        formVersionJpaRepository.findByFormIdAndVersion(formId, version)?.toDomain()
+    override fun findVersionByFormIdAndVersion(
+        formId: UUID,
+        version: Int,
+    ): FormVersion? = formVersionJpaRepository.findByFormIdAndVersion(formId, version)?.toDomain()
 
     override fun saveResponse(response: FormResponse): FormResponse {
-        val entity = formResponseJpaRepository.findById(response.id).orElse(null)
-            ?: FormResponseJpaEntity().apply { id = response.id }
+        val entity =
+            formResponseJpaRepository.findById(response.id).orElse(null)
+                ?: FormResponseJpaEntity().apply { id = response.id }
         entity.formId = response.formId
         entity.formVersionId = response.formVersionId
         entity.customerId = response.customerId
@@ -73,43 +73,41 @@ class FormPersistenceAdapter(
         return formResponseJpaRepository.save(entity).toDomain()
     }
 
-    override fun findResponseById(id: UUID): FormResponse? =
-        formResponseJpaRepository.findById(id).orElse(null)?.toDomain()
+    override fun findResponseById(id: UUID): FormResponse? = formResponseJpaRepository.findById(id).orElse(null)?.toDomain()
 
-    override fun findResponsesByFormId(formId: UUID): List<FormResponse> =
-        formResponseJpaRepository.findByFormId(formId).map { it.toDomain() }
+    override fun findResponsesByFormId(formId: UUID): List<FormResponse> = formResponseJpaRepository.findByFormId(formId).map { it.toDomain() }
 
-    override fun findResponsesByCustomerId(customerId: UUID): List<FormResponse> =
-        formResponseJpaRepository.findByCustomerIdOrderByUpdatedAtDesc(customerId).map { it.toDomain() }
+    override fun findResponsesByCustomerId(customerId: UUID): List<FormResponse> = formResponseJpaRepository.findByCustomerIdOrderByUpdatedAtDesc(customerId).map { it.toDomain() }
 
-    override fun countResponsesByFormVersionId(formVersionId: UUID): Long =
-        formResponseJpaRepository.countByFormVersionId(formVersionId)
+    override fun countResponsesByFormVersionId(formVersionId: UUID): Long = formResponseJpaRepository.countByFormVersionId(formVersionId)
 
-    override fun findResponsesByIds(ids: List<UUID>): List<FormResponse> =
-        formResponseJpaRepository.findAllByIdIn(ids).map { it.toDomain() }
+    override fun findResponsesByIds(ids: List<UUID>): List<FormResponse> = formResponseJpaRepository.findAllByIdIn(ids).map { it.toDomain() }
 
     override fun deleteResponse(id: UUID) = formResponseJpaRepository.deleteById(id)
 
-    private fun FormJpaEntity.toDomain() = Form(
-        id,
-        linkedTemplateId,
-        currentVersion,
-        createdAt,
-        updatedAt
-    )
+    private fun FormJpaEntity.toDomain() =
+        Form(
+            id,
+            linkedTemplateId,
+            currentVersion,
+            createdAt,
+            updatedAt,
+        )
 
-    private fun FormVersionJpaEntity.toDomain() = FormVersion(
-        id,
-        formId,
-        version,
-        title,
-        description,
-        fields,
-        fieldMappings,
-        createdAt
-    )
+    private fun FormVersionJpaEntity.toDomain() =
+        FormVersion(
+            id,
+            formId,
+            version,
+            title,
+            description,
+            fields,
+            fieldMappings,
+            createdAt,
+        )
 
-    private fun FormResponseJpaEntity.toDomain() = FormResponse(
-        id, formId, formVersionId, customerId, customerName, status, answers, generatedReportId, createdAt, updatedAt
-    )
+    private fun FormResponseJpaEntity.toDomain() =
+        FormResponse(
+            id, formId, formVersionId, customerId, customerName, status, answers, generatedReportId, createdAt, updatedAt,
+        )
 }

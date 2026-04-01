@@ -12,27 +12,30 @@ import java.util.UUID
 
 @Service
 class UserServiceImpl(
-    private val userPersistencePort: UserPersistencePort
+    private val userPersistencePort: UserPersistencePort,
 ) : UserUseCase {
     override fun getMe(userId: UUID): UserInfo {
-        val user = userPersistencePort.findById(userId)
-            ?: throw ResourceNotFoundException("Usuário", userId.toString())
+        val user =
+            userPersistencePort.findById(userId)
+                ?: throw ResourceNotFoundException("Usuário", userId.toString())
         return user.toUserInfo()
     }
 
     @Transactional
     override fun updateMe(command: UpdateUserCommand): UserInfo {
-        val user = userPersistencePort.findById(command.userId)
-            ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
+        val user =
+            userPersistencePort.findById(command.userId)
+                ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
 
         val updated = userPersistencePort.save(user.copy(name = command.name))
         return updated.toUserInfo()
     }
 
-    private fun User.toUserInfo() = UserInfo(
-        id = id,
-        email = email,
-        name = name,
-        personalTenantId = personalTenantId
-    )
+    private fun User.toUserInfo() =
+        UserInfo(
+            id = id,
+            email = email,
+            name = name,
+            personalTenantId = personalTenantId,
+        )
 }

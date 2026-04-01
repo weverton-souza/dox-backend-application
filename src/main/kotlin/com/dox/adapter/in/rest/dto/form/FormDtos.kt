@@ -16,7 +16,7 @@ data class FormRequest(
     val fields: List<Map<String, Any?>> = emptyList(),
     val linkedTemplateId: UUID? = null,
     @field:Size(max = 200, message = "Máximo de 200 mapeamentos permitidos")
-    val fieldMappings: Map<String, Any?> = emptyMap()
+    val fieldMappings: Map<String, Any?> = emptyMap(),
 )
 
 data class FormResponseDto(
@@ -28,7 +28,7 @@ data class FormResponseDto(
     val fieldMappings: Map<String, Any?>,
     val currentVersion: Int,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class FormVersionResponseDto(
@@ -39,7 +39,7 @@ data class FormVersionResponseDto(
     val description: String?,
     val fields: List<Map<String, Any?>>,
     val fieldMappings: Map<String, Any?>,
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime?,
 )
 
 data class FormResponseRequest(
@@ -48,7 +48,7 @@ data class FormResponseRequest(
     val customerName: String? = null,
     val status: FormResponseStatus? = null,
     @field:Size(max = 200, message = "Máximo de 200 respostas permitidas")
-    val answers: List<Map<String, Any?>> = emptyList()
+    val answers: List<Map<String, Any?>> = emptyList(),
 )
 
 data class FormResponseResponseDto(
@@ -62,5 +62,5 @@ data class FormResponseResponseDto(
     val generatedReportId: UUID?,
     val version: Int?,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )

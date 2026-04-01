@@ -17,16 +17,17 @@ import org.springframework.stereotype.Component
 @Component
 class SectionPromptBuilder(
     private val promptSanitizer: PromptSanitizer,
-    private val aiInstructionPort: AiInstructionPort
+    private val aiInstructionPort: AiInstructionPort,
 ) : AiSectionPromptPort {
     private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
-        private val SAFE_CUSTOMER_FIELDS = setOf(
-            "name", "age", "education", "profession",
-            "chiefComplaint", "diagnosis", "medications", "referralDoctor",
-            "guardianName", "guardianRelationship"
-        )
+        private val SAFE_CUSTOMER_FIELDS =
+            setOf(
+                "name", "age", "education", "profession",
+                "chiefComplaint", "diagnosis", "medications", "referralDoctor",
+                "guardianName", "guardianRelationship",
+            )
     }
 
     fun buildContext(
@@ -34,7 +35,7 @@ class SectionPromptBuilder(
         formResponse: FormResponse?,
         template: ReportTemplate?,
         professional: ProfessionalSettings?,
-        quantitativeData: QuantitativeDataPayload? = null
+        quantitativeData: QuantitativeDataPayload? = null,
     ): String = buildContext(customer, formResponse?.let { listOf(it) }, template, professional, quantitativeData)
 
     override fun buildContext(
@@ -43,7 +44,7 @@ class SectionPromptBuilder(
         template: ReportTemplate?,
         professional: ProfessionalSettings?,
         quantitativeData: QuantitativeDataPayload?,
-        quantitativeContext: String?
+        quantitativeContext: String?,
     ): String {
         val parts = mutableListOf<String>()
 
@@ -60,7 +61,7 @@ class SectionPromptBuilder(
                     parts.add(buildFormResponseSection(response, label))
                 }
                 parts.add(
-                    "**IMPORTANTE: Quando houver informações conflitantes entre formulários, priorize os dados do formulário mais recente.**"
+                    "**IMPORTANTE: Quando houver informações conflitantes entre formulários, priorize os dados do formulário mais recente.**",
                 )
             }
         }
@@ -78,17 +79,22 @@ class SectionPromptBuilder(
         return parts.joinToString("\n\n")
     }
 
-    override fun buildUserPrompt(sectionType: String, vertical: Vertical?, instruction: String?): String {
+    override fun buildUserPrompt(
+        sectionType: String,
+        vertical: Vertical?,
+        instruction: String?,
+    ): String {
         val dbInstruction = resolveInstruction("section_prompt", vertical)
-        val basePrompt = if (dbInstruction != null) {
-            dbInstruction.replace("{{SECTION_TYPE}}", sectionType)
-        } else {
-            "Com base nos dados acima, elabore a seção \"$sectionType\" do laudo. " +
-                "Use APENAS os dados das respostas do formulário e dados quantitativos fornecidos acima para compor o texto. " +
-                "Cada afirmação deve ter fundamentação direta nos dados disponíveis. " +
-                "Se não houver dados suficientes para alguma parte da seção, indique isso claramente no texto ao invés de inferir ou inventar informações. " +
-                "Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação."
-        }
+        val basePrompt =
+            if (dbInstruction != null) {
+                dbInstruction.replace("{{SECTION_TYPE}}", sectionType)
+            } else {
+                "Com base nos dados acima, elabore a seção \"$sectionType\" do laudo. " +
+                    "Use APENAS os dados das respostas do formulário e dados quantitativos fornecidos acima para compor o texto. " +
+                    "Cada afirmação deve ter fundamentação direta nos dados disponíveis. " +
+                    "Se não houver dados suficientes para alguma parte da seção, indique isso claramente no texto ao invés de inferir ou inventar informações. " +
+                    "Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação."
+            }
         return appendProfessionalInstruction(basePrompt, instruction)
     }
 
@@ -96,21 +102,23 @@ class SectionPromptBuilder(
         sectionType: String,
         previousSections: List<PreviousSectionContext>,
         vertical: Vertical?,
-        instruction: String?
+        instruction: String?,
     ): String {
         if (previousSections.isEmpty()) return buildUserPrompt(sectionType, vertical, instruction)
 
-        val contextBlock = previousSections.joinToString("\n\n") { prev ->
-            "### ${prev.sectionType}\n${prev.summary}"
-        }
+        val contextBlock =
+            previousSections.joinToString("\n\n") { prev ->
+                "### ${prev.sectionType}\n${prev.summary}"
+            }
 
         val dbInstruction = resolveInstruction("section_prompt_with_context", vertical)
-        val basePrompt = if (dbInstruction != null) {
-            dbInstruction
-                .replace("{{SECTION_TYPE}}", sectionType)
-                .replace("{{PREVIOUS_SECTIONS}}", contextBlock)
-        } else {
-            """
+        val basePrompt =
+            if (dbInstruction != null) {
+                dbInstruction
+                    .replace("{{SECTION_TYPE}}", sectionType)
+                    .replace("{{PREVIOUS_SECTIONS}}", contextBlock)
+            } else {
+                """
             |## Seções já escritas neste laudo (mantenha coerência e não repita informações)
             |
             |$contextBlock
@@ -118,12 +126,15 @@ class SectionPromptBuilder(
             |---
             |
             |Com base nos dados acima e nas seções já escritas, elabore a seção "$sectionType" do laudo. Use os dados das respostas do formulário e dados quantitativos para compor o texto. Mantenha coerência com as seções anteriores. Cada afirmação deve ter fundamentação direta nos dados disponíveis. Responda apenas com o texto da seção, sem JSON, sem aspas, sem formatação.
-            """.trimMargin()
-        }
+                """.trimMargin()
+            }
         return appendProfessionalInstruction(basePrompt, instruction)
     }
 
-    private fun appendProfessionalInstruction(basePrompt: String, instruction: String?): String {
+    private fun appendProfessionalInstruction(
+        basePrompt: String,
+        instruction: String?,
+    ): String {
         if (instruction.isNullOrBlank()) return basePrompt
         val sanitized = promptSanitizer.sanitize(instruction)
         return """$basePrompt
@@ -134,22 +145,27 @@ $sanitized
 Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos dados fornecidos."""
     }
 
-    private fun resolveInstruction(type: String, vertical: Vertical?): String? {
-        val instruction = if (vertical != null) {
-            aiInstructionPort.findActiveByTypeAndVertical(type, vertical)
-                ?: aiInstructionPort.findActiveByType(type)
-        } else {
-            aiInstructionPort.findActiveByType(type)
-        }
+    private fun resolveInstruction(
+        type: String,
+        vertical: Vertical?,
+    ): String? {
+        val instruction =
+            if (vertical != null) {
+                aiInstructionPort.findActiveByTypeAndVertical(type, vertical)
+                    ?: aiInstructionPort.findActiveByType(type)
+            } else {
+                aiInstructionPort.findActiveByType(type)
+            }
         return instruction?.content
     }
 
     private fun buildTemplateSection(template: ReportTemplate): String {
-        val blocksDescription = template.blocks.joinToString("\n") { block ->
-            val type = block["type"]?.toString() ?: "unknown"
-            val label = block["label"]?.toString() ?: block["content"]?.toString() ?: ""
-            "- [$type] $label"
-        }
+        val blocksDescription =
+            template.blocks.joinToString("\n") { block ->
+                val type = block["type"]?.toString() ?: "unknown"
+                val label = block["label"]?.toString() ?: block["content"]?.toString() ?: ""
+                "- [$type] $label"
+            }
         return """
             |## Estrutura do laudo (template: ${promptSanitizer.sanitize(template.name)})
             |${if (template.description != null) promptSanitizer.sanitize(template.description) else ""}
@@ -159,12 +175,13 @@ Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos d
     }
 
     private fun buildCustomerSection(customer: Customer): String {
-        val fields = customer.data.entries
-            .filter { it.key in SAFE_CUSTOMER_FIELDS }
-            .filter { !it.value?.toString().isNullOrBlank() }
-            .joinToString("\n") { (key, value) ->
-                "- $key: ${promptSanitizer.sanitize(value?.toString() ?: "")}"
-            }
+        val fields =
+            customer.data.entries
+                .filter { it.key in SAFE_CUSTOMER_FIELDS }
+                .filter { !it.value?.toString().isNullOrBlank() }
+                .joinToString("\n") { (key, value) ->
+                    "- $key: ${promptSanitizer.sanitize(value?.toString() ?: "")}"
+                }
         if (fields.isBlank()) return ""
         return """
             |## Dados do paciente/cliente
@@ -172,20 +189,24 @@ Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos d
             """.trimMargin()
     }
 
-    private fun buildFormResponseSection(formResponse: FormResponse): String =
-        buildFormResponseSection(formResponse, null)
+    private fun buildFormResponseSection(formResponse: FormResponse): String = buildFormResponseSection(formResponse, null)
 
-    private fun buildFormResponseSection(formResponse: FormResponse, sectionLabel: String?): String {
-        val answers = formResponse.answers.joinToString("\n") { answer ->
-            val label = answer["label"]?.toString() ?: answer["fieldId"]?.toString() ?: ""
-            val value = answer["value"]?.toString() ?: ""
-            "- ${promptSanitizer.sanitize(label)}: ${promptSanitizer.sanitize(value)}"
-        }
-        val title = if (sectionLabel != null) {
-            "## Respostas do formulário: ${promptSanitizer.sanitize(sectionLabel)}"
-        } else {
-            "## Respostas do formulário"
-        }
+    private fun buildFormResponseSection(
+        formResponse: FormResponse,
+        sectionLabel: String?,
+    ): String {
+        val answers =
+            formResponse.answers.joinToString("\n") { answer ->
+                val label = answer["label"]?.toString() ?: answer["fieldId"]?.toString() ?: ""
+                val value = answer["value"]?.toString() ?: ""
+                "- ${promptSanitizer.sanitize(label)}: ${promptSanitizer.sanitize(value)}"
+            }
+        val title =
+            if (sectionLabel != null) {
+                "## Respostas do formulário: ${promptSanitizer.sanitize(sectionLabel)}"
+            } else {
+                "## Respostas do formulário"
+            }
         return """
             |$title
             |$answers
@@ -217,23 +238,27 @@ Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos d
 
     private fun buildTableContext(table: ComputedTableData): String {
         val statusLabel = if (table.dataStatus == "partial") "[dados parciais]" else "[dados completos]"
-        val rows = table.rows.joinToString("\n") { row ->
-            val vals = row.values.entries.joinToString(", ") { (col, v) ->
-                "$col=${promptSanitizer.sanitize(v)}"
+        val rows =
+            table.rows.joinToString("\n") { row ->
+                val vals =
+                    row.values.entries.joinToString(", ") { (col, v) ->
+                        "$col=${promptSanitizer.sanitize(v)}"
+                    }
+                "- ${promptSanitizer.sanitize(row.label)}: $vals"
             }
-            "- ${promptSanitizer.sanitize(row.label)}: $vals"
-        }
         return "### Tabela: ${promptSanitizer.sanitize(table.title)} (${promptSanitizer.sanitize(table.category)}) $statusLabel\n$rows"
     }
 
     private fun buildChartContext(chart: ComputedChartData): String {
         val statusLabel = if (chart.dataStatus == "partial") "[dados parciais]" else "[dados completos]"
-        val seriesText = chart.series.joinToString("\n") { series ->
-            val vals = series.values.entries.joinToString(", ") { (cat, v) ->
-                "${promptSanitizer.sanitize(cat)}: $v"
+        val seriesText =
+            chart.series.joinToString("\n") { series ->
+                val vals =
+                    series.values.entries.joinToString(", ") { (cat, v) ->
+                        "${promptSanitizer.sanitize(cat)}: $v"
+                    }
+                "- ${promptSanitizer.sanitize(series.label)}: $vals"
             }
-            "- ${promptSanitizer.sanitize(series.label)}: $vals"
-        }
         return "### Gráfico: ${promptSanitizer.sanitize(chart.title)} $statusLabel\n$seriesText"
     }
 }

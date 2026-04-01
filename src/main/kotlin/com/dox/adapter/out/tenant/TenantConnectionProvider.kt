@@ -10,7 +10,7 @@ import javax.sql.DataSource
 
 @Component
 class TenantConnectionProvider(
-    private val dataSource: DataSource
+    private val dataSource: DataSource,
 ) : MultiTenantConnectionProvider<String>, HibernatePropertiesCustomizer {
     override fun getAnyConnection(): Connection = dataSource.connection
 
@@ -23,7 +23,10 @@ class TenantConnectionProvider(
         return connection
     }
 
-    override fun releaseConnection(tenantIdentifier: String, connection: Connection) {
+    override fun releaseConnection(
+        tenantIdentifier: String,
+        connection: Connection,
+    ) {
         connection.createStatement().use { it.execute("SET search_path TO \"${TenancyConstant.PUBLIC_SCHEMA}\"") }
         connection.close()
     }

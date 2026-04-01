@@ -13,7 +13,7 @@ data class WorkspaceResponse(
     val name: String,
     val type: TenantType,
     val vertical: Vertical,
-    val role: MemberRole?
+    val role: MemberRole?,
 )
 
 data class CreateOrganizationRequest(
@@ -22,12 +22,12 @@ data class CreateOrganizationRequest(
     val name: String,
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
-    val vertical: Vertical = Vertical.GENERAL
+    val vertical: Vertical = Vertical.GENERAL,
 )
 
 data class InviteMemberRequest(
     @field:NotBlank(message = "Email é obrigatório")
     @field:Email(message = "Email inválido")
     val email: String,
-    val role: MemberRole = MemberRole.MEMBER
+    val role: MemberRole = MemberRole.MEMBER,
 )

@@ -6,7 +6,11 @@ import java.util.UUID
 data class FormLinkTokenData(val tenantId: UUID, val formLinkId: UUID)
 
 interface AuthTokenPort {
-    fun generateAccessToken(userId: UUID, email: String, tenantId: UUID): String
+    fun generateAccessToken(
+        userId: UUID,
+        email: String,
+        tenantId: UUID,
+    ): String
 
     fun generateRefreshToken(): String
 
@@ -18,7 +22,11 @@ interface AuthTokenPort {
 
     fun extractTenantId(token: String): UUID
 
-    fun generateFormLinkToken(tenantId: UUID, formLinkId: UUID, expiresAt: LocalDateTime): String
+    fun generateFormLinkToken(
+        tenantId: UUID,
+        formLinkId: UUID,
+        expiresAt: LocalDateTime,
+    ): String
 
     fun extractFormLinkData(token: String): FormLinkTokenData
 }

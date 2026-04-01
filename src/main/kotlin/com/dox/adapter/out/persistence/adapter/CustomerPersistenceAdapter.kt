@@ -23,54 +23,56 @@ import java.util.UUID
 class CustomerPersistenceAdapter(
     private val customerJpaRepository: CustomerJpaRepository,
     private val noteJpaRepository: CustomerNoteJpaRepository,
-    private val eventJpaRepository: CustomerEventJpaRepository
+    private val eventJpaRepository: CustomerEventJpaRepository,
 ) : CustomerPersistencePort {
     override fun save(customer: Customer): Customer {
-        val entity = customerJpaRepository.findById(customer.id).orElse(null)
-            ?: CustomerJpaEntity().apply { id = customer.id }
+        val entity =
+            customerJpaRepository.findById(customer.id).orElse(null)
+                ?: CustomerJpaEntity().apply { id = customer.id }
         entity.data = customer.data
         return customerJpaRepository.save(entity).toDomain()
     }
 
-    override fun findById(id: UUID): Customer? =
-        customerJpaRepository.findById(id).orElse(null)?.toDomain()
+    override fun findById(id: UUID): Customer? = customerJpaRepository.findById(id).orElse(null)?.toDomain()
 
     override fun findAll(pageable: Pageable): Page<Customer> =
         customerJpaRepository.findAll(
-            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt"))
+            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt")),
         ).map { it.toDomain() }
 
-    override fun search(query: String, pageable: Pageable): Page<Customer> =
+    override fun search(
+        query: String,
+        pageable: Pageable,
+    ): Page<Customer> =
         customerJpaRepository.searchByNameOrCpf(
             query,
-            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt"))
+            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt")),
         ).map { it.toDomain() }
 
-    override fun softDelete(id: UUID) =
-        customerJpaRepository.softDeleteById(id, "Cliente")
+    override fun softDelete(id: UUID) = customerJpaRepository.softDeleteById(id, "Cliente")
 
     override fun saveNote(note: CustomerNote): CustomerNote {
-        val entity = CustomerNoteJpaEntity().apply {
-            id = note.id
-            customerId = note.customerId
-            content = note.content
-        }
+        val entity =
+            CustomerNoteJpaEntity().apply {
+                id = note.id
+                customerId = note.customerId
+                content = note.content
+            }
         return noteJpaRepository.save(entity).toDomain()
     }
 
-    override fun findNoteById(noteId: UUID): CustomerNote? =
-        noteJpaRepository.findById(noteId).orElse(null)?.toDomain()
+    override fun findNoteById(noteId: UUID): CustomerNote? = noteJpaRepository.findById(noteId).orElse(null)?.toDomain()
 
-    override fun findNotesByCustomerId(customerId: UUID): List<CustomerNote> =
-        noteJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
+    override fun findNotesByCustomerId(customerId: UUID): List<CustomerNote> = noteJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
 
     override fun deleteNote(noteId: UUID) {
         noteJpaRepository.softDeleteById(noteId, "Nota")
     }
 
     override fun saveEvent(event: CustomerEvent): CustomerEvent {
-        val entity = eventJpaRepository.findById(event.id).orElse(null)
-            ?: CustomerEventJpaEntity().apply { id = event.id }
+        val entity =
+            eventJpaRepository.findById(event.id).orElse(null)
+                ?: CustomerEventJpaEntity().apply { id = event.id }
         entity.customerId = event.customerId
         entity.type = event.type
         entity.title = event.title
@@ -79,45 +81,47 @@ class CustomerPersistenceAdapter(
         return eventJpaRepository.save(entity).toDomain()
     }
 
-    override fun findEventById(eventId: UUID): CustomerEvent? =
-        eventJpaRepository.findById(eventId).orElse(null)?.toDomain()
+    override fun findEventById(eventId: UUID): CustomerEvent? = eventJpaRepository.findById(eventId).orElse(null)?.toDomain()
 
-    override fun findEventsByCustomerId(customerId: UUID): List<CustomerEvent> =
-        eventJpaRepository.findByCustomerIdOrderByDateDesc(customerId).map { it.toDomain() }
+    override fun findEventsByCustomerId(customerId: UUID): List<CustomerEvent> = eventJpaRepository.findByCustomerIdOrderByDateDesc(customerId).map { it.toDomain() }
 
     override fun deleteEvent(eventId: UUID) {
         eventJpaRepository.softDeleteById(eventId, "Evento")
     }
 
-    override fun findByIds(ids: Set<UUID>): List<Customer> =
-        customerJpaRepository.findAllById(ids).map { it.toDomain() }
+    override fun findByIds(ids: Set<UUID>): List<Customer> = customerJpaRepository.findAllById(ids).map { it.toDomain() }
 
-    override fun findEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<CustomerEvent> =
-        eventJpaRepository.findByDateBetweenOrderByDateAsc(from, to).map { it.toDomain() }
+    override fun findEventsByDateRange(
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): List<CustomerEvent> = eventJpaRepository.findByDateBetweenOrderByDateAsc(from, to).map { it.toDomain() }
 
-    private fun CustomerJpaEntity.toDomain() = Customer(
-        id = id,
-        data = data,
-        deleted = deleted,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    private fun CustomerJpaEntity.toDomain() =
+        Customer(
+            id = id,
+            data = data,
+            deleted = deleted,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+        )
 
-    private fun CustomerNoteJpaEntity.toDomain() = CustomerNote(
-        id = id,
-        customerId = customerId,
-        content = content,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    private fun CustomerNoteJpaEntity.toDomain() =
+        CustomerNote(
+            id = id,
+            customerId = customerId,
+            content = content,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+        )
 
-    private fun CustomerEventJpaEntity.toDomain() = CustomerEvent(
-        id = id,
-        customerId = customerId,
-        type = type,
-        title = title,
-        description = description,
-        date = date,
-        createdAt = createdAt
-    )
+    private fun CustomerEventJpaEntity.toDomain() =
+        CustomerEvent(
+            id = id,
+            customerId = customerId,
+            type = type,
+            title = title,
+            description = description,
+            date = date,
+            createdAt = createdAt,
+        )
 }

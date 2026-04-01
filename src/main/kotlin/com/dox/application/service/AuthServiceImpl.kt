@@ -35,7 +35,7 @@ class AuthServiceImpl(
     private val refreshTokenPersistencePort: RefreshTokenPersistencePort,
     private val organizationPersistencePort: OrganizationPersistencePort,
     private val authTokenPort: AuthTokenPort,
-    private val passwordEncoderPort: PasswordEncoderPort
+    private val passwordEncoderPort: PasswordEncoderPort,
 ) : AuthUseCase {
     companion object {
         private const val REFRESH_TOKEN_DURATION_DAYS = 7L
@@ -51,35 +51,39 @@ class AuthServiceImpl(
             throw BusinessException("Não foi possível completar o registro")
         }
 
-        val tenant = tenantProvisioningService.provisionTenant(
-            name = command.name,
-            type = TenantType.PERSONAL,
-            vertical = command.vertical
-        )
-
-        val user = userPersistencePort.save(
-            User(
-                email = command.email,
+        val tenant =
+            tenantProvisioningService.provisionTenant(
                 name = command.name,
-                passwordHash = passwordEncoderPort.encode(command.password),
-                personalTenantId = tenant.id
+                type = TenantType.PERSONAL,
+                vertical = command.vertical,
             )
-        )
+
+        val user =
+            userPersistencePort.save(
+                User(
+                    email = command.email,
+                    name = command.name,
+                    passwordHash = passwordEncoderPort.encode(command.password),
+                    personalTenantId = tenant.id,
+                ),
+            )
 
         return generateAuthResult(user, tenant.id)
     }
 
     @Transactional
     override fun login(command: LoginCommand): AuthResult {
-        val user = userPersistencePort.findByEmail(command.email)
-            ?: throw InvalidCredentialsException()
+        val user =
+            userPersistencePort.findByEmail(command.email)
+                ?: throw InvalidCredentialsException()
 
         if (!passwordEncoderPort.matches(command.password, user.passwordHash)) {
             throw InvalidCredentialsException()
         }
 
-        val tenantId = user.personalTenantId
-            ?: throw BusinessException("Usuário sem workspace pessoal")
+        val tenantId =
+            user.personalTenantId
+                ?: throw BusinessException("Usuário sem workspace pessoal")
 
         return generateAuthResult(user, tenantId)
     }
@@ -87,20 +91,23 @@ class AuthServiceImpl(
     @Transactional
     override fun refresh(refreshToken: String): AuthResult {
         val tokenHash = hashToken(refreshToken)
-        val storedToken = refreshTokenPersistencePort.findByTokenHash(tokenHash)
-            ?: throw InvalidTokenException("Refresh token inválido")
+        val storedToken =
+            refreshTokenPersistencePort.findByTokenHash(tokenHash)
+                ?: throw InvalidTokenException("Refresh token inválido")
 
         if (storedToken.expiresAt.isExpired()) {
             throw TokenExpiredException()
         }
 
-        val user = userPersistencePort.findById(storedToken.userId)
-            ?: throw ResourceNotFoundException("Usuário")
+        val user =
+            userPersistencePort.findById(storedToken.userId)
+                ?: throw ResourceNotFoundException("Usuário")
 
         refreshTokenPersistencePort.deleteByUserId(user.id)
 
-        val tenantId = user.personalTenantId
-            ?: throw BusinessException("Usuário sem workspace pessoal")
+        val tenantId =
+            user.personalTenantId
+                ?: throw BusinessException("Usuário sem workspace pessoal")
 
         return generateAuthResult(user, tenantId)
     }
@@ -112,18 +119,21 @@ class AuthServiceImpl(
 
     @Transactional(readOnly = true)
     override fun switchTenant(command: SwitchTenantCommand): AuthResult {
-        val user = userPersistencePort.findById(command.userId)
-            ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
+        val user =
+            userPersistencePort.findById(command.userId)
+                ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
 
-        val tenant = tenantPersistencePort.findById(command.tenantId)
-            ?: throw ResourceNotFoundException("Tenant", command.tenantId.toString())
+        val tenant =
+            tenantPersistencePort.findById(command.tenantId)
+                ?: throw ResourceNotFoundException("Tenant", command.tenantId.toString())
 
-        val hasAccess = user.personalTenantId == command.tenantId ||
-            organizationPersistencePort.findMembersByUserId(user.id)
-                .any { membership ->
-                    val org = organizationPersistencePort.findById(membership.organizationId)
-                    org?.tenantId == command.tenantId
-                }
+        val hasAccess =
+            user.personalTenantId == command.tenantId ||
+                organizationPersistencePort.findMembersByUserId(user.id)
+                    .any { membership ->
+                        val org = organizationPersistencePort.findById(membership.organizationId)
+                        org?.tenantId == command.tenantId
+                    }
 
         if (!hasAccess) {
             throw AccessDeniedException("Sem acesso a este workspace")
@@ -138,15 +148,19 @@ class AuthServiceImpl(
             email = user.email,
             name = user.name,
             tenantId = command.tenantId,
-            vertical = tenant.vertical
+            vertical = tenant.vertical,
         )
     }
 
-    private fun generateAuthResult(user: User, tenantId: UUID): AuthResult {
+    private fun generateAuthResult(
+        user: User,
+        tenantId: UUID,
+    ): AuthResult {
         refreshTokenPersistencePort.deleteByUserId(user.id)
 
-        val tenant = tenantPersistencePort.findById(tenantId)
-            ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
+        val tenant =
+            tenantPersistencePort.findById(tenantId)
+                ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
 
         val accessToken = authTokenPort.generateAccessToken(user.id, user.email, tenantId)
         val rawRefreshToken = authTokenPort.generateRefreshToken()
@@ -156,8 +170,8 @@ class AuthServiceImpl(
             RefreshToken(
                 userId = user.id,
                 tokenHash = tokenHash,
-                expiresAt = LocalDateTime.now().plusDays(REFRESH_TOKEN_DURATION_DAYS)
-            )
+                expiresAt = LocalDateTime.now().plusDays(REFRESH_TOKEN_DURATION_DAYS),
+            ),
         )
 
         return AuthResult(
@@ -167,7 +181,7 @@ class AuthServiceImpl(
             email = user.email,
             name = user.name,
             tenantId = tenantId,
-            vertical = tenant.vertical
+            vertical = tenant.vertical,
         )
     }
 

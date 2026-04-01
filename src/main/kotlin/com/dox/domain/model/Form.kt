@@ -9,7 +9,7 @@ data class Form(
     val linkedTemplateId: UUID? = null,
     val currentVersion: Int = 1,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )
 
 data class FormVersion(
@@ -20,7 +20,7 @@ data class FormVersion(
     val description: String? = null,
     val fields: List<Map<String, Any?>> = emptyList(),
     val fieldMappings: Map<String, Any?> = emptyMap(),
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
 )
 
 data class FormResponse(
@@ -33,5 +33,5 @@ data class FormResponse(
     val answers: List<Map<String, Any?>> = emptyList(),
     val generatedReportId: UUID? = null,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

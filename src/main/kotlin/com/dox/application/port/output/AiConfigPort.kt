@@ -5,7 +5,7 @@ data class AiCostConfig(
     val sonnetOutputPerMillion: Double,
     val sonnetCacheReadPerMillion: Double,
     val sonnetCacheWritePerMillion: Double,
-    val brlUsdRate: Double
+    val brlUsdRate: Double,
 )
 
 interface AiConfigPort {

@@ -32,41 +32,41 @@ interface AiResource : BaseResource {
     @PostMapping("/reports/{id}/generate-section")
     fun generateSection(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: GenerateSectionRequest
+        @Valid @RequestBody request: GenerateSectionRequest,
     ): ResponseEntity<GenerateSectionResponse>
 
     @Operation(summary = "Regerar seção do laudo com IA")
     @PostMapping("/reports/{id}/regenerate-section")
     fun regenerateSection(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: RegenerateSectionRequest
+        @Valid @RequestBody request: RegenerateSectionRequest,
     ): ResponseEntity<GenerateSectionResponse>
 
     @Operation(summary = "Gerar laudo completo com IA (SSE)")
     @PostMapping("/reports/{id}/generate-all", produces = ["text/event-stream"])
     fun generateFullReport(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: GenerateFullReportRequest
+        @Valid @RequestBody request: GenerateFullReportRequest,
     ): SseEmitter
 
     @Operation(summary = "Resumo de consumo de IA do mês")
     @GetMapping("/ai/usage/summary")
     fun getUsageSummary(
         @RequestParam month: Int,
-        @RequestParam year: Int
+        @RequestParam year: Int,
     ): ResponseEntity<AiUsageSummaryResponse>
 
     @Operation(summary = "Histórico detalhado de uso de IA")
     @GetMapping("/ai/usage/history")
     fun getUsageHistory(
         @RequestParam month: Int,
-        @RequestParam year: Int
+        @RequestParam year: Int,
     ): ResponseEntity<List<AiUsageDetailResponse>>
 
     @Operation(summary = "Histórico de uso de IA por relatório")
     @GetMapping("/ai/usage/report/{reportId}")
     fun getUsageByReport(
-        @PathVariable reportId: UUID
+        @PathVariable reportId: UUID,
     ): ResponseEntity<List<AiUsageDetailResponse>>
 
     @Operation(summary = "Quota de IA do workspace")
@@ -76,7 +76,7 @@ interface AiResource : BaseResource {
     @Operation(summary = "Atualizar quota de IA do workspace")
     @PutMapping("/ai/quota")
     fun updateQuota(
-        @Valid @RequestBody request: UpdateAiQuotaRequest
+        @Valid @RequestBody request: UpdateAiQuotaRequest,
     ): ResponseEntity<AiQuotaResponse>
 
     @Operation(summary = "Status do serviço de IA")
@@ -87,18 +87,18 @@ interface AiResource : BaseResource {
     @PostMapping("/reports/{id}/review-text")
     fun reviewText(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: ReviewTextRequest
+        @Valid @RequestBody request: ReviewTextRequest,
     ): ResponseEntity<ReviewTextResponse>
 
     @Operation(summary = "Fontes usadas nas gerações do relatório")
     @GetMapping("/reports/{reportId}/generation-sources")
     fun getGenerationSources(
-        @PathVariable reportId: UUID
+        @PathVariable reportId: UUID,
     ): ResponseEntity<List<AiGenerationSourceResponse>>
 
     @Operation(summary = "Info de regenerações disponíveis para o relatório")
     @GetMapping("/reports/{reportId}/regeneration-info")
     fun getRegenerationInfo(
-        @PathVariable reportId: UUID
+        @PathVariable reportId: UUID,
     ): ResponseEntity<RegenerationInfoResponse>
 }

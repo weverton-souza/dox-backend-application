@@ -25,5 +25,5 @@ class RefreshTokenJpaEntity(
     var expiresAt: LocalDateTime = LocalDateTime.now(),
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null,
 )

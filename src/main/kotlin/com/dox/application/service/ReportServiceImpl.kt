@@ -18,7 +18,7 @@ import java.util.UUID
 
 @Service
 class ReportServiceImpl(
-    private val reportPersistencePort: ReportPersistencePort
+    private val reportPersistencePort: ReportPersistencePort,
 ) : ReportUseCase {
     companion object {
         private const val MAX_VERSIONS = 20
@@ -33,24 +33,23 @@ class ReportServiceImpl(
                 formResponseId = command.formResponseId,
                 templateId = command.templateId,
                 isStructureLocked = command.isStructureLocked,
-                blocks = command.blocks
-            )
+                blocks = command.blocks,
+            ),
         )
 
     override fun findById(id: UUID): Report =
         reportPersistencePort.findById(id)
             ?: throw ResourceNotFoundException("Relatório", id.toString())
 
-    override fun findAll(pageable: Pageable): Page<Report> =
-        reportPersistencePort.findAll(pageable)
+    override fun findAll(pageable: Pageable): Page<Report> = reportPersistencePort.findAll(pageable)
 
-    override fun findByCustomerId(customerId: UUID): List<Report> =
-        reportPersistencePort.findByCustomerId(customerId)
+    override fun findByCustomerId(customerId: UUID): List<Report> = reportPersistencePort.findByCustomerId(customerId)
 
     @Transactional
     override fun update(command: UpdateReportCommand): Report {
-        val existing = reportPersistencePort.findById(command.id)
-            ?: throw ResourceNotFoundException("Relatório", command.id.toString())
+        val existing =
+            reportPersistencePort.findById(command.id)
+                ?: throw ResourceNotFoundException("Relatório", command.id.toString())
 
         if (command.status != null && command.status != existing.status) {
             validateStatusTransition(existing.status, command.status)
@@ -60,17 +59,21 @@ class ReportServiceImpl(
             existing.copy(
                 status = command.status ?: existing.status,
                 customerName = command.customerName ?: existing.customerName,
-                blocks = command.blocks ?: existing.blocks
-            )
+                blocks = command.blocks ?: existing.blocks,
+            ),
         )
     }
 
-    private fun validateStatusTransition(current: ReportStatus, target: ReportStatus) {
-        val allowed = when (current) {
-            ReportStatus.RASCUNHO -> setOf(ReportStatus.EM_REVISAO)
-            ReportStatus.EM_REVISAO -> setOf(ReportStatus.FINALIZADO, ReportStatus.RASCUNHO)
-            ReportStatus.FINALIZADO -> setOf(ReportStatus.EM_REVISAO)
-        }
+    private fun validateStatusTransition(
+        current: ReportStatus,
+        target: ReportStatus,
+    ) {
+        val allowed =
+            when (current) {
+                ReportStatus.RASCUNHO -> setOf(ReportStatus.EM_REVISAO)
+                ReportStatus.EM_REVISAO -> setOf(ReportStatus.FINALIZADO, ReportStatus.RASCUNHO)
+                ReportStatus.FINALIZADO -> setOf(ReportStatus.EM_REVISAO)
+            }
         if (target !in allowed) {
             throw BusinessException("Transição de status inválida: ${current.name} → ${target.name}")
         }
@@ -84,8 +87,9 @@ class ReportServiceImpl(
     }
 
     override fun getExportData(id: UUID): Report {
-        val report = reportPersistencePort.findById(id)
-            ?: throw ResourceNotFoundException("Relatório", id.toString())
+        val report =
+            reportPersistencePort.findById(id)
+                ?: throw ResourceNotFoundException("Relatório", id.toString())
 
         if (report.status != ReportStatus.FINALIZADO) {
             throw BusinessException("Relatório precisa estar finalizado para exportação. Status atual: ${report.status.name}")
@@ -94,13 +98,13 @@ class ReportServiceImpl(
         return report
     }
 
-    override fun getVersions(reportId: UUID): List<ReportVersion> =
-        reportPersistencePort.findVersionsByReportId(reportId)
+    override fun getVersions(reportId: UUID): List<ReportVersion> = reportPersistencePort.findVersionsByReportId(reportId)
 
     @Transactional
     override fun createVersion(command: CreateVersionCommand): ReportVersion {
-        val report = reportPersistencePort.findById(command.reportId)
-            ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
+        val report =
+            reportPersistencePort.findById(command.reportId)
+                ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
 
         if (reportPersistencePort.countVersionsByReportId(command.reportId) >= MAX_VERSIONS) {
             reportPersistencePort.deleteOldestVersion(command.reportId)
@@ -113,8 +117,8 @@ class ReportServiceImpl(
                 description = command.description,
                 customerName = report.customerName,
                 blocks = report.blocks,
-                type = command.type
-            )
+                type = command.type,
+            ),
         )
     }
 }
