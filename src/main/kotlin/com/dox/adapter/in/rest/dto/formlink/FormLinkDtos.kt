@@ -3,6 +3,7 @@ package com.dox.adapter.`in`.rest.dto.formlink
 import com.dox.domain.enum.FormLinkStatus
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -35,6 +36,7 @@ data class PublicFormResponse(
 )
 
 data class PublicFormSubmitRequest(
+    @field:Size(max = 200, message = "Máximo de 200 respostas permitidas")
     val answers: List<Map<String, Any?>> = emptyList()
 )
 

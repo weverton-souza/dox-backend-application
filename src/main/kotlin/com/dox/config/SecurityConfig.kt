@@ -26,8 +26,10 @@ class SecurityConfig(
     private val rateLimitFilter: RateLimitFilter,
     private val requestSizeLimitFilter: RequestSizeLimitFilter,
     private val corsConfig: CorsConfig,
-    @param:Value("\${SWAGGER_ENABLED:true}")
-    private val swaggerEnabled: Boolean
+    @param:Value("\${SWAGGER_ENABLED:false}")
+    private val swaggerEnabled: Boolean,
+    @param:Value("\${dox.hsts.enabled:false}")
+    private val hstsEnabled: Boolean
 ) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -67,7 +69,7 @@ class SecurityConfig(
         headers.contentSecurityPolicy { it.policyDirectives("default-src 'self'; frame-ancestors 'none'") }
         headers.referrerPolicy { it.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
         headers.permissionsPolicy { it.policy("camera=(), microphone=(), geolocation=()") }
-        if (!swaggerEnabled) {
+        if (hstsEnabled) {
             headers.httpStrictTransportSecurity { hsts ->
                 hsts.includeSubDomains(true)
                 hsts.maxAgeInSeconds(31536000)

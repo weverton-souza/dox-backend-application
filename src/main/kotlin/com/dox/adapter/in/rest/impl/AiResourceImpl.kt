@@ -14,6 +14,7 @@ import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
 import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
 import com.dox.adapter.`in`.rest.resource.AiResource
+import com.dox.adapter.out.tenant.TenantContext
 import com.dox.application.port.input.ComputedChartData
 import com.dox.application.port.input.ComputedChartSeries
 import com.dox.application.port.input.ComputedTableData
@@ -26,6 +27,7 @@ import com.dox.application.port.input.RegenerateSectionCommand
 import com.dox.application.port.input.ReportGenerationUseCase
 import com.dox.application.port.input.ReviewTextCommand
 import com.dox.application.port.input.UpdateAiQuotaCommand
+import com.dox.application.port.output.AiConfigPort
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.AiGenerationResult
 import com.dox.domain.model.AiUsage
@@ -36,15 +38,17 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.util.UUID
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 @RestController
 class AiResourceImpl(
     private val reportGenerationUseCase: ReportGenerationUseCase,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    aiConfigPort: AiConfigPort
 ) : AiResource {
     private val log = LoggerFactory.getLogger(javaClass)
-    private val sseExecutor = Executors.newCachedThreadPool()
+    private val sseExecutor: ExecutorService = Executors.newFixedThreadPool(aiConfigPort.ssePoolSize())
 
     override fun generateFullReport(id: UUID, request: GenerateFullReportRequest): SseEmitter {
         val emitter = SseEmitter(300_000L)
@@ -96,9 +100,7 @@ class AiResourceImpl(
             try {
                 ContextHolder.setUserId(userId)
                 ContextHolder.setTenantId(tenantId)
-                com.dox.adapter.out.tenant.TenantContext.setTenantId(
-                    com.dox.adapter.out.tenant.TenantContext.convertToSchemaName(tenantId.toString())
-                )
+                TenantContext.setTenantId(TenantContext.convertToSchemaName(tenantId.toString()))
 
                 reportGenerationUseCase.generateFullReport(command) { event ->
                     try {
@@ -127,6 +129,7 @@ class AiResourceImpl(
                 emitter.completeWithError(e)
             } finally {
                 ContextHolder.clear()
+                TenantContext.clear()
             }
         }
 

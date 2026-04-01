@@ -39,4 +39,21 @@ interface AiUsageJpaRepository : JpaRepository<AiUsageJpaEntity, UUID> {
         startDate: LocalDateTime,
         endDate: LocalDateTime
     ): List<AiUsageJpaEntity>
+
+    @Query(
+        "SELECT COALESCE(SUM(e.inputTokens), 0), " +
+            "COALESCE(SUM(e.outputTokens), 0), " +
+            "COALESCE(SUM(e.cacheReadTokens), 0), " +
+            "COALESCE(SUM(e.cacheWriteTokens), 0), " +
+            "COALESCE(SUM(e.estimatedCostBrl), 0) " +
+            "FROM AiUsageJpaEntity e " +
+            "WHERE e.professionalId = :professionalId " +
+            "AND e.createdAt >= :startDate " +
+            "AND e.createdAt < :endDate"
+    )
+    fun sumTokensByProfessionalAndPeriod(
+        professionalId: UUID,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): Array<Any>
 }

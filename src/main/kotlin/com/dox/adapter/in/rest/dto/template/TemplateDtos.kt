@@ -11,6 +11,7 @@ data class ReportTemplateRequest(
     val name: String,
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
+    @field:Size(max = 200, message = "Máximo de 200 blocos permitidos")
     val blocks: List<Map<String, Any?>> = emptyList(),
     val isLocked: Boolean = false
 )
@@ -37,7 +38,9 @@ data class ScoreTableTemplateRequest(
     val instrumentName: String? = null,
     @field:Size(max = 100, message = "Categoria deve ter no máximo 100 caracteres")
     val category: String? = null,
+    @field:Size(max = 100, message = "Máximo de 100 colunas permitidas")
     val columns: List<Map<String, Any?>> = emptyList(),
+    @field:Size(max = 500, message = "Máximo de 500 linhas permitidas")
     val rows: List<Map<String, Any?>> = emptyList()
 )
 

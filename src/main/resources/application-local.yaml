@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dox
+    username: dox
+    password: dox_secret
+
+dox:
+  security:
+    jwt-signing-key: intSz26ioFppLXCsH7tta3HicyHtkJRTIuiC4M8jVRaP6wQNs3CNvG3mNjICqQ1M
+  hsts:
+    enabled: false
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
+
+cors:
+  allowed-origins: http://localhost:5173,http://localhost:3000

@@ -12,8 +12,10 @@ data class FormRequest(
     val title: String,
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
+    @field:Size(max = 200, message = "Máximo de 200 campos permitidos")
     val fields: List<Map<String, Any?>> = emptyList(),
     val linkedTemplateId: UUID? = null,
+    @field:Size(max = 200, message = "Máximo de 200 mapeamentos permitidos")
     val fieldMappings: Map<String, Any?> = emptyMap()
 )
 
@@ -45,6 +47,7 @@ data class FormResponseRequest(
     @field:Size(max = 255, message = "Nome do cliente deve ter no máximo 255 caracteres")
     val customerName: String? = null,
     val status: FormResponseStatus? = null,
+    @field:Size(max = 200, message = "Máximo de 200 respostas permitidas")
     val answers: List<Map<String, Any?>> = emptyList()
 )
 

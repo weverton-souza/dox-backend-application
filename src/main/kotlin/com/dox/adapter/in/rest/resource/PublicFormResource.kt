@@ -6,6 +6,7 @@ import com.dox.adapter.`in`.rest.dto.formlink.PublicFormSubmitResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Size
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,13 +20,13 @@ interface PublicFormResource : BaseResource {
     @Operation(summary = "Obter formulário público pelo token")
     @GetMapping("/{token}")
     fun getForm(
-        @PathVariable token: String
+        @PathVariable @Size(max = 255, message = "Token inválido") token: String
     ): ResponseEntity<PublicFormResponse>
 
     @Operation(summary = "Submeter respostas do formulário público")
     @PostMapping("/{token}/submit")
     fun submitForm(
-        @PathVariable token: String,
+        @PathVariable @Size(max = 255, message = "Token inválido") token: String,
         @Valid @RequestBody request: PublicFormSubmitRequest
     ): ResponseEntity<PublicFormSubmitResponse>
 }

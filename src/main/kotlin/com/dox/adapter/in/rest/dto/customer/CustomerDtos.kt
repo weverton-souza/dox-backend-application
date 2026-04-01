@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class CustomerRequest(
+    @field:Size(max = 100, message = "Máximo de 100 campos permitidos")
     val data: Map<String, Any?>
 )
 

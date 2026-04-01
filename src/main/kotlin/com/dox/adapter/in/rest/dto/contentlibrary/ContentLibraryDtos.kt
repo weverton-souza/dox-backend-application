@@ -9,6 +9,7 @@ data class ContentLibraryRequest(
     @field:NotBlank(message = "Título é obrigatório")
     @field:Size(max = 300, message = "Título deve ter no máximo 300 caracteres")
     val title: String,
+    @field:Size(max = 100, message = "Máximo de 100 itens de conteúdo permitidos")
     val content: List<Map<String, Any?>>,
     @field:NotBlank(message = "Tipo é obrigatório")
     val type: String = "reference",

@@ -3,6 +3,8 @@ server:
   max-http-request-header-size: 16KB
 
 spring:
+  profiles:
+    default: local
   main:
     allow-bean-definition-overriding: true
   application:
@@ -13,9 +15,9 @@ spring:
     problemdetails:
       enabled: true
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:dox}
-    username: ${POSTGRES_USER:dox}
-    password: ${POSTGRES_PASSWORD:dox_secret}
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -33,7 +35,7 @@ spring:
 
 dox:
   security:
-    jwt-signing-key: ${JWT_SECRET:intSz26ioFppLXCsH7tta3HicyHtkJRTIuiC4M8jVRaP6wQNs3CNvG3mNjICqQ1M}
+    jwt-signing-key: ${JWT_SECRET}
     access-token-expiration: ${ACCESS_TOKEN_EXPIRATION:10800000}
     refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION:604800000}
   ai:
@@ -41,12 +43,15 @@ dox:
     default-model: ${AI_DEFAULT_MODEL:claude-sonnet-4-6}
     max-concurrent-per-tenant: ${AI_MAX_CONCURRENT:5}
     max-regenerations-per-report: ${AI_MAX_REGENERATIONS:3}
+    sse-pool-size: ${AI_SSE_POOL_SIZE:10}
     cost:
       sonnet-input-per-million: ${AI_COST_SONNET_INPUT:3.00}
       sonnet-output-per-million: ${AI_COST_SONNET_OUTPUT:15.00}
       sonnet-cache-read-per-million: ${AI_COST_SONNET_CACHE_READ:0.30}
       sonnet-cache-write-per-million: ${AI_COST_SONNET_CACHE_WRITE:3.75}
       brl-usd-rate: ${AI_BRL_USD_RATE:5.80}
+  hsts:
+    enabled: ${HSTS_ENABLED:false}
 
 spring.ai:
   anthropic:
@@ -69,8 +74,8 @@ springdoc:
   swagger-ui:
     tags-sorter: alpha
     operations-sorter: alpha
-    enabled: ${SWAGGER_ENABLED:true}
+    enabled: ${SWAGGER_ENABLED:false}
     doc-expansion: none
   api-docs:
     path: /v3-docs
-    enabled: ${SWAGGER_ENABLED:true}
+    enabled: ${SWAGGER_ENABLED:false}

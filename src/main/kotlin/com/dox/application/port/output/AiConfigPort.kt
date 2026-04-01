@@ -17,5 +17,7 @@ interface AiConfigPort {
 
     fun regenerationLimit(): Int
 
+    fun ssePoolSize(): Int
+
     fun costConfig(): AiCostConfig
 }

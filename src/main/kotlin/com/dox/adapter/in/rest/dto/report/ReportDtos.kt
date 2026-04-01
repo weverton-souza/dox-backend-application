@@ -13,6 +13,7 @@ data class ReportRequest(
     val formResponseId: UUID? = null,
     val templateId: UUID? = null,
     val isStructureLocked: Boolean = false,
+    @field:Size(max = 200, message = "Máximo de 200 blocos permitidos")
     val blocks: List<Map<String, Any?>> = emptyList()
 )
 
