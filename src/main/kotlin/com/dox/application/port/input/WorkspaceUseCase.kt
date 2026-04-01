@@ -10,20 +10,20 @@ data class WorkspaceInfo(
     val name: String,
     val type: TenantType,
     val vertical: Vertical,
-    val role: MemberRole?
+    val role: MemberRole?,
 )
 
 data class CreateOrganizationCommand(
     val userId: UUID,
     val name: String,
     val description: String?,
-    val vertical: Vertical = Vertical.GENERAL
+    val vertical: Vertical = Vertical.GENERAL,
 )
 
 data class InviteMemberCommand(
     val organizationId: UUID,
     val email: String,
-    val role: MemberRole
+    val role: MemberRole,
 )
 
 interface WorkspaceUseCase {

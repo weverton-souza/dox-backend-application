@@ -44,5 +44,5 @@ class ScoreTableTemplateJpaEntity(
     var createdAt: LocalDateTime? = null,
     @LastModifiedDate
     @Column(name = "updated_at")
-    var updatedAt: LocalDateTime? = null
+    var updatedAt: LocalDateTime? = null,
 )

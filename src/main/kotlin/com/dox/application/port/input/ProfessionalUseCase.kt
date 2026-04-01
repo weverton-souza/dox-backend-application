@@ -10,7 +10,7 @@ data class UpdateProfessionalCommand(
     val instagram: String? = null,
     val email: String? = null,
     val logo: String? = null,
-    val contactItems: List<Map<String, Any?>> = emptyList()
+    val contactItems: List<Map<String, Any?>> = emptyList(),
 )
 
 interface ProfessionalUseCase {

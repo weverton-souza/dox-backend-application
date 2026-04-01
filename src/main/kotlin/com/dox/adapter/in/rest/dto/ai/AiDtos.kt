@@ -11,7 +11,7 @@ import java.util.UUID
 
 data class PreviousSectionInput(
     val sectionType: String,
-    val summary: String
+    val summary: String,
 )
 
 data class GenerateSectionRequest(
@@ -21,7 +21,7 @@ data class GenerateSectionRequest(
     val formResponseId: UUID? = null,
     val customerId: UUID? = null,
     val previousSections: List<PreviousSectionInput>? = null,
-    val quantitativeData: QuantitativeDataRequest? = null
+    val quantitativeData: QuantitativeDataRequest? = null,
 )
 
 data class GenerateSectionResponse(
@@ -31,7 +31,7 @@ data class GenerateSectionResponse(
     val generationId: UUID,
     val cached: Boolean,
     val regenerationsUsed: Int = 0,
-    val regenerationLimit: Int = 3
+    val regenerationLimit: Int = 3,
 )
 
 data class AiUsageSummaryResponse(
@@ -41,7 +41,7 @@ data class AiUsageSummaryResponse(
     val overageCostCents: Int,
     val tierName: String?,
     val alertLevel: String?,
-    val alertMessage: String?
+    val alertMessage: String?,
 )
 
 data class AiUsageDetailResponse(
@@ -56,7 +56,7 @@ data class AiUsageDetailResponse(
     val status: AiGenerationStatus,
     val durationMs: Int,
     val isRegeneration: Boolean,
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime?,
 )
 
 data class RegenerateSectionRequest(
@@ -64,7 +64,7 @@ data class RegenerateSectionRequest(
     @field:Size(max = 100, message = "Tipo da seção deve ter no máximo 100 caracteres")
     val sectionType: String,
     @field:NotNull(message = "ID da geração é obrigatório")
-    val generationId: UUID
+    val generationId: UUID,
 )
 
 data class AiQuotaResponse(
@@ -72,7 +72,7 @@ data class AiQuotaResponse(
     val model: String,
     val monthlyLimit: Int,
     val overagePriceCents: Int,
-    val enabled: Boolean
+    val enabled: Boolean,
 )
 
 data class UpdateAiQuotaRequest(
@@ -84,18 +84,18 @@ data class UpdateAiQuotaRequest(
     val monthlyLimit: Int? = null,
     @field:Min(value = 0, message = "Preço de excedente não pode ser negativo")
     val overagePriceCents: Int? = null,
-    val enabled: Boolean? = null
+    val enabled: Boolean? = null,
 )
 
 data class AiStatusResponse(
     val available: Boolean,
     val tierName: String?,
-    val model: String?
+    val model: String?,
 )
 
 data class SectionInstructionRequest(
     val sectionTitle: String,
-    val instruction: String? = null
+    val instruction: String? = null,
 )
 
 data class GenerateFullReportRequest(
@@ -107,7 +107,7 @@ data class GenerateFullReportRequest(
     val quantitativeContext: String? = null,
     @field:Size(max = 50, message = "Máximo de 50 seções permitidas")
     val selectedSections: List<SectionInstructionRequest>? = null,
-    val includeCustomerData: Boolean = true
+    val includeCustomerData: Boolean = true,
 )
 
 data class ReviewTextRequest(
@@ -122,7 +122,7 @@ data class ReviewTextRequest(
     @field:Size(max = 500, message = "Instrução deve ter no máximo 500 caracteres")
     val instruction: String? = null,
     @field:Size(max = 20, message = "Máximo de 20 questionários permitidos")
-    val formResponseIds: List<UUID>? = null
+    val formResponseIds: List<UUID>? = null,
 )
 
 data class ReviewTextResponse(
@@ -130,7 +130,7 @@ data class ReviewTextResponse(
     val revised: String,
     val generationId: UUID,
     val tokensUsed: Int,
-    val model: String
+    val model: String,
 )
 
 data class AiGenerationSourceResponse(
@@ -142,12 +142,12 @@ data class AiGenerationSourceResponse(
     val sourceLabel: String?,
     val included: Boolean,
     val displayOrder: Int,
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime?,
 )
 
 data class QuantitativeDataRequest(
     val tables: List<ComputedTableDataRequest> = emptyList(),
-    val charts: List<ComputedChartDataRequest> = emptyList()
+    val charts: List<ComputedChartDataRequest> = emptyList(),
 )
 
 data class ComputedTableDataRequest(
@@ -155,27 +155,27 @@ data class ComputedTableDataRequest(
     val title: String,
     val category: String = "",
     val dataStatus: String,
-    val rows: List<ComputedTableRowRequest> = emptyList()
+    val rows: List<ComputedTableRowRequest> = emptyList(),
 )
 
 data class ComputedTableRowRequest(
     val label: String,
-    val values: Map<String, String> = emptyMap()
+    val values: Map<String, String> = emptyMap(),
 )
 
 data class ComputedChartDataRequest(
     val blockId: String,
     val title: String,
     val dataStatus: String,
-    val series: List<ComputedChartSeriesRequest> = emptyList()
+    val series: List<ComputedChartSeriesRequest> = emptyList(),
 )
 
 data class ComputedChartSeriesRequest(
     val label: String,
-    val values: Map<String, Double> = emptyMap()
+    val values: Map<String, Double> = emptyMap(),
 )
 
 data class RegenerationInfoResponse(
     val used: Int,
-    val limit: Int
+    val limit: Int,
 )

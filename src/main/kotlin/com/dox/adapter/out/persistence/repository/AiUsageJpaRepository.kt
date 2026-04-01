@@ -14,17 +14,17 @@ interface AiUsageJpaRepository : JpaRepository<AiUsageJpaEntity, UUID> {
             "WHERE e.professionalId = :professionalId " +
             "AND e.createdAt >= :startDate " +
             "AND e.createdAt < :endDate " +
-            "AND e.status = com.dox.domain.enum.AiGenerationStatus.SUCCESS"
+            "AND e.status = com.dox.domain.enum.AiGenerationStatus.SUCCESS",
     )
     fun countSuccessByProfessionalAndPeriod(
         professionalId: UUID,
         startDate: LocalDateTime,
-        endDate: LocalDateTime
+        endDate: LocalDateTime,
     ): Int
 
     fun countByReportIdAndStatusNot(
         reportId: UUID,
-        status: com.dox.domain.enum.AiGenerationStatus
+        status: com.dox.domain.enum.AiGenerationStatus,
     ): Int
 
     @Query(
@@ -32,12 +32,12 @@ interface AiUsageJpaRepository : JpaRepository<AiUsageJpaEntity, UUID> {
             "WHERE e.professionalId = :professionalId " +
             "AND e.createdAt >= :startDate " +
             "AND e.createdAt < :endDate " +
-            "ORDER BY e.createdAt DESC"
+            "ORDER BY e.createdAt DESC",
     )
     fun findByProfessionalAndPeriod(
         professionalId: UUID,
         startDate: LocalDateTime,
-        endDate: LocalDateTime
+        endDate: LocalDateTime,
     ): List<AiUsageJpaEntity>
 
     @Query(
@@ -49,11 +49,11 @@ interface AiUsageJpaRepository : JpaRepository<AiUsageJpaEntity, UUID> {
             "FROM AiUsageJpaEntity e " +
             "WHERE e.professionalId = :professionalId " +
             "AND e.createdAt >= :startDate " +
-            "AND e.createdAt < :endDate"
+            "AND e.createdAt < :endDate",
     )
     fun sumTokensByProfessionalAndPeriod(
         professionalId: UUID,
         startDate: LocalDateTime,
-        endDate: LocalDateTime
+        endDate: LocalDateTime,
     ): Array<Any>
 }

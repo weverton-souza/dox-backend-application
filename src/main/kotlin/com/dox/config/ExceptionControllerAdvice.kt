@@ -30,7 +30,7 @@ private fun buildProblemDetail(
     status: HttpStatusCode,
     title: String,
     detail: String,
-    errorCode: String
+    errorCode: String,
 ): ProblemDetail {
     val pd = ProblemDetail.forStatusAndDetail(status, detail)
     pd.title = title
@@ -46,7 +46,10 @@ class DomainExceptionHandler {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @ExceptionHandler(DomainException::class)
-    fun handle(ex: DomainException, request: WebRequest): ProblemDetail {
+    fun handle(
+        ex: DomainException,
+        request: WebRequest,
+    ): ProblemDetail {
         logger.warn("[{}] {}", ex.errorCode.code, ex.message)
 
         val httpStatus = resolveHttpStatus(ex)
@@ -67,15 +70,16 @@ class DomainExceptionHandler {
         return pd
     }
 
-    private fun resolveHttpStatus(ex: DomainException): HttpStatus = when (ex) {
-        is ResourceNotFoundException -> HttpStatus.NOT_FOUND
-        is DuplicateResourceException -> HttpStatus.CONFLICT
-        is InvalidCredentialsException -> HttpStatus.UNAUTHORIZED
-        is InvalidTokenException -> HttpStatus.UNAUTHORIZED
-        is TokenExpiredException -> HttpStatus.UNAUTHORIZED
-        is AccessDeniedException -> HttpStatus.FORBIDDEN
-        is BusinessException -> HttpStatus.UNPROCESSABLE_ENTITY
-    }
+    private fun resolveHttpStatus(ex: DomainException): HttpStatus =
+        when (ex) {
+            is ResourceNotFoundException -> HttpStatus.NOT_FOUND
+            is DuplicateResourceException -> HttpStatus.CONFLICT
+            is InvalidCredentialsException -> HttpStatus.UNAUTHORIZED
+            is InvalidTokenException -> HttpStatus.UNAUTHORIZED
+            is TokenExpiredException -> HttpStatus.UNAUTHORIZED
+            is AccessDeniedException -> HttpStatus.FORBIDDEN
+            is BusinessException -> HttpStatus.UNPROCESSABLE_ENTITY
+        }
 }
 
 @RestControllerAdvice
@@ -87,15 +91,16 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         ex: HttpMessageNotReadableException,
         headers: HttpHeaders,
         status: HttpStatusCode,
-        request: WebRequest
+        request: WebRequest,
     ): ResponseEntity<Any>? {
         log.warn("Erro ao ler requisição: {}", ex.message?.substringBefore("\n"))
-        val pd = buildProblemDetail(
-            HttpStatus.BAD_REQUEST,
-            "Requisição inválida",
-            "Corpo da requisição inválido ou malformado",
-            "INVALID_REQUEST_BODY"
-        )
+        val pd =
+            buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Requisição inválida",
+                "Corpo da requisição inválido ou malformado",
+                "INVALID_REQUEST_BODY",
+            )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pd)
     }
 
@@ -103,17 +108,18 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         ex: MethodArgumentNotValidException,
         headers: HttpHeaders,
         status: HttpStatusCode,
-        request: WebRequest
+        request: WebRequest,
     ): ResponseEntity<Any>? {
         val pd = buildProblemDetail(status, ErrorCode.VALIDATION_ERROR.title, "Erro de validação", ErrorCode.VALIDATION_ERROR.code)
 
-        val fieldErrors = ex.bindingResult.fieldErrors.map { fieldError ->
-            mapOf(
-                "field" to fieldError.field,
-                "message" to (fieldError.defaultMessage ?: "Valor inválido"),
-                "rejectedValue" to fieldError.rejectedValue
-            )
-        }
+        val fieldErrors =
+            ex.bindingResult.fieldErrors.map { fieldError ->
+                mapOf(
+                    "field" to fieldError.field,
+                    "message" to (fieldError.defaultMessage ?: "Valor inválido"),
+                    "rejectedValue" to fieldError.rejectedValue,
+                )
+            }
         pd.setProperty("errors", fieldErrors)
 
         return ResponseEntity.status(status).body(pd)
@@ -126,7 +132,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
             HttpStatus.BAD_REQUEST,
             "Estado inválido",
             ex.message ?: "Estado inválido",
-            "ILLEGAL_STATE"
+            "ILLEGAL_STATE",
         )
     }
 
@@ -135,12 +141,13 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         val traceId = UUID.randomUUID().toString()
         log.error("Erro inesperado [traceId={}]", traceId, ex)
 
-        val pd = buildProblemDetail(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            ErrorCode.INTERNAL_ERROR.title,
-            "Erro inesperado. Referência: $traceId",
-            ErrorCode.INTERNAL_ERROR.code
-        )
+        val pd =
+            buildProblemDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ErrorCode.INTERNAL_ERROR.title,
+                "Erro inesperado. Referência: $traceId",
+                ErrorCode.INTERNAL_ERROR.code,
+            )
         pd.setProperty("traceId", traceId)
         return pd
     }

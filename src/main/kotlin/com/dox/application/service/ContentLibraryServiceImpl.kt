@@ -11,13 +11,16 @@ import java.util.UUID
 
 @Service
 class ContentLibraryServiceImpl(
-    private val persistencePort: ContentLibraryPersistencePort
+    private val persistencePort: ContentLibraryPersistencePort,
 ) : ContentLibraryUseCase {
     override fun findAll() = persistencePort.findAll()
 
     override fun findByType(type: String) = persistencePort.findByType(type)
 
-    override fun search(query: String, type: String?) = persistencePort.search(query, type)
+    override fun search(
+        query: String,
+        type: String?,
+    ) = persistencePort.search(query, type)
 
     override fun create(command: CreateContentLibraryCommand): ContentLibraryEntry =
         persistencePort.save(
@@ -29,8 +32,8 @@ class ContentLibraryServiceImpl(
                 instrument = command.instrument,
                 authors = command.authors,
                 year = command.year,
-                tags = command.tags
-            )
+                tags = command.tags,
+            ),
         )
 
     override fun update(command: UpdateContentLibraryCommand): ContentLibraryEntry {
@@ -39,8 +42,8 @@ class ContentLibraryServiceImpl(
             ContentLibraryEntry(
                 id = command.id, title = command.title, content = command.content, type = command.type,
                 category = command.category, instrument = command.instrument,
-                authors = command.authors, year = command.year, tags = command.tags
-            )
+                authors = command.authors, year = command.year, tags = command.tags,
+            ),
         )
     }
 

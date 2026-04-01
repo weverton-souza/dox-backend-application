@@ -6,5 +6,8 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 interface CalendarEventJpaRepository : JpaRepository<CalendarEventJpaEntity, UUID> {
-    fun findByStartDateTimeBetweenOrderByStartDateTimeAsc(from: OffsetDateTime, to: OffsetDateTime): List<CalendarEventJpaEntity>
+    fun findByStartDateTimeBetweenOrderByStartDateTimeAsc(
+        from: OffsetDateTime,
+        to: OffsetDateTime,
+    ): List<CalendarEventJpaEntity>
 }

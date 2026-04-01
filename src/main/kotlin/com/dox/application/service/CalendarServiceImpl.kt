@@ -14,14 +14,12 @@ import java.util.UUID
 @Service
 class CalendarServiceImpl(
     private val calendarPersistencePort: CalendarPersistencePort,
-    private val customerPersistencePort: CustomerPersistencePort
+    private val customerPersistencePort: CustomerPersistencePort,
 ) : CalendarUseCase {
     @Transactional
-    override fun createTag(command: CreateTagCommand): EventTag =
-        calendarPersistencePort.saveTag(EventTag(name = command.name, color = command.color))
+    override fun createTag(command: CreateTagCommand): EventTag = calendarPersistencePort.saveTag(EventTag(name = command.name, color = command.color))
 
-    override fun findAllTags(): List<EventTag> =
-        calendarPersistencePort.findAllTags()
+    override fun findAllTags(): List<EventTag> = calendarPersistencePort.findAllTags()
 
     @Transactional
     override fun updateTag(command: UpdateTagCommand): EventTag {
@@ -38,39 +36,45 @@ class CalendarServiceImpl(
     }
 
     @Transactional
-    override fun createEvent(command: CreateCalendarEventCommand): CalendarEvent =
-        calendarPersistencePort.saveEvent(command.toCalendarEvent())
+    override fun createEvent(command: CreateCalendarEventCommand): CalendarEvent = calendarPersistencePort.saveEvent(command.toCalendarEvent())
 
     override fun findEventById(id: UUID): CalendarEvent =
         calendarPersistencePort.findEventById(id)
             ?: throw ResourceNotFoundException("Evento", id.toString())
 
-    override fun findEventsByDateRange(from: OffsetDateTime, to: OffsetDateTime): List<CalendarEvent> =
-        calendarPersistencePort.findEventsByDateRange(from, to)
+    override fun findEventsByDateRange(
+        from: OffsetDateTime,
+        to: OffsetDateTime,
+    ): List<CalendarEvent> = calendarPersistencePort.findEventsByDateRange(from, to)
 
-    override fun findEnrichedEventsByDateRange(from: OffsetDateTime, to: OffsetDateTime): List<EnrichedCalendarEvent> {
+    override fun findEnrichedEventsByDateRange(
+        from: OffsetDateTime,
+        to: OffsetDateTime,
+    ): List<EnrichedCalendarEvent> {
         val events = calendarPersistencePort.findEventsByDateRange(from, to)
         val tags = calendarPersistencePort.findAllTags().associateBy { it.id }
         val customerIds = events.mapNotNull { it.customerId }.toSet()
-        val customerNames = if (customerIds.isNotEmpty()) {
-            customerPersistencePort.findByIds(customerIds).associate { it.id to it.displayName() }
-        } else {
-            emptyMap()
-        }
+        val customerNames =
+            if (customerIds.isNotEmpty()) {
+                customerPersistencePort.findByIds(customerIds).associate { it.id to it.displayName() }
+            } else {
+                emptyMap()
+            }
         return events.map { event ->
             EnrichedCalendarEvent(
                 event = event,
                 tag = event.tagId?.let { tags[it] },
-                customerName = event.customerId?.let { customerNames[it] }
+                customerName = event.customerId?.let { customerNames[it] },
             )
         }
     }
 
     override fun enrichEvent(event: CalendarEvent): EnrichedCalendarEvent {
         val tag = event.tagId?.let { calendarPersistencePort.findTagById(it) }
-        val customerName = event.customerId?.let { cid ->
-            customerPersistencePort.findById(cid)?.displayName()
-        }
+        val customerName =
+            event.customerId?.let { cid ->
+                customerPersistencePort.findById(cid)?.displayName()
+            }
         return EnrichedCalendarEvent(event = event, tag = tag, customerName = customerName)
     }
 
@@ -81,19 +85,21 @@ class CalendarServiceImpl(
         return calendarPersistencePort.saveEvent(command.toCalendarEvent())
     }
 
-    private fun CreateCalendarEventCommand.toCalendarEvent() = CalendarEvent(
-        summary = summary, description = description, location = location,
-        startDate = startDate, startDateTime = startDateTime, startTimeZone = startTimeZone,
-        endDate = endDate, endDateTime = endDateTime, endTimeZone = endTimeZone,
-        allDay = allDay, tagId = tagId, customerId = customerId, status = status
-    )
+    private fun CreateCalendarEventCommand.toCalendarEvent() =
+        CalendarEvent(
+            summary = summary, description = description, location = location,
+            startDate = startDate, startDateTime = startDateTime, startTimeZone = startTimeZone,
+            endDate = endDate, endDateTime = endDateTime, endTimeZone = endTimeZone,
+            allDay = allDay, tagId = tagId, customerId = customerId, status = status,
+        )
 
-    private fun UpdateCalendarEventCommand.toCalendarEvent() = CalendarEvent(
-        id = id, summary = summary, description = description, location = location,
-        startDate = startDate, startDateTime = startDateTime, startTimeZone = startTimeZone,
-        endDate = endDate, endDateTime = endDateTime, endTimeZone = endTimeZone,
-        allDay = allDay, tagId = tagId, customerId = customerId, status = status
-    )
+    private fun UpdateCalendarEventCommand.toCalendarEvent() =
+        CalendarEvent(
+            id = id, summary = summary, description = description, location = location,
+            startDate = startDate, startDateTime = startDateTime, startTimeZone = startTimeZone,
+            endDate = endDate, endDateTime = endDateTime, endTimeZone = endTimeZone,
+            allDay = allDay, tagId = tagId, customerId = customerId, status = status,
+        )
 
     @Transactional
     override fun deleteEvent(id: UUID) {

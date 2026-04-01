@@ -19,5 +19,5 @@ class CustomerEventJpaEntity(
     @Column(name = "description", columnDefinition = "TEXT")
     var description: String? = null,
     @Column(name = "date", nullable = false)
-    var date: LocalDateTime = LocalDateTime.now()
+    var date: LocalDateTime = LocalDateTime.now(),
 ) : AbstractJpaEntity(id = id)

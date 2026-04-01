@@ -15,7 +15,7 @@ import javax.crypto.SecretKey
 
 @Component
 class JwtAuthTokenAdapter(
-    private val securityProperties: SecurityProperties
+    private val securityProperties: SecurityProperties,
 ) : AuthTokenPort {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -29,7 +29,11 @@ class JwtAuthTokenAdapter(
 
     private fun parseClaims(token: String) = parser.parseSignedClaims(token).payload
 
-    override fun generateAccessToken(userId: UUID, email: String, tenantId: UUID): String {
+    override fun generateAccessToken(
+        userId: UUID,
+        email: String,
+        tenantId: UUID,
+    ): String {
         val now = Date()
         val expiry = Date(now.time + securityProperties.accessTokenExpiration)
 
@@ -63,16 +67,17 @@ class JwtAuthTokenAdapter(
             false
         }
 
-    override fun extractUserId(token: String): UUID =
-        UUID.fromString(parseClaims(token).subject)
+    override fun extractUserId(token: String): UUID = UUID.fromString(parseClaims(token).subject)
 
-    override fun extractEmail(token: String): String =
-        parseClaims(token)["email"] as String
+    override fun extractEmail(token: String): String = parseClaims(token)["email"] as String
 
-    override fun extractTenantId(token: String): UUID =
-        UUID.fromString(parseClaims(token)["tenantId"] as String)
+    override fun extractTenantId(token: String): UUID = UUID.fromString(parseClaims(token)["tenantId"] as String)
 
-    override fun generateFormLinkToken(tenantId: UUID, formLinkId: UUID, expiresAt: LocalDateTime): String {
+    override fun generateFormLinkToken(
+        tenantId: UUID,
+        formLinkId: UUID,
+        expiresAt: LocalDateTime,
+    ): String {
         val expiry = Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant())
 
         return Jwts.builder()
@@ -89,7 +94,7 @@ class JwtAuthTokenAdapter(
         require(claims["type"] == "form_link") { "Token type invalid" }
         return FormLinkTokenData(
             tenantId = UUID.fromString(claims["tenantId"] as String),
-            formLinkId = UUID.fromString(claims["formLinkId"] as String)
+            formLinkId = UUID.fromString(claims["formLinkId"] as String),
         )
     }
 }

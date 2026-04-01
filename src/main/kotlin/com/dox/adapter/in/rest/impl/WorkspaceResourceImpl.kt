@@ -15,51 +15,56 @@ import java.util.UUID
 
 @RestController
 class WorkspaceResourceImpl(
-    private val workspaceUseCase: WorkspaceUseCase
+    private val workspaceUseCase: WorkspaceUseCase,
 ) : WorkspaceResource {
     override fun listWorkspaces(): ResponseEntity<List<WorkspaceResponse>> {
         val userId = ContextHolder.getUserIdOrThrow()
-        val workspaces = workspaceUseCase.listWorkspaces(userId).map {
-            WorkspaceResponse(
-                tenantId = it.tenantId,
-                name = it.name,
-                type = it.type,
-                vertical = it.vertical,
-                role = it.role
-            )
-        }
+        val workspaces =
+            workspaceUseCase.listWorkspaces(userId).map {
+                WorkspaceResponse(
+                    tenantId = it.tenantId,
+                    name = it.name,
+                    type = it.type,
+                    vertical = it.vertical,
+                    role = it.role,
+                )
+            }
         return responseEntity(workspaces)
     }
 
     override fun createOrganization(request: CreateOrganizationRequest): ResponseEntity<WorkspaceResponse> {
         val userId = ContextHolder.getUserIdOrThrow()
-        val result = workspaceUseCase.createOrganization(
-            CreateOrganizationCommand(
-                userId = userId,
-                name = request.name,
-                description = request.description,
-                vertical = request.vertical
+        val result =
+            workspaceUseCase.createOrganization(
+                CreateOrganizationCommand(
+                    userId = userId,
+                    name = request.name,
+                    description = request.description,
+                    vertical = request.vertical,
+                ),
             )
-        )
         return responseEntity(
             WorkspaceResponse(
                 tenantId = result.tenantId,
                 name = result.name,
                 type = result.type,
                 vertical = result.vertical,
-                role = result.role
+                role = result.role,
             ),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
     }
 
-    override fun inviteMember(organizationId: UUID, request: InviteMemberRequest): ResponseEntity<Void> {
+    override fun inviteMember(
+        organizationId: UUID,
+        request: InviteMemberRequest,
+    ): ResponseEntity<Void> {
         workspaceUseCase.inviteMember(
             InviteMemberCommand(
                 organizationId = organizationId,
                 email = request.email,
-                role = request.role
-            )
+                role = request.role,
+            ),
         )
         return noContent()
     }

@@ -12,5 +12,5 @@ class CustomerNoteJpaEntity(
     @Column(name = "customer_id", nullable = false)
     var customerId: UUID = UUID.randomUUID(),
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-    var content: String = ""
+    var content: String = "",
 ) : AbstractJpaEntity(id = id)

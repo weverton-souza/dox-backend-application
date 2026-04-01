@@ -28,19 +28,19 @@ interface TemplateResource : BaseResource {
     @Operation(summary = "Salvar template de relatório")
     @PostMapping("/reports")
     fun saveReportTemplate(
-        @Valid @RequestBody request: ReportTemplateRequest
+        @Valid @RequestBody request: ReportTemplateRequest,
     ): ResponseEntity<ReportTemplateResponse>
 
     @Operation(summary = "Excluir template de relatório")
     @DeleteMapping("/reports/{id}")
     fun deleteReportTemplate(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 
     @Operation(summary = "Duplicar template de relatório")
     @PostMapping("/reports/{id}/duplicate")
     fun duplicateReportTemplate(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<ReportTemplateResponse>
 
     @Operation(summary = "Listar templates de tabela de escores")
@@ -50,13 +50,13 @@ interface TemplateResource : BaseResource {
     @Operation(summary = "Salvar template de tabela de escores")
     @PostMapping("/score-tables")
     fun saveScoreTableTemplate(
-        @Valid @RequestBody request: ScoreTableTemplateRequest
+        @Valid @RequestBody request: ScoreTableTemplateRequest,
     ): ResponseEntity<ScoreTableTemplateResponse>
 
     @Operation(summary = "Excluir template de tabela de escores")
     @DeleteMapping("/score-tables/{id}")
     fun deleteScoreTableTemplate(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 
     @Operation(summary = "Listar templates de gráfico")
@@ -66,12 +66,12 @@ interface TemplateResource : BaseResource {
     @Operation(summary = "Salvar template de gráfico")
     @PostMapping("/charts")
     fun saveChartTemplate(
-        @Valid @RequestBody request: ChartTemplateRequest
+        @Valid @RequestBody request: ChartTemplateRequest,
     ): ResponseEntity<ChartTemplateResponse>
 
     @Operation(summary = "Excluir template de gráfico")
     @DeleteMapping("/charts/{id}")
     fun deleteChartTemplate(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 }

@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class SecurityProperties(
     val jwtSigningKey: String,
     val accessTokenExpiration: Long = 10_800_000,
-    val refreshTokenExpiration: Long = 604_800_000
+    val refreshTokenExpiration: Long = 604_800_000,
 ) {
     @PostConstruct
     fun validate() {

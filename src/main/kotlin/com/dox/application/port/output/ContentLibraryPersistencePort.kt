@@ -8,7 +8,10 @@ interface ContentLibraryPersistencePort {
 
     fun findByType(type: String): List<ContentLibraryEntry>
 
-    fun search(query: String, type: String? = null): List<ContentLibraryEntry>
+    fun search(
+        query: String,
+        type: String? = null,
+    ): List<ContentLibraryEntry>
 
     fun findById(id: UUID): ContentLibraryEntry?
 

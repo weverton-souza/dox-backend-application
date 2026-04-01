@@ -12,11 +12,14 @@ import kotlin.reflect.KClass
 annotation class ValidCnpj(
     val message: String = "CNPJ inválido",
     val groups: Array<KClass<*>> = [],
-    val payload: Array<KClass<out Payload>> = []
+    val payload: Array<KClass<out Payload>> = [],
 )
 
 class CnpjValidator : ConstraintValidator<ValidCnpj, String> {
-    override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+    override fun isValid(
+        value: String?,
+        context: ConstraintValidatorContext?,
+    ): Boolean {
         if (value.isNullOrBlank()) return true
         return isValidCnpj(value)
     }
@@ -37,7 +40,12 @@ class CnpjValidator : ConstraintValidator<ValidCnpj, String> {
             return d2 == digits[13].digitToInt()
         }
 
-        private fun calculateDigit(digits: String, start: Int, count: Int, weights: IntArray): Int {
+        private fun calculateDigit(
+            digits: String,
+            start: Int,
+            count: Int,
+            weights: IntArray,
+        ): Int {
             var sum = 0
             for (i in 0 until count) {
                 sum += digits[start + i].digitToInt() * weights[i]

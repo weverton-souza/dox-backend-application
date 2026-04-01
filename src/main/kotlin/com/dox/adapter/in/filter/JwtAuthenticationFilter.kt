@@ -13,19 +13,18 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val authTokenPort: AuthTokenPort
+    private val authTokenPort: AuthTokenPort,
 ) : OncePerRequestFilter() {
     companion object {
         private val PUBLIC_PATHS = listOf("/auth/login", "/auth/register", "/auth/refresh", "/public/")
     }
 
-    override fun shouldNotFilter(request: HttpServletRequest): Boolean =
-        PUBLIC_PATHS.any { request.servletPath.startsWith(it) }
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean = PUBLIC_PATHS.any { request.servletPath.startsWith(it) }
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val token = extractToken(request)
 
@@ -36,7 +35,7 @@ class JwtAuthenticationFilter(
                     status = 401,
                     type = "invalid-token",
                     title = "Não autorizado",
-                    detail = "Token inválido ou expirado"
+                    detail = "Token inválido ou expirado",
                 )
                 return
             }

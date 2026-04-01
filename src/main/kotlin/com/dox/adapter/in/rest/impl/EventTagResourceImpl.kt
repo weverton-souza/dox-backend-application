@@ -14,19 +14,20 @@ import java.util.UUID
 
 @RestController
 class EventTagResourceImpl(
-    private val calendarUseCase: CalendarUseCase
+    private val calendarUseCase: CalendarUseCase,
 ) : EventTagResource {
-    override fun findAll(): ResponseEntity<List<EventTagResponse>> =
-        responseEntity(calendarUseCase.findAllTags().map { it.toResponse() })
+    override fun findAll(): ResponseEntity<List<EventTagResponse>> = responseEntity(calendarUseCase.findAllTags().map { it.toResponse() })
 
     override fun create(request: EventTagRequest): ResponseEntity<EventTagResponse> =
         responseEntity(
             calendarUseCase.createTag(CreateTagCommand(request.name, request.color)).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
-    override fun update(id: UUID, request: EventTagRequest): ResponseEntity<EventTagResponse> =
-        responseEntity(calendarUseCase.updateTag(UpdateTagCommand(id, request.name, request.color)).toResponse())
+    override fun update(
+        id: UUID,
+        request: EventTagRequest,
+    ): ResponseEntity<EventTagResponse> = responseEntity(calendarUseCase.updateTag(UpdateTagCommand(id, request.name, request.color)).toResponse())
 
     override fun delete(id: UUID): ResponseEntity<Void> {
         calendarUseCase.deleteTag(id)

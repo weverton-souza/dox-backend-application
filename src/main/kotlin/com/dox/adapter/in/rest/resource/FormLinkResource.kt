@@ -21,18 +21,18 @@ interface FormLinkResource : BaseResource {
     @Operation(summary = "Criar link público para formulário")
     @PostMapping
     fun create(
-        @Valid @RequestBody request: CreateFormLinkRequest
+        @Valid @RequestBody request: CreateFormLinkRequest,
     ): ResponseEntity<FormLinkResponse>
 
     @Operation(summary = "Listar links do tenant, opcionalmente filtrado por cliente")
     @GetMapping
     fun findAll(
-        @RequestParam(required = false) customerId: UUID?
+        @RequestParam(required = false) customerId: UUID?,
     ): ResponseEntity<List<FormLinkResponse>>
 
     @Operation(summary = "Revogar link")
     @DeleteMapping("/{id}")
     fun revoke(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 }

@@ -14,5 +14,5 @@ data class ContentLibraryEntry(
     val year: Int? = null,
     val tags: String? = null,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

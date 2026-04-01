@@ -21,6 +21,6 @@ interface UserResource : BaseResource {
     @Operation(summary = "Atualizar dados do usuário autenticado")
     @PutMapping("/me")
     fun updateMe(
-        @Valid @RequestBody request: UpdateUserRequest
+        @Valid @RequestBody request: UpdateUserRequest,
     ): ResponseEntity<UserResponse>
 }

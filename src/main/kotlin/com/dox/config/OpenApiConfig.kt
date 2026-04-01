@@ -19,7 +19,7 @@ class OpenApiConfig {
                 Info()
                     .title("DOX API")
                     .description("API do DOX - Sistema de laudos neuropsicológicos")
-                    .version("1.0.0")
+                    .version("1.0.0"),
             )
             .addSecurityItem(SecurityRequirement().addList(schemeName))
             .components(
@@ -29,8 +29,8 @@ class OpenApiConfig {
                         SecurityScheme()
                             .type(SecurityScheme.Type.HTTP)
                             .scheme("bearer")
-                            .bearerFormat("JWT")
-                    )
+                            .bearerFormat("JWT"),
+                    ),
             )
     }
 }

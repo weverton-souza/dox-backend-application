@@ -12,21 +12,26 @@ import java.util.UUID
 @Service
 class TenantProvisioningService(
     private val tenantPersistencePort: TenantPersistencePort,
-    private val tenantProvisioningPort: TenantProvisioningPort
+    private val tenantProvisioningPort: TenantProvisioningPort,
 ) {
-    fun provisionTenant(name: String, type: TenantType, vertical: Vertical): Tenant {
+    fun provisionTenant(
+        name: String,
+        type: TenantType,
+        vertical: Vertical,
+    ): Tenant {
         val tenantId = UUID.randomUUID()
         val schemaName = TenantContext.convertToSchemaName(tenantId.toString())
 
-        val tenant = tenantPersistencePort.save(
-            Tenant(
-                id = tenantId,
-                schemaName = schemaName,
-                type = type,
-                name = name,
-                vertical = vertical
+        val tenant =
+            tenantPersistencePort.save(
+                Tenant(
+                    id = tenantId,
+                    schemaName = schemaName,
+                    type = type,
+                    name = name,
+                    vertical = vertical,
+                ),
             )
-        )
 
         tenantProvisioningPort.createSchema(schemaName)
         tenantProvisioningPort.runMigrations(schemaName)

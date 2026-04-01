@@ -8,14 +8,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class AiQuotaPersistenceAdapter(
-    private val aiQuotaJpaRepository: AiQuotaJpaRepository
+    private val aiQuotaJpaRepository: AiQuotaJpaRepository,
 ) : AiQuotaPort {
-    override fun findQuota(): AiQuota? =
-        aiQuotaJpaRepository.findFirstByOrderByCreatedAtAsc()?.toDomain()
+    override fun findQuota(): AiQuota? = aiQuotaJpaRepository.findFirstByOrderByCreatedAtAsc()?.toDomain()
 
     override fun save(quota: AiQuota): AiQuota {
-        val entity = aiQuotaJpaRepository.findById(quota.id).orElse(null)
-            ?: AiQuotaJpaEntity().apply { id = quota.id }
+        val entity =
+            aiQuotaJpaRepository.findById(quota.id).orElse(null)
+                ?: AiQuotaJpaEntity().apply { id = quota.id }
         entity.aiTier = quota.aiTier
         entity.model = quota.model
         entity.monthlyLimit = quota.monthlyLimit
@@ -24,14 +24,15 @@ class AiQuotaPersistenceAdapter(
         return aiQuotaJpaRepository.save(entity).toDomain()
     }
 
-    private fun AiQuotaJpaEntity.toDomain() = AiQuota(
-        id = id,
-        aiTier = aiTier,
-        model = model,
-        monthlyLimit = monthlyLimit,
-        overagePriceCents = overagePriceCents,
-        enabled = enabled,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    private fun AiQuotaJpaEntity.toDomain() =
+        AiQuota(
+            id = id,
+            aiTier = aiTier,
+            model = model,
+            monthlyLimit = monthlyLimit,
+            overagePriceCents = overagePriceCents,
+            enabled = enabled,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+        )
 }

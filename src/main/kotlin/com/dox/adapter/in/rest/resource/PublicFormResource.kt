@@ -20,13 +20,13 @@ interface PublicFormResource : BaseResource {
     @Operation(summary = "Obter formulário público pelo token")
     @GetMapping("/{token}")
     fun getForm(
-        @PathVariable @Size(max = 255, message = "Token inválido") token: String
+        @PathVariable @Size(max = 255, message = "Token inválido") token: String,
     ): ResponseEntity<PublicFormResponse>
 
     @Operation(summary = "Submeter respostas do formulário público")
     @PostMapping("/{token}/submit")
     fun submitForm(
         @PathVariable @Size(max = 255, message = "Token inválido") token: String,
-        @Valid @RequestBody request: PublicFormSubmitRequest
+        @Valid @RequestBody request: PublicFormSubmitRequest,
     ): ResponseEntity<PublicFormSubmitResponse>
 }

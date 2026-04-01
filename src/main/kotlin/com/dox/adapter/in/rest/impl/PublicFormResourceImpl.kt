@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class PublicFormResourceImpl(
-    private val formLinkUseCase: FormLinkUseCase
+    private val formLinkUseCase: FormLinkUseCase,
 ) : PublicFormResource {
     override fun getForm(token: String): ResponseEntity<PublicFormResponse> {
         val data = formLinkUseCase.resolvePublicForm(token)
@@ -21,14 +21,17 @@ class PublicFormResourceImpl(
                 formDescription = data.formDescription,
                 fields = data.fields,
                 customerName = data.customerName,
-                expiresAt = data.expiresAt
-            )
+                expiresAt = data.expiresAt,
+            ),
         )
     }
 
-    override fun submitForm(token: String, request: PublicFormSubmitRequest): ResponseEntity<PublicFormSubmitResponse> {
+    override fun submitForm(
+        token: String,
+        request: PublicFormSubmitRequest,
+    ): ResponseEntity<PublicFormSubmitResponse> {
         formLinkUseCase.submitPublicForm(
-            PublicFormSubmitCommand(token = token, answers = request.answers)
+            PublicFormSubmitCommand(token = token, answers = request.answers),
         )
         return responseEntity(PublicFormSubmitResponse())
     }

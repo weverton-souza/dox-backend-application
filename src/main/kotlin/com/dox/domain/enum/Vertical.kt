@@ -14,5 +14,5 @@ enum class Vertical {
     VETERINARY,
     FORENSICS,
     SOCIAL_WORK,
-    AGRONOMY
+    AGRONOMY,
 }

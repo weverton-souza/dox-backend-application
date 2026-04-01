@@ -11,5 +11,5 @@ data class AiGenerationResult(
     val cacheReadTokens: Int = 0,
     val cacheWriteTokens: Int = 0,
     val cached: Boolean = false,
-    val durationMs: Int = 0
+    val durationMs: Int = 0,
 )

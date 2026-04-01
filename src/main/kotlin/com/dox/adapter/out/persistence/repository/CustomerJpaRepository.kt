@@ -11,7 +11,10 @@ interface CustomerJpaRepository : JpaRepository<CustomerJpaEntity, UUID> {
     @Query(
         "SELECT c FROM CustomerJpaEntity c WHERE " +
             "LOWER(CAST(function('jsonb_extract_path_text', c.data, 'name') AS string)) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "CAST(function('jsonb_extract_path_text', c.data, 'cpf') AS string) LIKE CONCAT('%', :search, '%')"
+            "CAST(function('jsonb_extract_path_text', c.data, 'cpf') AS string) LIKE CONCAT('%', :search, '%')",
     )
-    fun searchByNameOrCpf(search: String, pageable: Pageable): Page<CustomerJpaEntity>
+    fun searchByNameOrCpf(
+        search: String,
+        pageable: Pageable,
+    ): Page<CustomerJpaEntity>
 }

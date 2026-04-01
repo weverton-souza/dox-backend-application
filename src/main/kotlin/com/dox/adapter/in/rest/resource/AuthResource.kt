@@ -19,19 +19,19 @@ interface AuthResource : BaseResource {
     @Operation(summary = "Registrar novo usuário", security = [])
     @PostMapping("/register")
     fun register(
-        @Valid @RequestBody request: RegisterRequest
+        @Valid @RequestBody request: RegisterRequest,
     ): ResponseEntity<AuthResponse>
 
     @Operation(summary = "Login com email e senha", security = [])
     @PostMapping("/login")
     fun login(
-        @Valid @RequestBody request: LoginRequest
+        @Valid @RequestBody request: LoginRequest,
     ): ResponseEntity<AuthResponse>
 
     @Operation(summary = "Renovar tokens", security = [])
     @PostMapping("/refresh")
     fun refresh(
-        @Valid @RequestBody request: RefreshRequest
+        @Valid @RequestBody request: RefreshRequest,
     ): ResponseEntity<AuthResponse>
 
     @Operation(summary = "Logout (revoga refresh tokens)")
@@ -41,6 +41,6 @@ interface AuthResource : BaseResource {
     @Operation(summary = "Trocar de workspace/tenant")
     @PostMapping("/switch-tenant")
     fun switchTenant(
-        @Valid @RequestBody request: SwitchTenantRequest
+        @Valid @RequestBody request: SwitchTenantRequest,
     ): ResponseEntity<AuthResponse>
 }

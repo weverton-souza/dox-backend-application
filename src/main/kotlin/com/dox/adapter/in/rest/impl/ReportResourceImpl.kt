@@ -19,10 +19,9 @@ import java.util.UUID
 
 @RestController
 class ReportResourceImpl(
-    private val reportUseCase: ReportUseCase
+    private val reportUseCase: ReportUseCase,
 ) : ReportResource {
-    override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<ReportResponse>> =
-        responseEntity(reportUseCase.findAll(retrievePageableParameter(parameters)).map { it.toResponse() })
+    override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<ReportResponse>> = responseEntity(reportUseCase.findAll(retrievePageableParameter(parameters)).map { it.toResponse() })
 
     override fun create(request: ReportRequest): ResponseEntity<ReportResponse> =
         responseEntity(
@@ -33,25 +32,27 @@ class ReportResourceImpl(
                     formResponseId = request.formResponseId,
                     templateId = request.templateId,
                     isStructureLocked = request.isStructureLocked,
-                    blocks = request.blocks
-                )
+                    blocks = request.blocks,
+                ),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
-    override fun findById(id: UUID): ResponseEntity<ReportResponse> =
-        responseEntity(reportUseCase.findById(id).toResponse())
+    override fun findById(id: UUID): ResponseEntity<ReportResponse> = responseEntity(reportUseCase.findById(id).toResponse())
 
-    override fun update(id: UUID, request: ReportRequest): ResponseEntity<ReportResponse> =
+    override fun update(
+        id: UUID,
+        request: ReportRequest,
+    ): ResponseEntity<ReportResponse> =
         responseEntity(
             reportUseCase.update(
                 UpdateReportCommand(
                     id = id,
                     status = request.status,
                     customerName = request.customerName,
-                    blocks = request.blocks
-                )
-            ).toResponse()
+                    blocks = request.blocks,
+                ),
+            ).toResponse(),
         )
 
     override fun delete(id: UUID): ResponseEntity<Void> {
@@ -59,35 +60,37 @@ class ReportResourceImpl(
         return noContent()
     }
 
-    override fun findByCustomerId(customerId: UUID): ResponseEntity<List<ReportResponse>> =
-        responseEntity(reportUseCase.findByCustomerId(customerId).map { it.toResponse() })
+    override fun findByCustomerId(customerId: UUID): ResponseEntity<List<ReportResponse>> = responseEntity(reportUseCase.findByCustomerId(customerId).map { it.toResponse() })
 
-    override fun getExportData(id: UUID): ResponseEntity<ReportResponse> =
-        responseEntity(reportUseCase.getExportData(id).toResponse())
+    override fun getExportData(id: UUID): ResponseEntity<ReportResponse> = responseEntity(reportUseCase.getExportData(id).toResponse())
 
-    override fun getVersions(id: UUID): ResponseEntity<List<ReportVersionResponse>> =
-        responseEntity(reportUseCase.getVersions(id).map { it.toResponse() })
+    override fun getVersions(id: UUID): ResponseEntity<List<ReportVersionResponse>> = responseEntity(reportUseCase.getVersions(id).map { it.toResponse() })
 
-    override fun createVersion(id: UUID, request: ReportVersionRequest): ResponseEntity<ReportVersionResponse> =
+    override fun createVersion(
+        id: UUID,
+        request: ReportVersionRequest,
+    ): ResponseEntity<ReportVersionResponse> =
         responseEntity(
             reportUseCase.createVersion(
-                CreateVersionCommand(reportId = id, description = request.description, type = request.type)
+                CreateVersionCommand(reportId = id, description = request.description, type = request.type),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
-    private fun Report.toResponse() = ReportResponse(
-        id, status, customerName, customerId, formResponseId, templateId, isStructureLocked, blocks, createdAt, updatedAt
-    )
+    private fun Report.toResponse() =
+        ReportResponse(
+            id, status, customerName, customerId, formResponseId, templateId, isStructureLocked, blocks, createdAt, updatedAt,
+        )
 
-    private fun ReportVersion.toResponse() = ReportVersionResponse(
-        id,
-        reportId,
-        status,
-        description,
-        customerName,
-        blocks,
-        type,
-        createdAt
-    )
+    private fun ReportVersion.toResponse() =
+        ReportVersionResponse(
+            id,
+            reportId,
+            status,
+            description,
+            customerName,
+            blocks,
+            type,
+            createdAt,
+        )
 }

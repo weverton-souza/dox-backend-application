@@ -18,17 +18,16 @@ import java.util.UUID
 
 @RestController
 class TemplateResourceImpl(
-    private val templateUseCase: TemplateUseCase
+    private val templateUseCase: TemplateUseCase,
 ) : TemplateResource {
-    override fun getReportTemplates(): ResponseEntity<List<ReportTemplateResponse>> =
-        responseEntity(templateUseCase.getAllReportTemplates().map { it.toResponse() })
+    override fun getReportTemplates(): ResponseEntity<List<ReportTemplateResponse>> = responseEntity(templateUseCase.getAllReportTemplates().map { it.toResponse() })
 
     override fun saveReportTemplate(request: ReportTemplateRequest): ResponseEntity<ReportTemplateResponse> =
         responseEntity(
             templateUseCase.saveReportTemplate(
-                ReportTemplate(name = request.name, description = request.description, blocks = request.blocks, isLocked = request.isLocked)
+                ReportTemplate(name = request.name, description = request.description, blocks = request.blocks, isLocked = request.isLocked),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
     override fun deleteReportTemplate(id: UUID): ResponseEntity<Void> {
@@ -36,11 +35,9 @@ class TemplateResourceImpl(
         return noContent()
     }
 
-    override fun duplicateReportTemplate(id: UUID): ResponseEntity<ReportTemplateResponse> =
-        responseEntity(templateUseCase.duplicateReportTemplate(id).toResponse(), HttpStatus.CREATED)
+    override fun duplicateReportTemplate(id: UUID): ResponseEntity<ReportTemplateResponse> = responseEntity(templateUseCase.duplicateReportTemplate(id).toResponse(), HttpStatus.CREATED)
 
-    override fun getScoreTableTemplates(): ResponseEntity<List<ScoreTableTemplateResponse>> =
-        responseEntity(templateUseCase.getAllScoreTableTemplates().map { it.toResponse() })
+    override fun getScoreTableTemplates(): ResponseEntity<List<ScoreTableTemplateResponse>> = responseEntity(templateUseCase.getAllScoreTableTemplates().map { it.toResponse() })
 
     override fun saveScoreTableTemplate(request: ScoreTableTemplateRequest): ResponseEntity<ScoreTableTemplateResponse> =
         responseEntity(
@@ -51,10 +48,10 @@ class TemplateResourceImpl(
                     instrumentName = request.instrumentName,
                     category = request.category,
                     columns = request.columns,
-                    rows = request.rows
-                )
+                    rows = request.rows,
+                ),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
     override fun deleteScoreTableTemplate(id: UUID): ResponseEntity<Void> {
@@ -62,8 +59,7 @@ class TemplateResourceImpl(
         return noContent()
     }
 
-    override fun getChartTemplates(): ResponseEntity<List<ChartTemplateResponse>> =
-        responseEntity(templateUseCase.getAllChartTemplates().map { it.toResponse() })
+    override fun getChartTemplates(): ResponseEntity<List<ChartTemplateResponse>> = responseEntity(templateUseCase.getAllChartTemplates().map { it.toResponse() })
 
     override fun saveChartTemplate(request: ChartTemplateRequest): ResponseEntity<ChartTemplateResponse> =
         responseEntity(
@@ -73,10 +69,10 @@ class TemplateResourceImpl(
                     description = request.description,
                     instrumentName = request.instrumentName,
                     category = request.category,
-                    data = request.data
-                )
+                    data = request.data,
+                ),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
     override fun deleteChartTemplate(id: UUID): ResponseEntity<Void> {
@@ -84,15 +80,18 @@ class TemplateResourceImpl(
         return noContent()
     }
 
-    private fun ReportTemplate.toResponse() = ReportTemplateResponse(
-        id, name, description, blocks, isDefault, isLocked, isMaster, createdAt, updatedAt
-    )
+    private fun ReportTemplate.toResponse() =
+        ReportTemplateResponse(
+            id, name, description, blocks, isDefault, isLocked, isMaster, createdAt, updatedAt,
+        )
 
-    private fun ScoreTableTemplate.toResponse() = ScoreTableTemplateResponse(
-        id, name, description, instrumentName, category, columns, rows, footnote, isDefault, createdAt, updatedAt
-    )
+    private fun ScoreTableTemplate.toResponse() =
+        ScoreTableTemplateResponse(
+            id, name, description, instrumentName, category, columns, rows, footnote, isDefault, createdAt, updatedAt,
+        )
 
-    private fun ChartTemplate.toResponse() = ChartTemplateResponse(
-        id, name, description, instrumentName, category, data, isDefault, createdAt, updatedAt
-    )
+    private fun ChartTemplate.toResponse() =
+        ChartTemplateResponse(
+            id, name, description, instrumentName, category, data, isDefault, createdAt, updatedAt,
+        )
 }

@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class SystemPromptBuilder(
-    private val aiInstructionPort: AiInstructionPort
+    private val aiInstructionPort: AiInstructionPort,
 ) : AiSystemPromptPort {
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun build(vertical: Vertical): String {
-        val instruction = aiInstructionPort.findActiveByTypeAndVertical("system_prompt", vertical)
-            ?: aiInstructionPort.findActiveByType("system_prompt")
+        val instruction =
+            aiInstructionPort.findActiveByTypeAndVertical("system_prompt", vertical)
+                ?: aiInstructionPort.findActiveByType("system_prompt")
 
         if (instruction != null) {
             return instruction.content
@@ -26,10 +27,15 @@ class SystemPromptBuilder(
         return buildHardcodedFallback(vertical)
     }
 
-    override fun buildPlanningPrompt(vertical: Vertical, sectionTitles: String, dataSummary: String): String? {
-        val instruction = aiInstructionPort.findActiveByTypeAndVertical("planning_prompt", vertical)
-            ?: aiInstructionPort.findActiveByType("planning_prompt")
-            ?: return null
+    override fun buildPlanningPrompt(
+        vertical: Vertical,
+        sectionTitles: String,
+        dataSummary: String,
+    ): String? {
+        val instruction =
+            aiInstructionPort.findActiveByTypeAndVertical("planning_prompt", vertical)
+                ?: aiInstructionPort.findActiveByType("planning_prompt")
+                ?: return null
 
         return instruction.content
             .replace("{{VERTICAL_NAME}}", vertical.displayName())
@@ -73,37 +79,39 @@ class SystemPromptBuilder(
             """.trimMargin()
     }
 
-    private fun roleForVertical(vertical: Vertical): String = when (vertical) {
-        Vertical.HEALTH -> "profissional de saúde"
-        Vertical.LEGAL -> "profissional jurídico"
-        Vertical.EDUCATION -> "profissional de educação"
-        Vertical.ENGINEERING -> "engenheiro"
-        Vertical.ACCOUNTING -> "contador"
-        Vertical.ENVIRONMENT -> "profissional de meio ambiente"
-        Vertical.SAFETY -> "profissional de segurança do trabalho"
-        Vertical.TECHNOLOGY -> "profissional de tecnologia"
-        Vertical.NUTRITION -> "nutricionista"
-        Vertical.VETERINARY -> "médico veterinário"
-        Vertical.FORENSICS -> "perito forense"
-        Vertical.SOCIAL_WORK -> "assistente social"
-        Vertical.AGRONOMY -> "agrônomo"
-        Vertical.GENERAL -> "profissional especialista"
-    }
+    private fun roleForVertical(vertical: Vertical): String =
+        when (vertical) {
+            Vertical.HEALTH -> "profissional de saúde"
+            Vertical.LEGAL -> "profissional jurídico"
+            Vertical.EDUCATION -> "profissional de educação"
+            Vertical.ENGINEERING -> "engenheiro"
+            Vertical.ACCOUNTING -> "contador"
+            Vertical.ENVIRONMENT -> "profissional de meio ambiente"
+            Vertical.SAFETY -> "profissional de segurança do trabalho"
+            Vertical.TECHNOLOGY -> "profissional de tecnologia"
+            Vertical.NUTRITION -> "nutricionista"
+            Vertical.VETERINARY -> "médico veterinário"
+            Vertical.FORENSICS -> "perito forense"
+            Vertical.SOCIAL_WORK -> "assistente social"
+            Vertical.AGRONOMY -> "agrônomo"
+            Vertical.GENERAL -> "profissional especialista"
+        }
 
-    private fun Vertical.displayName(): String = when (this) {
-        Vertical.HEALTH -> "saúde"
-        Vertical.LEGAL -> "direito"
-        Vertical.EDUCATION -> "educação"
-        Vertical.ENGINEERING -> "engenharia"
-        Vertical.ACCOUNTING -> "contabilidade"
-        Vertical.ENVIRONMENT -> "meio ambiente"
-        Vertical.SAFETY -> "segurança do trabalho"
-        Vertical.TECHNOLOGY -> "tecnologia"
-        Vertical.NUTRITION -> "nutrição"
-        Vertical.VETERINARY -> "veterinária"
-        Vertical.FORENSICS -> "ciências forenses"
-        Vertical.SOCIAL_WORK -> "serviço social"
-        Vertical.AGRONOMY -> "agronomia"
-        Vertical.GENERAL -> "geral"
-    }
+    private fun Vertical.displayName(): String =
+        when (this) {
+            Vertical.HEALTH -> "saúde"
+            Vertical.LEGAL -> "direito"
+            Vertical.EDUCATION -> "educação"
+            Vertical.ENGINEERING -> "engenharia"
+            Vertical.ACCOUNTING -> "contabilidade"
+            Vertical.ENVIRONMENT -> "meio ambiente"
+            Vertical.SAFETY -> "segurança do trabalho"
+            Vertical.TECHNOLOGY -> "tecnologia"
+            Vertical.NUTRITION -> "nutrição"
+            Vertical.VETERINARY -> "veterinária"
+            Vertical.FORENSICS -> "ciências forenses"
+            Vertical.SOCIAL_WORK -> "serviço social"
+            Vertical.AGRONOMY -> "agronomia"
+            Vertical.GENERAL -> "geral"
+        }
 }

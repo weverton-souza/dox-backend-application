@@ -9,5 +9,5 @@ data class Organization(
     val name: String,
     val description: String? = null,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

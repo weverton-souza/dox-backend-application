@@ -18,13 +18,15 @@ import org.springframework.context.annotation.Configuration
 class JacksonConfig {
     @Bean
     fun objectMapper(): ObjectMapper {
-        val enumModule = SimpleModule().apply {
-            addSerializer(Enum::class.java, LowercaseEnumSerializer())
-        }
+        val enumModule =
+            SimpleModule().apply {
+                addSerializer(Enum::class.java, LowercaseEnumSerializer())
+            }
 
-        val sanitizingModule = SimpleModule().apply {
-            addDeserializer(String::class.java, HtmlSanitizingDeserializer())
-        }
+        val sanitizingModule =
+            SimpleModule().apply {
+                addDeserializer(String::class.java, HtmlSanitizingDeserializer())
+            }
 
         return JsonMapper.builder()
             .addModule(JavaTimeModule())
@@ -39,7 +41,11 @@ class JacksonConfig {
 }
 
 class LowercaseEnumSerializer : StdSerializer<Enum<*>>(Enum::class.java) {
-    override fun serialize(value: Enum<*>, gen: JsonGenerator, provider: SerializerProvider) {
+    override fun serialize(
+        value: Enum<*>,
+        gen: JsonGenerator,
+        provider: SerializerProvider,
+    ) {
         gen.writeString(value.name.lowercase())
     }
 }

@@ -9,26 +9,30 @@ import java.time.OffsetDateTime
 
 @RestController
 class CustomerCalendarEventResourceImpl(
-    private val customerUseCase: CustomerUseCase
+    private val customerUseCase: CustomerUseCase,
 ) : CustomerCalendarEventResource {
-    override fun findByDateRange(from: OffsetDateTime, to: OffsetDateTime): ResponseEntity<List<CustomerCalendarEventResponse>> {
+    override fun findByDateRange(
+        from: OffsetDateTime,
+        to: OffsetDateTime,
+    ): ResponseEntity<List<CustomerCalendarEventResponse>> {
         val fromDate = from.toLocalDateTime()
         val toDate = to.toLocalDateTime()
 
         val eventsWithNames = customerUseCase.findAllEventsByDateRange(fromDate, toDate)
 
-        val response = eventsWithNames.map { (event, customerName) ->
-            CustomerCalendarEventResponse(
-                id = event.id,
-                customerId = event.customerId,
-                customerName = customerName,
-                type = event.type,
-                title = event.title,
-                description = event.description,
-                date = event.date,
-                createdAt = event.createdAt
-            )
-        }
+        val response =
+            eventsWithNames.map { (event, customerName) ->
+                CustomerCalendarEventResponse(
+                    id = event.id,
+                    customerId = event.customerId,
+                    customerName = customerName,
+                    type = event.type,
+                    title = event.title,
+                    description = event.description,
+                    date = event.date,
+                    createdAt = event.createdAt,
+                )
+            }
 
         return responseEntity(response)
     }

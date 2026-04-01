@@ -24,13 +24,13 @@ interface WorkspaceResource : BaseResource {
     @Operation(summary = "Criar nova organização")
     @PostMapping("/organizations")
     fun createOrganization(
-        @Valid @RequestBody request: CreateOrganizationRequest
+        @Valid @RequestBody request: CreateOrganizationRequest,
     ): ResponseEntity<WorkspaceResponse>
 
     @Operation(summary = "Convidar membro para organização")
     @PostMapping("/organizations/{organizationId}/members")
     fun inviteMember(
         @PathVariable organizationId: UUID,
-        @Valid @RequestBody request: InviteMemberRequest
+        @Valid @RequestBody request: InviteMemberRequest,
     ): ResponseEntity<Void>
 }

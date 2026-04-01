@@ -8,20 +8,20 @@ import java.util.UUID
 
 data class CustomerRequest(
     @field:Size(max = 100, message = "Máximo de 100 campos permitidos")
-    val data: Map<String, Any?>
+    val data: Map<String, Any?>,
 )
 
 data class CustomerResponse(
     val id: UUID,
     val data: Map<String, Any?>,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class CustomerNoteRequest(
     @field:NotBlank(message = "Conteúdo é obrigatório")
     @field:Size(max = 10000, message = "Conteúdo deve ter no máximo 10000 caracteres")
-    val content: String
+    val content: String,
 )
 
 data class CustomerNoteResponse(
@@ -29,7 +29,7 @@ data class CustomerNoteResponse(
     val customerId: UUID,
     val content: String,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class CustomerEventRequest(
@@ -42,7 +42,7 @@ data class CustomerEventRequest(
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
     @field:NotNull(message = "Data é obrigatória")
-    val date: LocalDateTime
+    val date: LocalDateTime,
 )
 
 data class CustomerEventResponse(
@@ -52,7 +52,7 @@ data class CustomerEventResponse(
     val title: String,
     val description: String?,
     val date: LocalDateTime,
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime?,
 )
 
 data class CustomerCalendarEventResponse(
@@ -63,5 +63,5 @@ data class CustomerCalendarEventResponse(
     val title: String,
     val description: String?,
     val date: LocalDateTime,
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime?,
 )

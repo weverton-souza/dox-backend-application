@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UserResourceImpl(
-    private val userUseCase: UserUseCase
+    private val userUseCase: UserUseCase,
 ) : UserResource {
     override fun getMe(): ResponseEntity<UserResponse> {
         val userId = ContextHolder.getUserIdOrThrow()
@@ -21,16 +21,18 @@ class UserResourceImpl(
 
     override fun updateMe(request: UpdateUserRequest): ResponseEntity<UserResponse> {
         val userId = ContextHolder.getUserIdOrThrow()
-        val result = userUseCase.updateMe(
-            UpdateUserCommand(userId = userId, name = request.name)
-        )
+        val result =
+            userUseCase.updateMe(
+                UpdateUserCommand(userId = userId, name = request.name),
+            )
         return responseEntity(result.toResponse())
     }
 
-    private fun UserInfo.toResponse() = UserResponse(
-        id = id,
-        email = email,
-        name = name,
-        personalTenantId = personalTenantId
-    )
+    private fun UserInfo.toResponse() =
+        UserResponse(
+            id = id,
+            email = email,
+            name = name,
+            personalTenantId = personalTenantId,
+        )
 }

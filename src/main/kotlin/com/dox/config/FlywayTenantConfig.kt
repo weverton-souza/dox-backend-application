@@ -9,17 +9,18 @@ import javax.sql.DataSource
 
 @Configuration
 class FlywayTenantConfig(
-    private val dataSource: DataSource
+    private val dataSource: DataSource,
 ) {
     @Bean
     fun flywayMigrationStrategy(): FlywayMigrationStrategy {
         return FlywayMigrationStrategy {
-            val publicFlyway = Flyway.configure()
-                .locations(TenancyConstant.FLYWAY_PUBLIC_LOCATION)
-                .dataSource(dataSource)
-                .schemas(TenancyConstant.PUBLIC_SCHEMA)
-                .baselineOnMigrate(true)
-                .load()
+            val publicFlyway =
+                Flyway.configure()
+                    .locations(TenancyConstant.FLYWAY_PUBLIC_LOCATION)
+                    .dataSource(dataSource)
+                    .schemas(TenancyConstant.PUBLIC_SCHEMA)
+                    .baselineOnMigrate(true)
+                    .load()
             publicFlyway.migrate()
 
             migrateAllTenants()

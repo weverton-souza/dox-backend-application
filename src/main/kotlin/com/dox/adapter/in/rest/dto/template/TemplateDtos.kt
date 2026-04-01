@@ -13,7 +13,7 @@ data class ReportTemplateRequest(
     val description: String? = null,
     @field:Size(max = 200, message = "Máximo de 200 blocos permitidos")
     val blocks: List<Map<String, Any?>> = emptyList(),
-    val isLocked: Boolean = false
+    val isLocked: Boolean = false,
 )
 
 data class ReportTemplateResponse(
@@ -25,7 +25,7 @@ data class ReportTemplateResponse(
     val isLocked: Boolean,
     val isMaster: Boolean,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class ScoreTableTemplateRequest(
@@ -41,7 +41,7 @@ data class ScoreTableTemplateRequest(
     @field:Size(max = 100, message = "Máximo de 100 colunas permitidas")
     val columns: List<Map<String, Any?>> = emptyList(),
     @field:Size(max = 500, message = "Máximo de 500 linhas permitidas")
-    val rows: List<Map<String, Any?>> = emptyList()
+    val rows: List<Map<String, Any?>> = emptyList(),
 )
 
 data class ScoreTableTemplateResponse(
@@ -55,7 +55,7 @@ data class ScoreTableTemplateResponse(
     val footnote: List<Map<String, Any?>>?,
     val isDefault: Boolean,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class ChartTemplateRequest(
@@ -68,7 +68,7 @@ data class ChartTemplateRequest(
     val instrumentName: String? = null,
     @field:Size(max = 100, message = "Categoria deve ter no máximo 100 caracteres")
     val category: String? = null,
-    val data: Map<String, Any?> = emptyMap()
+    val data: Map<String, Any?> = emptyMap(),
 )
 
 data class ChartTemplateResponse(
@@ -80,5 +80,5 @@ data class ChartTemplateResponse(
     val data: Map<String, Any?>,
     val isDefault: Boolean,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )

@@ -43,5 +43,5 @@ class CustomerFileJpaEntity(
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null,
     @Column(name = "deleted", nullable = false)
-    var deleted: Boolean = false
+    var deleted: Boolean = false,
 )

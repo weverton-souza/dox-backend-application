@@ -22,15 +22,16 @@ class WorkspaceServiceImpl(
     private val userPersistencePort: UserPersistencePort,
     private val tenantPersistencePort: TenantPersistencePort,
     private val tenantProvisioningService: TenantProvisioningService,
-    private val organizationPersistencePort: OrganizationPersistencePort
+    private val organizationPersistencePort: OrganizationPersistencePort,
 ) : WorkspaceUseCase {
     companion object {
         private const val PERSONAL_WORKSPACE_NAME = "Pessoal"
     }
 
     override fun listWorkspaces(userId: UUID): List<WorkspaceInfo> {
-        val user = userPersistencePort.findById(userId)
-            ?: throw ResourceNotFoundException("Usuário", userId.toString())
+        val user =
+            userPersistencePort.findById(userId)
+                ?: throw ResourceNotFoundException("Usuário", userId.toString())
 
         return listOfNotNull(buildPersonalWorkspace(user.personalTenantId)) +
             buildOrgWorkspaces(userId)
@@ -43,7 +44,7 @@ class WorkspaceServiceImpl(
             name = PERSONAL_WORKSPACE_NAME,
             type = TenantType.PERSONAL,
             vertical = tenant.vertical,
-            role = null
+            role = null,
         )
     }
 
@@ -56,33 +57,35 @@ class WorkspaceServiceImpl(
                 name = org.name,
                 type = TenantType.ORGANIZATION,
                 vertical = tenant.vertical,
-                role = membership.role
+                role = membership.role,
             )
         }
     }
 
     @Transactional
     override fun createOrganization(command: CreateOrganizationCommand): WorkspaceInfo {
-        val tenant = tenantProvisioningService.provisionTenant(
-            name = command.name,
-            type = TenantType.ORGANIZATION,
-            vertical = command.vertical
-        )
-
-        val org = organizationPersistencePort.save(
-            Organization(
-                tenantId = tenant.id,
+        val tenant =
+            tenantProvisioningService.provisionTenant(
                 name = command.name,
-                description = command.description
+                type = TenantType.ORGANIZATION,
+                vertical = command.vertical,
             )
-        )
+
+        val org =
+            organizationPersistencePort.save(
+                Organization(
+                    tenantId = tenant.id,
+                    name = command.name,
+                    description = command.description,
+                ),
+            )
 
         organizationPersistencePort.saveMember(
             OrganizationMember(
                 organizationId = org.id,
                 userId = command.userId,
-                role = MemberRole.OWNER
-            )
+                role = MemberRole.OWNER,
+            ),
         )
 
         return WorkspaceInfo(
@@ -90,14 +93,15 @@ class WorkspaceServiceImpl(
             name = org.name,
             type = TenantType.ORGANIZATION,
             vertical = tenant.vertical,
-            role = MemberRole.OWNER
+            role = MemberRole.OWNER,
         )
     }
 
     @Transactional
     override fun inviteMember(command: InviteMemberCommand) {
-        val user = userPersistencePort.findByEmail(command.email)
-            ?: throw ResourceNotFoundException("Usuário")
+        val user =
+            userPersistencePort.findByEmail(command.email)
+                ?: throw ResourceNotFoundException("Usuário")
 
         if (organizationPersistencePort.existsMember(command.organizationId, user.id)) {
             throw DuplicateResourceException("membro", command.email)
@@ -107,8 +111,8 @@ class WorkspaceServiceImpl(
             OrganizationMember(
                 organizationId = command.organizationId,
                 userId = user.id,
-                role = command.role
-            )
+                role = command.role,
+            ),
         )
     }
 }

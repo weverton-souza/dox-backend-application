@@ -15,30 +15,37 @@ import java.util.UUID
 
 @Component("anthropicAiAdapter")
 class AnthropicAiAdapter(
-    private val chatModel: AnthropicChatModel
+    private val chatModel: AnthropicChatModel,
 ) : AiGenerationPort {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun generateSection(systemPrompt: String, userPrompt: String, model: String, maxTokens: Int?): AiGenerationResult {
+    override fun generateSection(
+        systemPrompt: String,
+        userPrompt: String,
+        model: String,
+        maxTokens: Int?,
+    ): AiGenerationResult {
         log.info(
             "=== AI GENERATION REQUEST === Model: {}, systemPromptChars={}, userPromptChars={}",
             model,
             systemPrompt.length,
-            userPrompt.length
+            userPrompt.length,
         )
         log.debug("System prompt preview: {}", systemPrompt.take(200))
         log.debug("User prompt preview: {}", userPrompt.take(300))
 
-        val options = AnthropicChatOptions.builder()
-            .model(model)
-            .maxTokens(maxTokens ?: MAX_TOKENS)
-            .temperature(TEMPERATURE)
-            .build()
+        val options =
+            AnthropicChatOptions.builder()
+                .model(model)
+                .maxTokens(maxTokens ?: MAX_TOKENS)
+                .temperature(TEMPERATURE)
+                .build()
 
-        val prompt = Prompt(
-            listOf(SystemMessage(systemPrompt), UserMessage(userPrompt)),
-            options
-        )
+        val prompt =
+            Prompt(
+                listOf(SystemMessage(systemPrompt), UserMessage(userPrompt)),
+                options,
+            )
 
         val startTime = System.currentTimeMillis()
         try {
@@ -62,7 +69,7 @@ class AnthropicAiAdapter(
                 outputTokens,
                 cacheReadTokens,
                 cacheWriteTokens,
-                durationMs
+                durationMs,
             )
 
             return AiGenerationResult(
@@ -74,7 +81,7 @@ class AnthropicAiAdapter(
                 cacheReadTokens = cacheReadTokens,
                 cacheWriteTokens = cacheWriteTokens,
                 cached = cacheReadTokens > 0,
-                durationMs = durationMs
+                durationMs = durationMs,
             )
         } catch (e: Exception) {
             val durationMs = (System.currentTimeMillis() - startTime).toInt()
@@ -88,7 +95,10 @@ class AnthropicAiAdapter(
         }
     }
 
-    private fun extractCacheMetric(response: org.springframework.ai.chat.model.ChatResponse, key: String): Int {
+    private fun extractCacheMetric(
+        response: org.springframework.ai.chat.model.ChatResponse,
+        key: String,
+    ): Int {
         return try {
             val metadata = response.metadata
             val map = metadata?.get("usage") as? Map<*, *>
@@ -104,10 +114,11 @@ class AnthropicAiAdapter(
         var trimmed = raw.trim()
 
         if (trimmed.startsWith("```")) {
-            trimmed = trimmed
-                .removePrefix("```json").removePrefix("```")
-                .removeSuffix("```")
-                .trim()
+            trimmed =
+                trimmed
+                    .removePrefix("```json").removePrefix("```")
+                    .removeSuffix("```")
+                    .trim()
         }
 
         if (trimmed.startsWith("{")) {

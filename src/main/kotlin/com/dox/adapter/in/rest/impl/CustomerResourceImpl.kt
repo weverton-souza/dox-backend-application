@@ -24,7 +24,7 @@ import java.util.UUID
 
 @RestController
 class CustomerResourceImpl(
-    private val customerUseCase: CustomerUseCase
+    private val customerUseCase: CustomerUseCase,
 ) : CustomerResource {
     override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<CustomerResponse>> {
         val search = parameters["search"]?.toString()?.takeIf { it.isNotBlank() }
@@ -32,53 +32,67 @@ class CustomerResourceImpl(
         return responseEntity(customerUseCase.findAll(search, pageable).map { it.toResponse() })
     }
 
-    override fun create(request: CustomerRequest): ResponseEntity<CustomerResponse> =
-        responseEntity(customerUseCase.create(CreateCustomerCommand(request.data)).toResponse(), HttpStatus.CREATED)
+    override fun create(request: CustomerRequest): ResponseEntity<CustomerResponse> = responseEntity(customerUseCase.create(CreateCustomerCommand(request.data)).toResponse(), HttpStatus.CREATED)
 
-    override fun findById(id: UUID): ResponseEntity<CustomerResponse> =
-        responseEntity(customerUseCase.findById(id).toResponse())
+    override fun findById(id: UUID): ResponseEntity<CustomerResponse> = responseEntity(customerUseCase.findById(id).toResponse())
 
-    override fun update(id: UUID, request: CustomerRequest): ResponseEntity<CustomerResponse> =
-        responseEntity(customerUseCase.update(UpdateCustomerCommand(id, request.data)).toResponse())
+    override fun update(
+        id: UUID,
+        request: CustomerRequest,
+    ): ResponseEntity<CustomerResponse> = responseEntity(customerUseCase.update(UpdateCustomerCommand(id, request.data)).toResponse())
 
     override fun delete(id: UUID): ResponseEntity<Void> {
         customerUseCase.delete(id)
         return noContent()
     }
 
-    override fun getNotes(id: UUID): ResponseEntity<List<CustomerNoteResponse>> =
-        responseEntity(customerUseCase.getNotes(id).map { it.toResponse() })
+    override fun getNotes(id: UUID): ResponseEntity<List<CustomerNoteResponse>> = responseEntity(customerUseCase.getNotes(id).map { it.toResponse() })
 
-    override fun addNote(id: UUID, request: CustomerNoteRequest): ResponseEntity<CustomerNoteResponse> =
+    override fun addNote(
+        id: UUID,
+        request: CustomerNoteRequest,
+    ): ResponseEntity<CustomerNoteResponse> =
         responseEntity(
             customerUseCase.addNote(CreateCustomerNoteCommand(id, request.content)).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
-    override fun deleteNote(id: UUID, noteId: UUID): ResponseEntity<Void> {
+    override fun deleteNote(
+        id: UUID,
+        noteId: UUID,
+    ): ResponseEntity<Void> {
         customerUseCase.deleteNote(noteId)
         return noContent()
     }
 
-    override fun getEvents(id: UUID): ResponseEntity<List<CustomerEventResponse>> =
-        responseEntity(customerUseCase.getEvents(id).map { it.toResponse() })
+    override fun getEvents(id: UUID): ResponseEntity<List<CustomerEventResponse>> = responseEntity(customerUseCase.getEvents(id).map { it.toResponse() })
 
-    override fun addEvent(id: UUID, request: CustomerEventRequest): ResponseEntity<CustomerEventResponse> =
+    override fun addEvent(
+        id: UUID,
+        request: CustomerEventRequest,
+    ): ResponseEntity<CustomerEventResponse> =
         responseEntity(
             customerUseCase.addEvent(
-                CreateCustomerEventCommand(id, request.type, request.title, request.description, request.date)
+                CreateCustomerEventCommand(id, request.type, request.title, request.description, request.date),
             ).toResponse(),
-            HttpStatus.CREATED
+            HttpStatus.CREATED,
         )
 
-    override fun updateEvent(id: UUID, eventId: UUID, request: CustomerEventRequest): ResponseEntity<CustomerEventResponse> =
+    override fun updateEvent(
+        id: UUID,
+        eventId: UUID,
+        request: CustomerEventRequest,
+    ): ResponseEntity<CustomerEventResponse> =
         responseEntity(
             customerUseCase.updateEvent(
-                UpdateCustomerEventCommand(eventId, id, request.type, request.title, request.description, request.date)
-            ).toResponse()
+                UpdateCustomerEventCommand(eventId, id, request.type, request.title, request.description, request.date),
+            ).toResponse(),
         )
 
-    override fun deleteEvent(id: UUID, eventId: UUID): ResponseEntity<Void> {
+    override fun deleteEvent(
+        id: UUID,
+        eventId: UUID,
+    ): ResponseEntity<Void> {
         customerUseCase.deleteEvent(eventId)
         return noContent()
     }

@@ -18,11 +18,12 @@ import java.util.UUID
 @Component
 class ReportPersistenceAdapter(
     private val reportJpaRepository: ReportJpaRepository,
-    private val versionJpaRepository: ReportVersionJpaRepository
+    private val versionJpaRepository: ReportVersionJpaRepository,
 ) : ReportPersistencePort {
     override fun save(report: Report): Report {
-        val entity = reportJpaRepository.findById(report.id).orElse(null)
-            ?: ReportJpaEntity().apply { id = report.id }
+        val entity =
+            reportJpaRepository.findById(report.id).orElse(null)
+                ?: ReportJpaEntity().apply { id = report.id }
         entity.status = report.status
         entity.customerName = report.customerName
         entity.customerId = report.customerId
@@ -33,38 +34,34 @@ class ReportPersistenceAdapter(
         return reportJpaRepository.save(entity).toDomain()
     }
 
-    override fun findById(id: UUID): Report? =
-        reportJpaRepository.findById(id).orElse(null)?.toDomain()
+    override fun findById(id: UUID): Report? = reportJpaRepository.findById(id).orElse(null)?.toDomain()
 
     override fun findAll(pageable: Pageable): Page<Report> =
         reportJpaRepository.findAll(
-            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt"))
+            PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "updatedAt")),
         ).map { it.toDomain() }
 
-    override fun findByCustomerId(customerId: UUID): List<Report> =
-        reportJpaRepository.findByCustomerId(customerId).map { it.toDomain() }
+    override fun findByCustomerId(customerId: UUID): List<Report> = reportJpaRepository.findByCustomerId(customerId).map { it.toDomain() }
 
-    override fun softDelete(id: UUID) =
-        reportJpaRepository.softDeleteById(id, "Relatório")
+    override fun softDelete(id: UUID) = reportJpaRepository.softDeleteById(id, "Relatório")
 
     override fun saveVersion(version: ReportVersion): ReportVersion {
-        val entity = ReportVersionJpaEntity().apply {
-            id = version.id
-            reportId = version.reportId
-            status = version.status
-            description = version.description
-            customerName = version.customerName
-            blocks = version.blocks
-            type = version.type
-        }
+        val entity =
+            ReportVersionJpaEntity().apply {
+                id = version.id
+                reportId = version.reportId
+                status = version.status
+                description = version.description
+                customerName = version.customerName
+                blocks = version.blocks
+                type = version.type
+            }
         return versionJpaRepository.save(entity).toDomain()
     }
 
-    override fun findVersionsByReportId(reportId: UUID): List<ReportVersion> =
-        versionJpaRepository.findByReportIdOrderByCreatedAtDesc(reportId).map { it.toDomain() }
+    override fun findVersionsByReportId(reportId: UUID): List<ReportVersion> = versionJpaRepository.findByReportIdOrderByCreatedAtDesc(reportId).map { it.toDomain() }
 
-    override fun countVersionsByReportId(reportId: UUID): Long =
-        versionJpaRepository.countByReportId(reportId)
+    override fun countVersionsByReportId(reportId: UUID): Long = versionJpaRepository.countByReportId(reportId)
 
     override fun deleteOldestVersion(reportId: UUID) {
         val versions = versionJpaRepository.findByReportIdOrderByCreatedAtDesc(reportId)
@@ -73,22 +70,24 @@ class ReportPersistenceAdapter(
         }
     }
 
-    private fun ReportJpaEntity.toDomain() = Report(
-        id = id, status = status, customerName = customerName,
-        customerId = customerId, formResponseId = formResponseId,
-        templateId = templateId, isStructureLocked = isStructureLocked,
-        blocks = blocks, deleted = deleted,
-        createdAt = createdAt, updatedAt = updatedAt
-    )
+    private fun ReportJpaEntity.toDomain() =
+        Report(
+            id = id, status = status, customerName = customerName,
+            customerId = customerId, formResponseId = formResponseId,
+            templateId = templateId, isStructureLocked = isStructureLocked,
+            blocks = blocks, deleted = deleted,
+            createdAt = createdAt, updatedAt = updatedAt,
+        )
 
-    private fun ReportVersionJpaEntity.toDomain() = ReportVersion(
-        id = id,
-        reportId = reportId,
-        status = status,
-        description = description,
-        customerName = customerName,
-        blocks = blocks,
-        type = type,
-        createdAt = createdAt
-    )
+    private fun ReportVersionJpaEntity.toDomain() =
+        ReportVersion(
+            id = id,
+            reportId = reportId,
+            status = status,
+            description = description,
+            customerName = customerName,
+            blocks = blocks,
+            type = type,
+            createdAt = createdAt,
+        )
 }

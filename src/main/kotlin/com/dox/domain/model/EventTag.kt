@@ -8,5 +8,5 @@ data class EventTag(
     val name: String,
     val color: String,
     val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 )

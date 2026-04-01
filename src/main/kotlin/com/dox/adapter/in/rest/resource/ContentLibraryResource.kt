@@ -16,25 +16,25 @@ interface ContentLibraryResource : BaseResource {
     @GetMapping
     fun findAll(
         @RequestParam(required = false) query: String?,
-        @RequestParam(required = false) type: String?
+        @RequestParam(required = false) type: String?,
     ): ResponseEntity<List<ContentLibraryResponse>>
 
     @Operation(summary = "Criar conteúdo")
     @PostMapping
     fun create(
-        @Valid @RequestBody request: ContentLibraryRequest
+        @Valid @RequestBody request: ContentLibraryRequest,
     ): ResponseEntity<ContentLibraryResponse>
 
     @Operation(summary = "Atualizar conteúdo")
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: ContentLibraryRequest
+        @Valid @RequestBody request: ContentLibraryRequest,
     ): ResponseEntity<ContentLibraryResponse>
 
     @Operation(summary = "Excluir conteúdo")
     @DeleteMapping("/{id}")
     fun delete(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 }

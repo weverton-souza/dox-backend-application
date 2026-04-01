@@ -8,5 +8,5 @@ data class RefreshToken(
     val userId: UUID,
     val tokenHash: String,
     val expiresAt: LocalDateTime,
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
 )

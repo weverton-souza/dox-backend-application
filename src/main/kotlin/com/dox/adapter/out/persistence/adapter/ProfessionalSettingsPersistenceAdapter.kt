@@ -8,14 +8,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class ProfessionalSettingsPersistenceAdapter(
-    private val repository: ProfessionalSettingsJpaRepository
+    private val repository: ProfessionalSettingsJpaRepository,
 ) : ProfessionalSettingsPersistencePort {
-    override fun find(): ProfessionalSettings? =
-        repository.findFirstByOrderByCreatedAtAsc()?.toDomain()
+    override fun find(): ProfessionalSettings? = repository.findFirstByOrderByCreatedAtAsc()?.toDomain()
 
     override fun save(settings: ProfessionalSettings): ProfessionalSettings {
-        val entity = repository.findFirstByOrderByCreatedAtAsc()
-            ?: ProfessionalSettingsJpaEntity()
+        val entity =
+            repository.findFirstByOrderByCreatedAtAsc()
+                ?: ProfessionalSettingsJpaEntity()
         entity.name = settings.name
         entity.crp = settings.crp
         entity.specialization = settings.specialization
@@ -27,17 +27,18 @@ class ProfessionalSettingsPersistenceAdapter(
         return repository.save(entity).toDomain()
     }
 
-    private fun ProfessionalSettingsJpaEntity.toDomain() = ProfessionalSettings(
-        id = id,
-        name = name,
-        crp = crp,
-        specialization = specialization,
-        phone = phone,
-        instagram = instagram,
-        email = email,
-        logo = logo,
-        contactItems = contactItems,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    private fun ProfessionalSettingsJpaEntity.toDomain() =
+        ProfessionalSettings(
+            id = id,
+            name = name,
+            crp = crp,
+            specialization = specialization,
+            phone = phone,
+            instagram = instagram,
+            email = email,
+            logo = logo,
+            contactItems = contactItems,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+        )
 }

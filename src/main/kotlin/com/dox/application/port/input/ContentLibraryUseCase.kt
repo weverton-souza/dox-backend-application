@@ -11,7 +11,7 @@ data class CreateContentLibraryCommand(
     val instrument: String? = null,
     val authors: String? = null,
     val year: Int? = null,
-    val tags: String? = null
+    val tags: String? = null,
 )
 
 data class UpdateContentLibraryCommand(
@@ -23,7 +23,7 @@ data class UpdateContentLibraryCommand(
     val instrument: String? = null,
     val authors: String? = null,
     val year: Int? = null,
-    val tags: String? = null
+    val tags: String? = null,
 )
 
 interface ContentLibraryUseCase {
@@ -31,7 +31,10 @@ interface ContentLibraryUseCase {
 
     fun findByType(type: String): List<ContentLibraryEntry>
 
-    fun search(query: String, type: String? = null): List<ContentLibraryEntry>
+    fun search(
+        query: String,
+        type: String? = null,
+    ): List<ContentLibraryEntry>
 
     fun create(command: CreateContentLibraryCommand): ContentLibraryEntry
 

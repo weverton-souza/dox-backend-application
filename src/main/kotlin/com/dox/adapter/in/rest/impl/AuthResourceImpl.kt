@@ -17,24 +17,26 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class AuthResourceImpl(
-    private val authUseCase: AuthUseCase
+    private val authUseCase: AuthUseCase,
 ) : AuthResource {
     override fun register(request: RegisterRequest): ResponseEntity<AuthResponse> {
-        val result = authUseCase.register(
-            RegisterCommand(
-                email = request.email,
-                name = request.name,
-                password = request.password,
-                vertical = request.vertical
+        val result =
+            authUseCase.register(
+                RegisterCommand(
+                    email = request.email,
+                    name = request.name,
+                    password = request.password,
+                    vertical = request.vertical,
+                ),
             )
-        )
         return responseEntity(result.toResponse(), HttpStatus.CREATED)
     }
 
     override fun login(request: LoginRequest): ResponseEntity<AuthResponse> {
-        val result = authUseCase.login(
-            LoginCommand(email = request.email, password = request.password)
-        )
+        val result =
+            authUseCase.login(
+                LoginCommand(email = request.email, password = request.password),
+            )
         return responseEntity(result.toResponse())
     }
 
@@ -51,19 +53,21 @@ class AuthResourceImpl(
 
     override fun switchTenant(request: SwitchTenantRequest): ResponseEntity<AuthResponse> {
         val userId = ContextHolder.getUserIdOrThrow()
-        val result = authUseCase.switchTenant(
-            SwitchTenantCommand(userId = userId, tenantId = request.tenantId)
-        )
+        val result =
+            authUseCase.switchTenant(
+                SwitchTenantCommand(userId = userId, tenantId = request.tenantId),
+            )
         return responseEntity(result.toResponse())
     }
 
-    private fun com.dox.application.port.input.AuthResult.toResponse() = AuthResponse(
-        accessToken = accessToken,
-        refreshToken = refreshToken,
-        userId = userId,
-        email = email,
-        name = name,
-        tenantId = tenantId,
-        vertical = vertical
-    )
+    private fun com.dox.application.port.input.AuthResult.toResponse() =
+        AuthResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            userId = userId,
+            email = email,
+            name = name,
+            tenantId = tenantId,
+            vertical = vertical,
+        )
 }

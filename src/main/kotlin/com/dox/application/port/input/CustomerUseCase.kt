@@ -19,7 +19,7 @@ data class CreateCustomerEventCommand(
     val type: String,
     val title: String,
     val description: String?,
-    val date: LocalDateTime
+    val date: LocalDateTime,
 )
 
 data class UpdateCustomerEventCommand(
@@ -28,7 +28,7 @@ data class UpdateCustomerEventCommand(
     val type: String,
     val title: String,
     val description: String?,
-    val date: LocalDateTime
+    val date: LocalDateTime,
 )
 
 interface CustomerUseCase {
@@ -36,7 +36,10 @@ interface CustomerUseCase {
 
     fun findById(id: UUID): Customer
 
-    fun findAll(search: String?, pageable: Pageable): Page<Customer>
+    fun findAll(
+        search: String?,
+        pageable: Pageable,
+    ): Page<Customer>
 
     fun update(command: UpdateCustomerCommand): Customer
 
@@ -56,5 +59,8 @@ interface CustomerUseCase {
 
     fun deleteEvent(eventId: UUID)
 
-    fun findAllEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<Pair<CustomerEvent, String>>
+    fun findAllEventsByDateRange(
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): List<Pair<CustomerEvent, String>>
 }

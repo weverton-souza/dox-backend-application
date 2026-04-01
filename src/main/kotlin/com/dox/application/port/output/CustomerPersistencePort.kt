@@ -15,7 +15,10 @@ interface CustomerPersistencePort {
 
     fun findAll(pageable: Pageable): Page<Customer>
 
-    fun search(query: String, pageable: Pageable): Page<Customer>
+    fun search(
+        query: String,
+        pageable: Pageable,
+    ): Page<Customer>
 
     fun softDelete(id: UUID)
 
@@ -37,5 +40,8 @@ interface CustomerPersistencePort {
 
     fun findByIds(ids: Set<UUID>): List<Customer>
 
-    fun findEventsByDateRange(from: LocalDateTime, to: LocalDateTime): List<CustomerEvent>
+    fun findEventsByDateRange(
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): List<CustomerEvent>
 }

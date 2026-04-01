@@ -19,19 +19,19 @@ interface EventTagResource : BaseResource {
     @Operation(summary = "Criar tag")
     @PostMapping
     fun create(
-        @Valid @RequestBody request: EventTagRequest
+        @Valid @RequestBody request: EventTagRequest,
     ): ResponseEntity<EventTagResponse>
 
     @Operation(summary = "Atualizar tag")
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: EventTagRequest
+        @Valid @RequestBody request: EventTagRequest,
     ): ResponseEntity<EventTagResponse>
 
     @Operation(summary = "Excluir tag")
     @DeleteMapping("/{id}")
     fun delete(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 }

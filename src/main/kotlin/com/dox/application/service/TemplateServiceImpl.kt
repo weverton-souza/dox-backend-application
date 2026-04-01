@@ -13,10 +13,9 @@ import java.util.UUID
 
 @Service
 class TemplateServiceImpl(
-    private val templatePersistencePort: TemplatePersistencePort
+    private val templatePersistencePort: TemplatePersistencePort,
 ) : TemplateUseCase {
-    override fun getAllReportTemplates(): List<ReportTemplate> =
-        templatePersistencePort.findAllReportTemplates()
+    override fun getAllReportTemplates(): List<ReportTemplate> = templatePersistencePort.findAllReportTemplates()
 
     @Transactional
     override fun saveReportTemplate(template: ReportTemplate): ReportTemplate {
@@ -29,8 +28,9 @@ class TemplateServiceImpl(
 
     @Transactional
     override fun deleteReportTemplate(id: UUID) {
-        val template = templatePersistencePort.findReportTemplateById(id)
-            ?: throw ResourceNotFoundException("Template", id.toString())
+        val template =
+            templatePersistencePort.findReportTemplateById(id)
+                ?: throw ResourceNotFoundException("Template", id.toString())
         if (template.isMaster) {
             throw BusinessException("Templates mestre não podem ser excluídos")
         }
@@ -39,38 +39,33 @@ class TemplateServiceImpl(
 
     @Transactional
     override fun duplicateReportTemplate(id: UUID): ReportTemplate {
-        val source = templatePersistencePort.findReportTemplateById(id)
-            ?: throw ResourceNotFoundException("Template", id.toString())
+        val source =
+            templatePersistencePort.findReportTemplateById(id)
+                ?: throw ResourceNotFoundException("Template", id.toString())
         return templatePersistencePort.saveReportTemplate(
             source.copy(
                 id = UUID.randomUUID(),
                 name = "Cópia de ${source.name}",
                 isDefault = false,
                 isLocked = false,
-                isMaster = false
-            )
+                isMaster = false,
+            ),
         )
     }
 
-    override fun getAllScoreTableTemplates(): List<ScoreTableTemplate> =
-        templatePersistencePort.findAllScoreTableTemplates()
+    override fun getAllScoreTableTemplates(): List<ScoreTableTemplate> = templatePersistencePort.findAllScoreTableTemplates()
 
     @Transactional
-    override fun saveScoreTableTemplate(template: ScoreTableTemplate): ScoreTableTemplate =
-        templatePersistencePort.saveScoreTableTemplate(template)
+    override fun saveScoreTableTemplate(template: ScoreTableTemplate): ScoreTableTemplate = templatePersistencePort.saveScoreTableTemplate(template)
 
     @Transactional
-    override fun deleteScoreTableTemplate(id: UUID) =
-        templatePersistencePort.deleteScoreTableTemplate(id)
+    override fun deleteScoreTableTemplate(id: UUID) = templatePersistencePort.deleteScoreTableTemplate(id)
 
-    override fun getAllChartTemplates(): List<ChartTemplate> =
-        templatePersistencePort.findAllChartTemplates()
+    override fun getAllChartTemplates(): List<ChartTemplate> = templatePersistencePort.findAllChartTemplates()
 
     @Transactional
-    override fun saveChartTemplate(template: ChartTemplate): ChartTemplate =
-        templatePersistencePort.saveChartTemplate(template)
+    override fun saveChartTemplate(template: ChartTemplate): ChartTemplate = templatePersistencePort.saveChartTemplate(template)
 
     @Transactional
-    override fun deleteChartTemplate(id: UUID) =
-        templatePersistencePort.deleteChartTemplate(id)
+    override fun deleteChartTemplate(id: UUID) = templatePersistencePort.deleteChartTemplate(id)
 }

@@ -29,7 +29,7 @@ class FormLinkServiceImpl(
     private val formLinkPersistencePort: FormLinkPersistencePort,
     private val formUseCase: FormUseCase,
     private val customerPersistencePort: CustomerPersistencePort,
-    private val authTokenPort: AuthTokenPort
+    private val authTokenPort: AuthTokenPort,
 ) : FormLinkUseCase {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -44,14 +44,15 @@ class FormLinkServiceImpl(
 
         val expiresAt = LocalDateTime.now().plusHours(command.expiresInHours)
 
-        val formLink = formLinkPersistencePort.save(
-            FormLink(
-                formId = command.formId,
-                customerId = command.customerId,
-                createdBy = userId,
-                expiresAt = expiresAt
+        val formLink =
+            formLinkPersistencePort.save(
+                FormLink(
+                    formId = command.formId,
+                    customerId = command.customerId,
+                    createdBy = userId,
+                    expiresAt = expiresAt,
+                ),
             )
-        )
 
         val token = authTokenPort.generateFormLinkToken(tenantId, formLink.id, expiresAt)
         return FormLinkWithToken(formLink, token)
@@ -74,8 +75,9 @@ class FormLinkServiceImpl(
 
     @Transactional
     override fun revokeFormLink(id: UUID) {
-        val formLink = formLinkPersistencePort.findById(id)
-            ?: throw ResourceNotFoundException("FormLink", id.toString())
+        val formLink =
+            formLinkPersistencePort.findById(id)
+                ?: throw ResourceNotFoundException("FormLink", id.toString())
         formLinkPersistencePort.save(formLink.copy(status = FormLinkStatus.EXPIRED))
     }
 
@@ -92,7 +94,7 @@ class FormLinkServiceImpl(
                 formDescription = formWithVersion.version.description,
                 fields = formWithVersion.version.fields,
                 customerName = customerName,
-                expiresAt = formLink.expiresAt
+                expiresAt = formLink.expiresAt,
             )
         }
     }
@@ -105,14 +107,15 @@ class FormLinkServiceImpl(
             val formLink = findAndValidateFormLink(tokenData.formLinkId)
             val customerName = customerPersistencePort.findById(formLink.customerId)?.displayName()
 
-            val response = formUseCase.createResponse(
-                CreateFormResponseCommand(
-                    formId = formLink.formId,
-                    customerId = formLink.customerId,
-                    customerName = customerName,
-                    answers = command.answers
+            val response =
+                formUseCase.createResponse(
+                    CreateFormResponseCommand(
+                        formId = formLink.formId,
+                        customerId = formLink.customerId,
+                        customerName = customerName,
+                        answers = command.answers,
+                    ),
                 )
-            )
 
             formLinkPersistencePort.save(formLink.copy(status = FormLinkStatus.ANSWERED))
             response
@@ -132,8 +135,9 @@ class FormLinkServiceImpl(
     }
 
     private fun findAndValidateFormLink(formLinkId: UUID): FormLink {
-        val formLink = formLinkPersistencePort.findById(formLinkId)
-            ?: throw ResourceNotFoundException("FormLink", formLinkId.toString())
+        val formLink =
+            formLinkPersistencePort.findById(formLinkId)
+                ?: throw ResourceNotFoundException("FormLink", formLinkId.toString())
 
         if (formLink.status == FormLinkStatus.ANSWERED) {
             throw BusinessException("Este link já foi utilizado")

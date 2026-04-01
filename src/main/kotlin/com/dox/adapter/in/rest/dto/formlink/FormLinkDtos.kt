@@ -13,7 +13,7 @@ data class CreateFormLinkRequest(
     @field:NotNull(message = "ID do cliente é obrigatório")
     val customerId: UUID,
     @field:Min(value = 1, message = "Expiração deve ser de pelo menos 1 hora")
-    val expiresInHours: Long = 72
+    val expiresInHours: Long = 72,
 )
 
 data class FormLinkResponse(
@@ -24,7 +24,7 @@ data class FormLinkResponse(
     val status: FormLinkStatus,
     val expiresAt: LocalDateTime,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class PublicFormResponse(
@@ -32,14 +32,14 @@ data class PublicFormResponse(
     val formDescription: String?,
     val fields: List<Map<String, Any?>>,
     val customerName: String?,
-    val expiresAt: LocalDateTime
+    val expiresAt: LocalDateTime,
 )
 
 data class PublicFormSubmitRequest(
     @field:Size(max = 200, message = "Máximo de 200 respostas permitidas")
-    val answers: List<Map<String, Any?>> = emptyList()
+    val answers: List<Map<String, Any?>> = emptyList(),
 )
 
 data class PublicFormSubmitResponse(
-    val message: String = "Resposta enviada com sucesso"
+    val message: String = "Resposta enviada com sucesso",
 )

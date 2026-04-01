@@ -18,7 +18,7 @@ data class ProfessionalRequest(
     @field:Email(message = "Email inválido")
     val email: String? = null,
     val logo: String? = null,
-    val contactItems: List<Map<String, Any?>> = emptyList()
+    val contactItems: List<Map<String, Any?>> = emptyList(),
 )
 
 data class ProfessionalResponse(
@@ -30,5 +30,5 @@ data class ProfessionalResponse(
     val instagram: String?,
     val email: String?,
     val logo: String?,
-    val contactItems: List<Map<String, Any?>>
+    val contactItems: List<Map<String, Any?>>,
 )

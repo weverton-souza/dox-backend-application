@@ -23,29 +23,30 @@ class RateLimitFilter(
     @param:Value("\${RATE_LIMIT_REGISTER_WINDOW:60}")
     private val registerWindowSeconds: Long,
     @param:Value("\${TRUSTED_PROXIES:}")
-    trustedProxiesConfig: String
+    trustedProxiesConfig: String,
 ) : OncePerRequestFilter() {
-    private val trustedProxies: Set<String> = trustedProxiesConfig
-        .split(",")
-        .map { it.trim() }
-        .filter { it.isNotEmpty() }
-        .toSet()
+    private val trustedProxies: Set<String> =
+        trustedProxiesConfig
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .toSet()
 
     private val attempts = ConcurrentHashMap<String, ConcurrentLinkedDeque<Instant>>()
     private val lastCleanup = AtomicLong(Instant.now().epochSecond)
 
-    private val rateLimitedPaths = mapOf(
-        "/auth/login" to { Pair(loginMaxAttempts, loginWindowSeconds) },
-        "/auth/register" to { Pair(registerMaxAttempts, registerWindowSeconds) }
-    )
+    private val rateLimitedPaths =
+        mapOf(
+            "/auth/login" to { Pair(loginMaxAttempts, loginWindowSeconds) },
+            "/auth/register" to { Pair(registerMaxAttempts, registerWindowSeconds) },
+        )
 
-    override fun shouldNotFilter(request: HttpServletRequest): Boolean =
-        request.method != "POST" || rateLimitedPaths.keys.none { request.servletPath == it }
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean = request.method != "POST" || rateLimitedPaths.keys.none { request.servletPath == it }
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val clientIp = resolveClientIp(request)
         val path = request.servletPath
@@ -68,7 +69,7 @@ class RateLimitFilter(
                 HttpStatus.TOO_MANY_REQUESTS.value(),
                 "RATE_LIMITED",
                 "Muitas tentativas",
-                "Limite de requisições excedido. Tente novamente em ${retryAfter}s"
+                "Limite de requisições excedido. Tente novamente em ${retryAfter}s",
             )
             return
         }

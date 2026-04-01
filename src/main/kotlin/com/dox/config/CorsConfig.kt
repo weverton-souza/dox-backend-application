@@ -10,17 +10,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 class CorsConfig(
     @param:Value("\${cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
-    private val allowedOriginsRaw: String
+    private val allowedOriginsRaw: String,
 ) {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration().apply {
-            allowedOrigins = allowedOriginsRaw.split(",").map { it.trim() }
-            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-            allowedHeaders = listOf("*")
-            allowCredentials = true
-            maxAge = 3600
-        }
+        val configuration =
+            CorsConfiguration().apply {
+                allowedOrigins = allowedOriginsRaw.split(",").map { it.trim() }
+                allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                allowedHeaders = listOf("*")
+                allowCredentials = true
+                maxAge = 3600
+            }
         return UrlBasedCorsConfigurationSource().apply {
             registerCorsConfiguration("/**", configuration)
         }

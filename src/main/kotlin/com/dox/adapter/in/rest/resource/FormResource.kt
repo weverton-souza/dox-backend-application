@@ -28,59 +28,59 @@ interface FormResource : BaseResource {
     @Operation(summary = "Criar formulário")
     @PostMapping
     fun create(
-        @Valid @RequestBody request: FormRequest
+        @Valid @RequestBody request: FormRequest,
     ): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Buscar formulário por ID")
     @GetMapping("/{id}")
     fun findById(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Atualizar formulário")
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: FormRequest
+        @Valid @RequestBody request: FormRequest,
     ): ResponseEntity<FormResponseDto>
 
     @Operation(summary = "Excluir formulário")
     @DeleteMapping("/{id}")
     fun deleteForm(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<Void>
 
     @Operation(summary = "Listar versões de um formulário")
     @GetMapping("/{id}/versions")
     fun getVersions(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<List<FormVersionResponseDto>>
 
     @Operation(summary = "Buscar versão específica")
     @GetMapping("/{id}/versions/{version}")
     fun getVersion(
         @PathVariable id: UUID,
-        @PathVariable version: Int
+        @PathVariable version: Int,
     ): ResponseEntity<FormVersionResponseDto>
 
     @Operation(summary = "Listar respostas de um formulário")
     @GetMapping("/{id}/responses")
     fun getResponses(
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
     ): ResponseEntity<List<FormResponseResponseDto>>
 
     @Operation(summary = "Criar resposta para formulário")
     @PostMapping("/{id}/responses")
     fun createResponse(
         @PathVariable id: UUID,
-        @Valid @RequestBody request: FormResponseRequest
+        @Valid @RequestBody request: FormResponseRequest,
     ): ResponseEntity<FormResponseResponseDto>
 
     @Operation(summary = "Buscar resposta por ID")
     @GetMapping("/{id}/responses/{responseId}")
     fun getResponse(
         @PathVariable id: UUID,
-        @PathVariable responseId: UUID
+        @PathVariable responseId: UUID,
     ): ResponseEntity<FormResponseResponseDto>
 
     @Operation(summary = "Atualizar resposta")
@@ -88,19 +88,19 @@ interface FormResource : BaseResource {
     fun updateResponse(
         @PathVariable id: UUID,
         @PathVariable responseId: UUID,
-        @Valid @RequestBody request: FormResponseRequest
+        @Valid @RequestBody request: FormResponseRequest,
     ): ResponseEntity<FormResponseResponseDto>
 
     @Operation(summary = "Excluir resposta")
     @DeleteMapping("/{id}/responses/{responseId}")
     fun deleteResponse(
         @PathVariable id: UUID,
-        @PathVariable responseId: UUID
+        @PathVariable responseId: UUID,
     ): ResponseEntity<Void>
 
     @Operation(summary = "Listar respostas por cliente")
     @GetMapping("/by-customer/{customerId}/responses")
     fun getResponsesByCustomer(
-        @PathVariable customerId: UUID
+        @PathVariable customerId: UUID,
     ): ResponseEntity<List<FormResponseResponseDto>>
 }

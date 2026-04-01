@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class Context(
     val tenantId: UUID? = null,
-    val userId: UUID? = null
+    val userId: UUID? = null,
 )
 
 class ContextHolder {
@@ -26,10 +26,8 @@ class ContextHolder {
 
         fun clear() = contextThreadLocal.remove()
 
-        fun getUserIdOrThrow(): UUID =
-            context.userId ?: throw IllegalStateException("Usuário não autenticado")
+        fun getUserIdOrThrow(): UUID = context.userId ?: throw IllegalStateException("Usuário não autenticado")
 
-        fun getTenantIdOrThrow(): UUID =
-            context.tenantId ?: throw BusinessException("Tenant não identificado")
+        fun getTenantIdOrThrow(): UUID = context.tenantId ?: throw BusinessException("Tenant não identificado")
     }
 }

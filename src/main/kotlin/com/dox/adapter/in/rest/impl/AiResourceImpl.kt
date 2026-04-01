@@ -45,56 +45,64 @@ import java.util.concurrent.Executors
 class AiResourceImpl(
     private val reportGenerationUseCase: ReportGenerationUseCase,
     private val objectMapper: ObjectMapper,
-    aiConfigPort: AiConfigPort
+    aiConfigPort: AiConfigPort,
 ) : AiResource {
     private val log = LoggerFactory.getLogger(javaClass)
     private val sseExecutor: ExecutorService = Executors.newFixedThreadPool(aiConfigPort.ssePoolSize())
 
-    override fun generateFullReport(id: UUID, request: GenerateFullReportRequest): SseEmitter {
+    override fun generateFullReport(
+        id: UUID,
+        request: GenerateFullReportRequest,
+    ): SseEmitter {
         val emitter = SseEmitter(300_000L)
 
         val userId = ContextHolder.getUserIdOrThrow()
         val tenantId = ContextHolder.getTenantIdOrThrow()
 
-        val quantitativeData = request.quantitativeData?.let { qd ->
-            QuantitativeDataPayload(
-                tables = qd.tables.map { t ->
-                    ComputedTableData(
-                        t.blockId,
-                        t.title,
-                        t.category,
-                        t.dataStatus,
-                        t.rows.map { r -> ComputedTableRow(r.label, r.values) }
-                    )
-                },
-                charts = qd.charts.map { c ->
-                    ComputedChartData(
-                        c.blockId,
-                        c.title,
-                        c.dataStatus,
-                        c.series.map { s -> ComputedChartSeries(s.label, s.values) }
-                    )
-                }
-            )
-        }
+        val quantitativeData =
+            request.quantitativeData?.let { qd ->
+                QuantitativeDataPayload(
+                    tables =
+                        qd.tables.map { t ->
+                            ComputedTableData(
+                                t.blockId,
+                                t.title,
+                                t.category,
+                                t.dataStatus,
+                                t.rows.map { r -> ComputedTableRow(r.label, r.values) },
+                            )
+                        },
+                    charts =
+                        qd.charts.map { c ->
+                            ComputedChartData(
+                                c.blockId,
+                                c.title,
+                                c.dataStatus,
+                                c.series.map { s -> ComputedChartSeries(s.label, s.values) },
+                            )
+                        },
+                )
+            }
 
         val resolvedFormResponseIds = request.formResponseIds ?: emptyList()
 
         val selectedSectionTitles = request.selectedSections?.map { it.sectionTitle }
-        val sectionInstructions = request.selectedSections
-            ?.filter { !it.instruction.isNullOrBlank() }
-            ?.associate { it.sectionTitle to it.instruction }
-            ?: emptyMap()
+        val sectionInstructions =
+            request.selectedSections
+                ?.filter { !it.instruction.isNullOrBlank() }
+                ?.associate { it.sectionTitle to it.instruction }
+                ?: emptyMap()
 
-        val command = GenerateFullReportCommand(
-            reportId = id,
-            formResponseIds = resolvedFormResponseIds,
-            includeCustomerData = request.includeCustomerData,
-            quantitativeData = quantitativeData,
-            quantitativeContext = request.quantitativeContext,
-            selectedSections = selectedSectionTitles,
-            sectionInstructions = sectionInstructions
-        )
+        val command =
+            GenerateFullReportCommand(
+                reportId = id,
+                formResponseIds = resolvedFormResponseIds,
+                includeCustomerData = request.includeCustomerData,
+                quantitativeData = quantitativeData,
+                quantitativeContext = request.quantitativeContext,
+                selectedSections = selectedSectionTitles,
+                sectionInstructions = sectionInstructions,
+            )
 
         sseExecutor.submit {
             try {
@@ -108,7 +116,7 @@ class AiResourceImpl(
                         emitter.send(
                             SseEmitter.event()
                                 .name(eventName)
-                                .data(objectMapper.writeValueAsString(event))
+                                .data(objectMapper.writeValueAsString(event)),
                         )
                     } catch (e: Exception) {
                         log.warn("Failed to send SSE event: {}", e.message)
@@ -122,7 +130,7 @@ class AiResourceImpl(
                     emitter.send(
                         SseEmitter.event()
                             .name("error")
-                            .data(objectMapper.writeValueAsString(mapOf("message" to (e.message ?: "Erro interno"))))
+                            .data(objectMapper.writeValueAsString(mapOf("message" to (e.message ?: "Erro interno")))),
                     )
                 } catch (_: Exception) {
                 }
@@ -139,54 +147,69 @@ class AiResourceImpl(
         return emitter
     }
 
-    override fun generateSection(id: UUID, request: GenerateSectionRequest): ResponseEntity<GenerateSectionResponse> {
-        val result = reportGenerationUseCase.generateSection(
-            GenerateSectionCommand(
-                reportId = id,
-                sectionType = request.sectionType,
-                formResponseId = request.formResponseId,
-                previousSections = request.previousSections?.map {
-                    com.dox.application.port.input.PreviousSectionContext(it.sectionType, it.summary)
-                },
-                quantitativeData = request.quantitativeData?.let { qd ->
-                    QuantitativeDataPayload(
-                        tables = qd.tables.map { t ->
-                            ComputedTableData(
-                                t.blockId,
-                                t.title,
-                                t.category,
-                                t.dataStatus,
-                                t.rows.map { r -> ComputedTableRow(r.label, r.values) }
+    override fun generateSection(
+        id: UUID,
+        request: GenerateSectionRequest,
+    ): ResponseEntity<GenerateSectionResponse> {
+        val result =
+            reportGenerationUseCase.generateSection(
+                GenerateSectionCommand(
+                    reportId = id,
+                    sectionType = request.sectionType,
+                    formResponseId = request.formResponseId,
+                    previousSections =
+                        request.previousSections?.map {
+                            com.dox.application.port.input.PreviousSectionContext(it.sectionType, it.summary)
+                        },
+                    quantitativeData =
+                        request.quantitativeData?.let { qd ->
+                            QuantitativeDataPayload(
+                                tables =
+                                    qd.tables.map { t ->
+                                        ComputedTableData(
+                                            t.blockId,
+                                            t.title,
+                                            t.category,
+                                            t.dataStatus,
+                                            t.rows.map { r -> ComputedTableRow(r.label, r.values) },
+                                        )
+                                    },
+                                charts =
+                                    qd.charts.map { c ->
+                                        ComputedChartData(
+                                            c.blockId,
+                                            c.title,
+                                            c.dataStatus,
+                                            c.series.map { s -> ComputedChartSeries(s.label, s.values) },
+                                        )
+                                    },
                             )
                         },
-                        charts = qd.charts.map { c ->
-                            ComputedChartData(
-                                c.blockId,
-                                c.title,
-                                c.dataStatus,
-                                c.series.map { s -> ComputedChartSeries(s.label, s.values) }
-                            )
-                        }
-                    )
-                }
+                ),
             )
-        )
         val regenInfo = reportGenerationUseCase.getRegenerationInfo(id)
         return responseEntity(result.toResponse(regenInfo.used, regenInfo.limit))
     }
 
-    override fun regenerateSection(id: UUID, request: RegenerateSectionRequest): ResponseEntity<GenerateSectionResponse> {
-        val result = reportGenerationUseCase.regenerateSection(
-            RegenerateSectionCommand(
-                reportId = id,
-                sectionType = request.sectionType
+    override fun regenerateSection(
+        id: UUID,
+        request: RegenerateSectionRequest,
+    ): ResponseEntity<GenerateSectionResponse> {
+        val result =
+            reportGenerationUseCase.regenerateSection(
+                RegenerateSectionCommand(
+                    reportId = id,
+                    sectionType = request.sectionType,
+                ),
             )
-        )
         val regenInfo = reportGenerationUseCase.getRegenerationInfo(id)
         return responseEntity(result.toResponse(regenInfo.used, regenInfo.limit))
     }
 
-    override fun getUsageSummary(month: Int, year: Int): ResponseEntity<AiUsageSummaryResponse> =
+    override fun getUsageSummary(
+        month: Int,
+        year: Int,
+    ): ResponseEntity<AiUsageSummaryResponse> =
         responseEntity(
             reportGenerationUseCase.getUsageSummary(GetAiUsageCommand(month, year)).let { summary ->
                 AiUsageSummaryResponse(
@@ -196,53 +219,58 @@ class AiResourceImpl(
                     overageCostCents = summary.overageCostCents,
                     tierName = summary.quota?.aiTier?.name,
                     alertLevel = summary.alertLevel?.name,
-                    alertMessage = summary.alertLevel?.message
+                    alertMessage = summary.alertLevel?.message,
                 )
-            }
+            },
         )
 
-    override fun getUsageHistory(month: Int, year: Int): ResponseEntity<List<AiUsageDetailResponse>> =
+    override fun getUsageHistory(
+        month: Int,
+        year: Int,
+    ): ResponseEntity<List<AiUsageDetailResponse>> =
         responseEntity(
-            reportGenerationUseCase.getUsageHistory(GetAiUsageCommand(month, year)).map { it.toResponse() }
+            reportGenerationUseCase.getUsageHistory(GetAiUsageCommand(month, year)).map { it.toResponse() },
         )
 
     override fun getUsageByReport(reportId: UUID): ResponseEntity<List<AiUsageDetailResponse>> =
         responseEntity(
-            reportGenerationUseCase.getUsageByReport(reportId).map { it.toResponse() }
+            reportGenerationUseCase.getUsageByReport(reportId).map { it.toResponse() },
         )
 
     override fun getQuota(): ResponseEntity<AiQuotaResponse> {
-        val quota = reportGenerationUseCase.getQuota()
-            ?: throw ResourceNotFoundException("Quota do Assistente", "tenant")
+        val quota =
+            reportGenerationUseCase.getQuota()
+                ?: throw ResourceNotFoundException("Quota do Assistente", "tenant")
         return responseEntity(
             AiQuotaResponse(
                 tier = quota.aiTier.name,
                 model = quota.model,
                 monthlyLimit = quota.monthlyLimit,
                 overagePriceCents = quota.overagePriceCents,
-                enabled = quota.enabled
-            )
+                enabled = quota.enabled,
+            ),
         )
     }
 
     override fun updateQuota(request: UpdateAiQuotaRequest): ResponseEntity<AiQuotaResponse> {
-        val quota = reportGenerationUseCase.updateQuota(
-            UpdateAiQuotaCommand(
-                aiTier = request.aiTier,
-                model = request.model,
-                monthlyLimit = request.monthlyLimit,
-                overagePriceCents = request.overagePriceCents,
-                enabled = request.enabled
+        val quota =
+            reportGenerationUseCase.updateQuota(
+                UpdateAiQuotaCommand(
+                    aiTier = request.aiTier,
+                    model = request.model,
+                    monthlyLimit = request.monthlyLimit,
+                    overagePriceCents = request.overagePriceCents,
+                    enabled = request.enabled,
+                ),
             )
-        )
         return responseEntity(
             AiQuotaResponse(
                 tier = quota.aiTier.name,
                 model = quota.model,
                 monthlyLimit = quota.monthlyLimit,
                 overagePriceCents = quota.overagePriceCents,
-                enabled = quota.enabled
-            )
+                enabled = quota.enabled,
+            ),
         )
     }
 
@@ -252,30 +280,34 @@ class AiResourceImpl(
             AiStatusResponse(
                 available = status.available,
                 tierName = status.tierName,
-                model = status.model
-            )
+                model = status.model,
+            ),
         )
     }
 
-    override fun reviewText(id: UUID, request: ReviewTextRequest): ResponseEntity<ReviewTextResponse> {
-        val result = reportGenerationUseCase.reviewText(
-            ReviewTextCommand(
-                reportId = id,
-                text = request.text,
-                action = request.action,
-                sectionType = request.sectionType,
-                instruction = request.instruction,
-                formResponseIds = request.formResponseIds
+    override fun reviewText(
+        id: UUID,
+        request: ReviewTextRequest,
+    ): ResponseEntity<ReviewTextResponse> {
+        val result =
+            reportGenerationUseCase.reviewText(
+                ReviewTextCommand(
+                    reportId = id,
+                    text = request.text,
+                    action = request.action,
+                    sectionType = request.sectionType,
+                    instruction = request.instruction,
+                    formResponseIds = request.formResponseIds,
+                ),
             )
-        )
         return responseEntity(
             ReviewTextResponse(
                 original = request.text,
                 revised = result.text,
                 generationId = result.generationId,
                 tokensUsed = result.inputTokens + result.outputTokens,
-                model = result.model
-            )
+                model = result.model,
+            ),
         )
     }
 
@@ -291,9 +323,9 @@ class AiResourceImpl(
                     sourceLabel = it.sourceLabel,
                     included = it.included,
                     displayOrder = it.displayOrder,
-                    createdAt = it.createdAt
+                    createdAt = it.createdAt,
                 )
-            }
+            },
         )
 
     override fun getRegenerationInfo(reportId: UUID): ResponseEntity<RegenerationInfoResponse> {
@@ -303,7 +335,7 @@ class AiResourceImpl(
 
     private fun AiGenerationResult.toResponse(
         regenerationsUsed: Int = 0,
-        regenerationLimit: Int = 3
+        regenerationLimit: Int = 3,
     ) = GenerateSectionResponse(
         text = text,
         tokensUsed = inputTokens + outputTokens,
@@ -311,21 +343,22 @@ class AiResourceImpl(
         generationId = generationId,
         cached = cached,
         regenerationsUsed = regenerationsUsed,
-        regenerationLimit = regenerationLimit
+        regenerationLimit = regenerationLimit,
     )
 
-    private fun AiUsage.toResponse() = AiUsageDetailResponse(
-        id = id,
-        reportId = reportId,
-        generationId = generationId,
-        sectionType = sectionType,
-        model = model,
-        inputTokens = inputTokens,
-        outputTokens = outputTokens,
-        estimatedCostBrl = estimatedCostBrl,
-        status = status,
-        durationMs = durationMs,
-        isRegeneration = isRegeneration,
-        createdAt = createdAt
-    )
+    private fun AiUsage.toResponse() =
+        AiUsageDetailResponse(
+            id = id,
+            reportId = reportId,
+            generationId = generationId,
+            sectionType = sectionType,
+            model = model,
+            inputTokens = inputTokens,
+            outputTokens = outputTokens,
+            estimatedCostBrl = estimatedCostBrl,
+            status = status,
+            durationMs = durationMs,
+            isRegeneration = isRegeneration,
+            createdAt = createdAt,
+        )
 }

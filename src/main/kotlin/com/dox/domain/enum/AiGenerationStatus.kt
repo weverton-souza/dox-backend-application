@@ -4,5 +4,5 @@ enum class AiGenerationStatus {
     SUCCESS,
     ERROR,
     TIMEOUT,
-    RATE_LIMITED
+    RATE_LIMITED,
 }

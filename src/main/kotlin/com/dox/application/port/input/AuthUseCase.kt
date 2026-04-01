@@ -7,12 +7,12 @@ data class RegisterCommand(
     val email: String,
     val name: String,
     val password: String,
-    val vertical: Vertical = Vertical.GENERAL
+    val vertical: Vertical = Vertical.GENERAL,
 )
 
 data class LoginCommand(
     val email: String,
-    val password: String
+    val password: String,
 )
 
 data class AuthResult(
@@ -22,12 +22,12 @@ data class AuthResult(
     val email: String,
     val name: String,
     val tenantId: UUID,
-    val vertical: Vertical
+    val vertical: Vertical,
 )
 
 data class SwitchTenantCommand(
     val userId: UUID,
-    val tenantId: UUID
+    val tenantId: UUID,
 )
 
 interface AuthUseCase {

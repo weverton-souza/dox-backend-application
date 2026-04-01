@@ -14,7 +14,7 @@ data class ReportRequest(
     val templateId: UUID? = null,
     val isStructureLocked: Boolean = false,
     @field:Size(max = 200, message = "Máximo de 200 blocos permitidos")
-    val blocks: List<Map<String, Any?>> = emptyList()
+    val blocks: List<Map<String, Any?>> = emptyList(),
 )
 
 data class ReportResponse(
@@ -27,14 +27,14 @@ data class ReportResponse(
     val isStructureLocked: Boolean,
     val blocks: List<Map<String, Any?>>,
     val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )
 
 data class ReportVersionRequest(
     @field:Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     val description: String? = null,
     @field:Size(max = 50, message = "Tipo deve ter no máximo 50 caracteres")
-    val type: String = "manual"
+    val type: String = "manual",
 )
 
 data class ReportVersionResponse(
@@ -45,5 +45,5 @@ data class ReportVersionResponse(
     val customerName: String?,
     val blocks: List<Map<String, Any?>>,
     val type: String,
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime?,
 )

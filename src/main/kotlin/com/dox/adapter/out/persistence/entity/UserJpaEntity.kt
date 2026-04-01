@@ -18,5 +18,5 @@ class UserJpaEntity(
     var passwordHash: String = "",
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personal_tenant_id")
-    var personalTenant: TenantJpaEntity? = null
+    var personalTenant: TenantJpaEntity? = null,
 ) : AbstractJpaEntity()
