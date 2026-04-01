@@ -100,15 +100,19 @@ data class SectionInstructionRequest(
 
 data class GenerateFullReportRequest(
     val formResponseId: UUID? = null,
+    @field:Size(max = 20, message = "Máximo de 20 questionários permitidos")
     val formResponseIds: List<UUID>? = null,
     val quantitativeData: QuantitativeDataRequest? = null,
+    @field:Size(max = 2000, message = "Contexto quantitativo deve ter no máximo 2000 caracteres")
     val quantitativeContext: String? = null,
+    @field:Size(max = 50, message = "Máximo de 50 seções permitidas")
     val selectedSections: List<SectionInstructionRequest>? = null,
     val includeCustomerData: Boolean = true
 )
 
 data class ReviewTextRequest(
     @field:NotBlank(message = "Texto é obrigatório")
+    @field:Size(max = 50000, message = "Texto deve ter no máximo 50000 caracteres")
     val text: String,
     @field:NotBlank(message = "Ação é obrigatória")
     @field:Size(max = 20, message = "Ação deve ter no máximo 20 caracteres")
@@ -117,6 +121,7 @@ data class ReviewTextRequest(
     val sectionType: String? = null,
     @field:Size(max = 500, message = "Instrução deve ter no máximo 500 caracteres")
     val instruction: String? = null,
+    @field:Size(max = 20, message = "Máximo de 20 questionários permitidos")
     val formResponseIds: List<UUID>? = null
 )
 

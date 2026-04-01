@@ -29,7 +29,18 @@ class JwtAuthenticationFilter(
     ) {
         val token = extractToken(request)
 
-        if (token != null && authTokenPort.validateAccessToken(token)) {
+        if (token != null) {
+            if (!authTokenPort.validateAccessToken(token)) {
+                FilterProblemDetailWriter.write(
+                    response = response,
+                    status = 401,
+                    type = "invalid-token",
+                    title = "Não autorizado",
+                    detail = "Token inválido ou expirado"
+                )
+                return
+            }
+
             val userId = authTokenPort.extractUserId(token)
             val email = authTokenPort.extractEmail(token)
             val tenantId = authTokenPort.extractTenantId(token)
