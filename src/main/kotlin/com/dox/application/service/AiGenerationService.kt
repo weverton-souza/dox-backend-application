@@ -58,7 +58,6 @@ class AiGenerationService(
         private const val MAX_SEMAPHORE_CACHE_SIZE = 1000
     }
 
-    @Transactional
     fun generateSection(command: GenerateSectionCommand): AiGenerationResult {
         val userId = ContextHolder.getUserIdOrThrow()
         val tenantId = ContextHolder.getTenantIdOrThrow()
@@ -100,7 +99,6 @@ class AiGenerationService(
         }
     }
 
-    @Transactional
     fun regenerateSection(command: RegenerateSectionCommand): AiGenerationResult {
         val regenCount = aiUsagePort.countByReportId(command.reportId)
         if (regenCount >= aiConfigPort.regenerationLimit()) {
@@ -117,7 +115,6 @@ class AiGenerationService(
         )
     }
 
-    @Transactional
     fun reviewText(command: ReviewTextCommand): AiGenerationResult {
         val userId = ContextHolder.getUserIdOrThrow()
         val tenantId = ContextHolder.getTenantIdOrThrow()
@@ -311,6 +308,7 @@ class AiGenerationService(
             .setScale(4, RoundingMode.HALF_UP)
     }
 
+    @Transactional
     fun recordUsage(
         reportId: UUID,
         userId: UUID,
@@ -337,6 +335,7 @@ class AiGenerationService(
         aiUsagePort.save(usage)
     }
 
+    @Transactional
     fun recordFailure(
         reportId: UUID,
         userId: UUID,
@@ -358,6 +357,6 @@ class AiGenerationService(
     private fun findLinkedTemplate(formId: UUID): com.dox.domain.model.ReportTemplate? {
         val form = formPersistencePort.findFormById(formId) ?: return null
         val templateId = form.linkedTemplateId ?: return null
-        return templatePersistencePort.findAllReportTemplates().find { it.id == templateId }
+        return templatePersistencePort.findReportTemplateById(templateId)
     }
 }

@@ -55,13 +55,14 @@ class AiUsagePersistenceAdapter(
         aiUsageJpaRepository.findByReportId(reportId).map { it.toDomain() }
 
     override fun sumTokensByProfessionalAndMonth(professionalId: UUID, month: Int, year: Int): TokenSummary {
-        val usages = findByProfessionalAndMonth(professionalId, month, year)
+        val (start, end) = monthRange(month, year)
+        val row = aiUsageJpaRepository.sumTokensByProfessionalAndPeriod(professionalId, start, end)
         return TokenSummary(
-            totalInputTokens = usages.sumOf { it.inputTokens.toLong() },
-            totalOutputTokens = usages.sumOf { it.outputTokens.toLong() },
-            totalCacheReadTokens = usages.sumOf { it.cacheReadTokens.toLong() },
-            totalCacheWriteTokens = usages.sumOf { it.cacheWriteTokens.toLong() },
-            totalCostBrl = usages.fold(BigDecimal.ZERO) { acc, u -> acc + u.estimatedCostBrl }
+            totalInputTokens = (row[0] as Number).toLong(),
+            totalOutputTokens = (row[1] as Number).toLong(),
+            totalCacheReadTokens = (row[2] as Number).toLong(),
+            totalCacheWriteTokens = (row[3] as Number).toLong(),
+            totalCostBrl = (row[4] as Number).let { BigDecimal(it.toString()) }
         )
     }
 

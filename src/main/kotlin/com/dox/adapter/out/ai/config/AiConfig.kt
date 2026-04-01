@@ -12,6 +12,7 @@ class AiConfig : AiConfigPort {
     var defaultModel: String = "claude-sonnet-4-6"
     var maxConcurrentPerTenant: Int = 5
     var maxRegenerationsPerReport: Int = 3
+    var ssePoolSize: Int = 10
     var cost: CostConfig = CostConfig()
 
     override fun isEnabled(): Boolean = enabled
@@ -21,6 +22,8 @@ class AiConfig : AiConfigPort {
     override fun concurrencyLimit(): Int = maxConcurrentPerTenant
 
     override fun regenerationLimit(): Int = maxRegenerationsPerReport
+
+    override fun ssePoolSize(): Int = ssePoolSize
 
     override fun costConfig(): AiCostConfig = AiCostConfig(
         sonnetInputPerMillion = cost.sonnetInputPerMillion,
