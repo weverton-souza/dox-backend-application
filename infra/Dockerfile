@@ -1,6 +1,6 @@
 FROM gradle:8-jdk21-alpine AS builder
 WORKDIR /app
-COPY build.gradle.kts settings.gradle.kts ./
+COPY build.gradle.kts settings.gradle.kts .editorconfig ./
 COPY gradle ./gradle
 COPY src ./src
 RUN gradle bootJar -x test --no-daemon
