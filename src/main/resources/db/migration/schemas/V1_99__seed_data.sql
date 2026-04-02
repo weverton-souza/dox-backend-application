@@ -30,10 +30,10 @@ INSERT INTO report_templates (id, name, description, blocks, is_default) VALUES
    {"id":"tpl-s3","type":"section","parentId":null,"order":3,"data":{"title":"ANAMNESE"}},
    {"id":"tpl-s3-t1","type":"text","parentId":"tpl-s3","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
    {"id":"tpl-s4","type":"section","parentId":null,"order":4,"data":{"title":"RESULTADOS"}},
-   {"id":"tpl-s4-st1","type":"score-table","parentId":"tpl-s4","order":0,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
-   {"id":"tpl-s4-st2","type":"score-table","parentId":"tpl-s4","order":1,"data":{"title":"RESULTADOS - MEMÓRIA","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
-   {"id":"tpl-s4-st3","type":"score-table","parentId":"tpl-s4","order":2,"data":{"title":"RESULTADOS - FUNÇÕES EXECUTIVAS","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
-   {"id":"tpl-s4-ch1","type":"chart","parentId":"tpl-s4","order":3,"data":{"title":"GRÁFICO DE DESEMPENHO","chartType":"bar","categories":[],"series":[]}},
+   {"id":"tpl-s4-st1","type":"score-table","parentId":"tpl-s4","order":0,"data":{"title":"RESULTADOS - ATENÇÃO","columns":[{"id":"col-teste","label":"Teste"},{"id":"col-eb","label":"Escore Bruto"},{"id":"col-perc","label":"Percentil"},{"id":"col-class","label":"Classificação"}],"rows":[],"footnote":""}},
+   {"id":"tpl-s4-st2","type":"score-table","parentId":"tpl-s4","order":1,"data":{"title":"RESULTADOS - MEMÓRIA","columns":[{"id":"col-teste","label":"Teste"},{"id":"col-eb","label":"Escore Bruto"},{"id":"col-perc","label":"Percentil"},{"id":"col-class","label":"Classificação"}],"rows":[],"footnote":""}},
+   {"id":"tpl-s4-st3","type":"score-table","parentId":"tpl-s4","order":2,"data":{"title":"RESULTADOS - FUNÇÕES EXECUTIVAS","columns":[{"id":"col-teste","label":"Teste"},{"id":"col-eb","label":"Escore Bruto"},{"id":"col-perc","label":"Percentil"},{"id":"col-class","label":"Classificação"}],"rows":[],"footnote":""}},
+   {"id":"tpl-s4-ch1","type":"chart","parentId":"tpl-s4","order":3,"data":{"title":"GRÁFICO DE DESEMPENHO","chartType":"bar","displayMode":"grouped","categories":[],"series":[],"referenceLines":[],"referenceRegions":[],"yAxisLabel":"","showValues":true,"showLegend":true,"showRegionLegend":false,"description":""}},
    {"id":"tpl-s5","type":"section","parentId":null,"order":5,"data":{"title":"ANÁLISE E OBSERVAÇÕES"}},
    {"id":"tpl-s5-t1","type":"text","parentId":"tpl-s5","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
    {"id":"tpl-s6","type":"section","parentId":null,"order":6,"data":{"title":"IMPRESSÃO DIAGNÓSTICA"}},
@@ -43,7 +43,7 @@ INSERT INTO report_templates (id, name, description, blocks, is_default) VALUES
    {"id":"tpl-s8","type":"section","parentId":null,"order":8,"data":{"title":"CONCLUSÃO"}},
    {"id":"tpl-s8-t1","type":"text","parentId":"tpl-s8","order":0,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
    {"id":"tpl-ref","type":"references","parentId":null,"order":9,"data":{"title":"REFERÊNCIAS BIBLIOGRÁFICAS","references":[]}},
-   {"id":"tpl-cp","type":"closing-page","parentId":null,"order":10,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
+   {"id":"tpl-cp","type":"closing-page","parentId":null,"order":10,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","bodyText":"","showPatientSignature":true,"showMotherSignature":false,"showFatherSignature":false,"showGuardianSignature":false,"footerNote":""}}
  ]'::JSONB, true);
 
 -- Reports (3)
@@ -56,13 +56,13 @@ INSERT INTO reports (id, status, customer_name, customer_id, form_response_id, b
    {"id":"b001-s2","type":"section","parentId":null,"order":2,"collapsed":false,"data":{"title":"PROCEDIMENTOS"}},
    {"id":"b001-s2-t1","type":"text","parentId":"b001-s2","order":0,"collapsed":false,"data":{"content":[{"type":"p","children":[{"text":"Foram realizadas 4 sessões de avaliação, incluindo entrevista clínica semiestruturada, aplicação do Inventário de Ansiedade de Beck (BAI) e Inventário de Depressão de Beck (BDI-II). Escore BAI: 28 (moderado). Escore BDI-II: 14 (leve)."}]}],"labeledItems":[],"useLabeledItems":false}},
    {"id":"b001-s3","type":"section","parentId":null,"order":3,"collapsed":false,"data":{"title":"RESULTADOS"}},
-   {"id":"b001-s3-st1","type":"score-table","parentId":"b001-s3","order":0,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[["Trail Making A","35s","60","Médio"],["Trail Making B","78s","45","Médio"]],"formulas":{},"columnAlignments":{}}},
+   {"id":"b001-s3-st1","type":"score-table","parentId":"b001-s3","order":0,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":[{"id":"col-teste","label":"Teste"},{"id":"col-eb","label":"Escore Bruto"},{"id":"col-perc","label":"Percentil"},{"id":"col-class","label":"Classificação"}],"rows":[{"id":"row-1","values":{"col-teste":"Trail Making A","col-eb":"35s","col-perc":"60","col-class":"Médio"}},{"id":"row-2","values":{"col-teste":"Trail Making B","col-eb":"78s","col-perc":"45","col-class":"Médio"}}],"footnote":""}},
    {"id":"b001-s3b","type":"section","parentId":null,"order":4,"collapsed":false,"data":{"title":"IMPRESSÃO DIAGNÓSTICA"}},
    {"id":"b001-ib1","type":"info-box","parentId":"b001-s3b","order":0,"collapsed":false,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":[{"type":"p","children":[{"text":"Transtorno de Ansiedade Generalizada (F41.1) com impacto funcional moderado."}]}]}},
    {"id":"b001-s4","type":"section","parentId":null,"order":5,"collapsed":false,"data":{"title":"CONCLUSÃO E RECOMENDAÇÕES"}},
    {"id":"b001-s4-t1","type":"text","parentId":"b001-s4","order":0,"collapsed":false,"data":{"content":[{"type":"p","children":[{"text":"Recomenda-se acompanhamento psicoterapêutico semanal com abordagem cognitivo-comportamental por período mínimo de 12 semanas, com reavaliação ao final do período."}]}],"labeledItems":[],"useLabeledItems":false}},
    {"id":"b001-ref","type":"references","parentId":null,"order":6,"collapsed":false,"data":{"title":"REFERÊNCIAS BIBLIOGRÁFICAS","references":[]}},
-   {"id":"b001-cp","type":"closing-page","parentId":null,"order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
+   {"id":"b001-cp","type":"closing-page","parentId":null,"order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","bodyText":"","showPatientSignature":true,"showMotherSignature":false,"showFatherSignature":false,"showGuardianSignature":false,"footerNote":""}}
  ]'::JSONB),
 
 ('fc2f985c-24c5-4c77-8288-49db8ef7e7e0', 'RASCUNHO', 'Maria Aparecida Santos', 'b5e59243-c260-4ff4-891d-cdb97520d29d', 'e1ad1b5a-ad9c-4272-8d34-cc2b0dfb26a2',
@@ -75,12 +75,12 @@ INSERT INTO reports (id, status, customer_name, customer_id, form_response_id, b
    {"id":"b003-s3","type":"section","parentId":null,"order":3,"collapsed":false,"data":{"title":"ANAMNESE"}},
    {"id":"b003-s3-t1","type":"text","parentId":"b003-s3","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
    {"id":"b003-s4","type":"section","parentId":null,"order":4,"collapsed":false,"data":{"title":"RESULTADOS"}},
-   {"id":"b003-s4-st1","type":"score-table","parentId":"b003-s4","order":0,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":["Teste","Escore Bruto","Percentil","Classificação"],"rows":[],"formulas":{},"columnAlignments":{}}},
+   {"id":"b003-s4-st1","type":"score-table","parentId":"b003-s4","order":0,"collapsed":false,"data":{"title":"RESULTADOS - ATENÇÃO","columns":[{"id":"col-teste","label":"Teste"},{"id":"col-eb","label":"Escore Bruto"},{"id":"col-perc","label":"Percentil"},{"id":"col-class","label":"Classificação"}],"rows":[],"footnote":""}},
    {"id":"b003-s4b","type":"section","parentId":null,"order":5,"collapsed":false,"data":{"title":"IMPRESSÃO DIAGNÓSTICA"}},
    {"id":"b003-ib1","type":"info-box","parentId":"b003-s4b","order":0,"collapsed":false,"data":{"label":"IMPRESSÃO DIAGNÓSTICA","content":""}},
    {"id":"b003-s5","type":"section","parentId":null,"order":6,"collapsed":false,"data":{"title":"CONCLUSÃO"}},
    {"id":"b003-s5-t1","type":"text","parentId":"b003-s5","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}},
-   {"id":"b003-cp","type":"closing-page","parentId":null,"order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","signatures":["professional","patient"]}}
+   {"id":"b003-cp","type":"closing-page","parentId":null,"order":7,"collapsed":false,"data":{"title":"TERMO DE ENTREGA E CIÊNCIA","bodyText":"","showPatientSignature":true,"showMotherSignature":false,"showFatherSignature":false,"showGuardianSignature":false,"footerNote":""}}
  ]'::JSONB),
 
 ('ef105901-94a7-46e6-8c7c-8f1dba6c20e5', 'RASCUNHO', 'José Carlos Oliveira', '46e24bd1-7cdd-4b84-b976-daaa11c1281b', NULL,
