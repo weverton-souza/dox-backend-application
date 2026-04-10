@@ -6,9 +6,11 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.SQLRestriction
 
 @Entity
 @Table(name = "users", schema = "public")
+@SQLRestriction("deleted = false")
 class UserJpaEntity(
     @Column(name = "email", unique = true, nullable = false)
     var email: String = "",
