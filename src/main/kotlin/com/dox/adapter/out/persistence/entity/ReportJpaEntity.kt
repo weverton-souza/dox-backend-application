@@ -7,11 +7,13 @@ import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
+import org.hibernate.annotations.SQLRestriction
 import org.hibernate.annotations.Type
 import java.util.UUID
 
 @Entity
 @Table(name = "reports")
+@SQLRestriction("deleted = false")
 class ReportJpaEntity(
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
