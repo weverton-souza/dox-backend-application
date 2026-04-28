@@ -14,6 +14,8 @@ data class Report(
     val isStructureLocked: Boolean = false,
     val blocks: List<Map<String, Any?>> = emptyList(),
     val deleted: Boolean = false,
+    val finalizedAt: LocalDateTime? = null,
+    val contentHash: String? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 )

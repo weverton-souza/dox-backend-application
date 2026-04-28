@@ -10,6 +10,7 @@ import jakarta.persistence.Table
 import jakarta.persistence.Version
 import org.hibernate.annotations.SQLRestriction
 import org.hibernate.annotations.Type
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
@@ -32,6 +33,10 @@ class ReportJpaEntity(
     @Type(JsonType::class)
     @Column(name = "blocks", columnDefinition = "jsonb")
     var blocks: List<Map<String, Any?>> = emptyList(),
+    @Column(name = "finalized_at")
+    var finalizedAt: LocalDateTime? = null,
+    @Column(name = "content_hash", length = 64)
+    var contentHash: String? = null,
     @Version
     @Column(name = "version", nullable = false)
     var version: Long = 0,
