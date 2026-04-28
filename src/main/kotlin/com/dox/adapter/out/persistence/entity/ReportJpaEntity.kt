@@ -37,6 +37,12 @@ class ReportJpaEntity(
     var finalizedAt: LocalDateTime? = null,
     @Column(name = "content_hash", length = 64)
     var contentHash: String? = null,
+    @Column(name = "finalized_by_user_id")
+    var finalizedByUserId: UUID? = null,
+    @Column(name = "finalized_by_ip", length = 45)
+    var finalizedByIp: String? = null,
+    @Column(name = "finalized_user_agent", length = 500)
+    var finalizedUserAgent: String? = null,
     @Version
     @Column(name = "version", nullable = false)
     var version: Long = 0,
