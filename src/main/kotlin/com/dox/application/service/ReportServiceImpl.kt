@@ -114,9 +114,17 @@ class ReportServiceImpl(
         reportPersistencePort.softDelete(id)
     }
 
-    override fun getExportData(id: UUID): Report =
-        reportPersistencePort.findById(id)
-            ?: throw ResourceNotFoundException("Relatório", id.toString())
+    override fun getExportData(id: UUID): Report {
+        val report =
+            reportPersistencePort.findById(id)
+                ?: throw ResourceNotFoundException("Relatório", id.toString())
+
+        if (report.status != ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório precisa estar finalizado para exportação. Status atual: ${report.status.name}")
+        }
+
+        return report
+    }
 
     override fun getVersions(reportId: UUID): List<ReportVersion> = reportPersistencePort.findVersionsByReportId(reportId)
 
