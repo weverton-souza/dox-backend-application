@@ -1,6 +1,8 @@
 package com.dox.application.service
 
 import com.dox.application.port.output.ReportPersistencePort
+import com.dox.domain.enum.ReportStatus
+import com.dox.domain.exception.BusinessException
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -26,6 +28,9 @@ class ReportBlockService(
         skipped: Boolean = false,
     ) {
         val report = reportPersistencePort.findById(reportId) ?: return
+        if (report.status == ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório finalizado não pode ter blocos modificados.")
+        }
         val blockId = block["id"]?.toString() ?: return
 
         val slateContent = textToSlateNodes(generatedText)
@@ -56,6 +61,9 @@ class ReportBlockService(
         skipped: Boolean = false,
     ) {
         val report = reportPersistencePort.findById(reportId) ?: return
+        if (report.status == ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório finalizado não pode ter blocos modificados.")
+        }
         val sectionBlockId = sectionBlock["id"]?.toString() ?: return
 
         val slateContent = textToSlateNodes(generatedText)
