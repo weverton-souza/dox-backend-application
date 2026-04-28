@@ -26,6 +26,8 @@ data class ReportResponse(
     val templateId: UUID?,
     val isStructureLocked: Boolean,
     val blocks: List<Map<String, Any?>>,
+    val finalizedAt: LocalDateTime?,
+    val contentHash: String?,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
 )
