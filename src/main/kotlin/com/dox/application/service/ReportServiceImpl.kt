@@ -1,15 +1,19 @@
 package com.dox.application.service
 
+import com.dox.adapter.out.persistence.adapter.PublishedReportPersistenceAdapter
 import com.dox.application.port.input.CreateReportCommand
 import com.dox.application.port.input.CreateVersionCommand
 import com.dox.application.port.input.ReportUseCase
 import com.dox.application.port.input.UpdateReportCommand
+import com.dox.application.port.output.CustomerPersistencePort
+import com.dox.application.port.output.ProfessionalSettingsPersistencePort
 import com.dox.application.port.output.ReportPersistencePort
 import com.dox.domain.enum.ReportStatus
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Report
 import com.dox.domain.model.ReportVersion
+import com.dox.shared.ContextHolder
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import org.springframework.data.domain.Page
@@ -23,6 +27,9 @@ import java.util.UUID
 @Service
 class ReportServiceImpl(
     private val reportPersistencePort: ReportPersistencePort,
+    private val publishedReportPersistenceAdapter: PublishedReportPersistenceAdapter,
+    private val professionalSettingsPersistencePort: ProfessionalSettingsPersistencePort,
+    private val customerPersistencePort: CustomerPersistencePort,
     objectMapper: ObjectMapper,
 ) : ReportUseCase {
     companion object {
@@ -76,16 +83,51 @@ class ReportServiceImpl(
         val targetStatus = command.status ?: existing.status
         val targetBlocks = command.blocks ?: existing.blocks
         val finalizing = targetStatus == ReportStatus.FINALIZADO && existing.status != ReportStatus.FINALIZADO
+        val finalizedAt = if (finalizing) LocalDateTime.now() else existing.finalizedAt
+        val contentHash = if (finalizing) computeContentHash(targetBlocks) else existing.contentHash
 
-        return reportPersistencePort.save(
-            existing.copy(
-                status = targetStatus,
-                customerName = command.customerName ?: existing.customerName,
-                blocks = targetBlocks,
-                finalizedAt = if (finalizing) LocalDateTime.now() else existing.finalizedAt,
-                contentHash = if (finalizing) computeContentHash(targetBlocks) else existing.contentHash,
-            ),
+        val saved =
+            reportPersistencePort.save(
+                existing.copy(
+                    status = targetStatus,
+                    customerName = command.customerName ?: existing.customerName,
+                    blocks = targetBlocks,
+                    finalizedAt = finalizedAt,
+                    contentHash = contentHash,
+                ),
+            )
+
+        if (finalizing && contentHash != null && finalizedAt != null) {
+            publishFinalized(saved, contentHash, finalizedAt)
+        }
+
+        return saved
+    }
+
+    private fun publishFinalized(
+        report: Report,
+        contentHash: String,
+        finalizedAt: LocalDateTime,
+    ) {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        val professional = runCatching { professionalSettingsPersistencePort.find() }.getOrNull()
+        val customer = report.customerId?.let { runCatching { customerPersistencePort.findById(it) }.getOrNull() }
+        val customerName = customer?.let { extractCustomerName(it) } ?: report.customerName
+
+        publishedReportPersistenceAdapter.publish(
+            reportId = report.id,
+            tenantId = tenantId,
+            contentHash = contentHash,
+            finalizedAt = finalizedAt,
+            professionalName = professional?.name?.takeIf { it.isNotBlank() },
+            professionalCrp = professional?.crp?.takeIf { it.isNotBlank() },
+            customerName = customerName,
         )
+    }
+
+    private fun extractCustomerName(customer: com.dox.domain.model.Customer): String? {
+        val data = customer.data
+        return (data["name"] as? String)?.takeIf { it.isNotBlank() }
     }
 
     private fun validateStatusTransition(
