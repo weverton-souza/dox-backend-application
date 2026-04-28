@@ -85,6 +85,9 @@ class ReportServiceImpl(
         val finalizing = targetStatus == ReportStatus.FINALIZADO && existing.status != ReportStatus.FINALIZADO
         val finalizedAt = if (finalizing) LocalDateTime.now() else existing.finalizedAt
         val contentHash = if (finalizing) computeContentHash(targetBlocks) else existing.contentHash
+        val finalizedByUserId = if (finalizing) ContextHolder.context.userId else existing.finalizedByUserId
+        val finalizedByIp = if (finalizing) ContextHolder.getIpAddress() else existing.finalizedByIp
+        val finalizedUserAgent = if (finalizing) ContextHolder.getUserAgent() else existing.finalizedUserAgent
 
         val saved =
             reportPersistencePort.save(
@@ -94,6 +97,9 @@ class ReportServiceImpl(
                     blocks = targetBlocks,
                     finalizedAt = finalizedAt,
                     contentHash = contentHash,
+                    finalizedByUserId = finalizedByUserId,
+                    finalizedByIp = finalizedByIp,
+                    finalizedUserAgent = finalizedUserAgent,
                 ),
             )
 

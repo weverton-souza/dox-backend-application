@@ -34,7 +34,10 @@ class ReportPersistenceAdapter(
                     existing.isStructureLocked == report.isStructureLocked &&
                     existing.blocks == report.blocks &&
                     existing.finalizedAt == report.finalizedAt &&
-                    existing.contentHash == report.contentHash
+                    existing.contentHash == report.contentHash &&
+                    existing.finalizedByUserId == report.finalizedByUserId &&
+                    existing.finalizedByIp == report.finalizedByIp &&
+                    existing.finalizedUserAgent == report.finalizedUserAgent
             if (!unchanged) {
                 throw BusinessException("Relatório finalizado é imutável (id=${report.id}).")
             }
@@ -49,6 +52,9 @@ class ReportPersistenceAdapter(
         entity.blocks = report.blocks
         entity.finalizedAt = report.finalizedAt
         entity.contentHash = report.contentHash
+        entity.finalizedByUserId = report.finalizedByUserId
+        entity.finalizedByIp = report.finalizedByIp
+        entity.finalizedUserAgent = report.finalizedUserAgent
         return reportJpaRepository.save(entity).toDomain()
     }
 
@@ -95,6 +101,9 @@ class ReportPersistenceAdapter(
             templateId = templateId, isStructureLocked = isStructureLocked,
             blocks = blocks, deleted = deleted,
             finalizedAt = finalizedAt, contentHash = contentHash,
+            finalizedByUserId = finalizedByUserId,
+            finalizedByIp = finalizedByIp,
+            finalizedUserAgent = finalizedUserAgent,
             createdAt = createdAt, updatedAt = updatedAt,
         )
 

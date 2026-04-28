@@ -16,6 +16,9 @@ data class Report(
     val deleted: Boolean = false,
     val finalizedAt: LocalDateTime? = null,
     val contentHash: String? = null,
+    val finalizedByUserId: UUID? = null,
+    val finalizedByIp: String? = null,
+    val finalizedUserAgent: String? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 )

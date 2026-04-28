@@ -47,7 +47,13 @@ class JwtAuthenticationFilter(
             val auth = UsernamePasswordAuthenticationToken(email, null, emptyList())
             SecurityContextHolder.getContext().authentication = auth
 
-            ContextHolder.context = Context(tenantId = tenantId, userId = userId)
+            ContextHolder.context =
+                Context(
+                    tenantId = tenantId,
+                    userId = userId,
+                    ipAddress = resolveClientIp(request),
+                    userAgent = request.getHeader("User-Agent")?.take(500),
+                )
         }
 
         try {
@@ -60,5 +66,13 @@ class JwtAuthenticationFilter(
     private fun extractToken(request: HttpServletRequest): String? {
         val header = request.getHeader("Authorization") ?: return null
         return if (header.startsWith("Bearer ")) header.substring(7) else null
+    }
+
+    private fun resolveClientIp(request: HttpServletRequest): String? {
+        val forwarded = request.getHeader("X-Forwarded-For")
+        if (!forwarded.isNullOrBlank()) {
+            return forwarded.split(",").first().trim().take(45)
+        }
+        return request.remoteAddr?.take(45)
     }
 }
