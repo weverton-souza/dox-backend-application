@@ -5,6 +5,8 @@ import com.dox.adapter.out.persistence.entity.ReportVersionJpaEntity
 import com.dox.adapter.out.persistence.repository.ReportJpaRepository
 import com.dox.adapter.out.persistence.repository.ReportVersionJpaRepository
 import com.dox.application.port.output.ReportPersistencePort
+import com.dox.domain.enum.ReportStatus
+import com.dox.domain.exception.BusinessException
 import com.dox.domain.model.Report
 import com.dox.domain.model.ReportVersion
 import com.dox.extensions.softDeleteById
@@ -21,9 +23,21 @@ class ReportPersistenceAdapter(
     private val versionJpaRepository: ReportVersionJpaRepository,
 ) : ReportPersistencePort {
     override fun save(report: Report): Report {
-        val entity =
-            reportJpaRepository.findById(report.id).orElse(null)
-                ?: ReportJpaEntity().apply { id = report.id }
+        val existing = reportJpaRepository.findById(report.id).orElse(null)
+        if (existing != null && existing.status == ReportStatus.FINALIZADO) {
+            val unchanged =
+                existing.status == report.status &&
+                    existing.customerName == report.customerName &&
+                    existing.customerId == report.customerId &&
+                    existing.formResponseId == report.formResponseId &&
+                    existing.templateId == report.templateId &&
+                    existing.isStructureLocked == report.isStructureLocked &&
+                    existing.blocks == report.blocks
+            if (!unchanged) {
+                throw BusinessException("Relatório finalizado é imutável (id=${report.id}).")
+            }
+        }
+        val entity = existing ?: ReportJpaEntity().apply { id = report.id }
         entity.status = report.status
         entity.customerName = report.customerName
         entity.customerId = report.customerId

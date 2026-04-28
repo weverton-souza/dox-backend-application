@@ -51,6 +51,10 @@ class ReportServiceImpl(
             reportPersistencePort.findById(command.id)
                 ?: throw ResourceNotFoundException("Relatório", command.id.toString())
 
+        if (existing.status == ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório finalizado é imutável e não pode ser alterado.")
+        }
+
         if (command.status != null && command.status != existing.status) {
             validateStatusTransition(existing.status, command.status)
         }
@@ -70,9 +74,9 @@ class ReportServiceImpl(
     ) {
         val allowed =
             when (current) {
-                ReportStatus.RASCUNHO -> setOf(ReportStatus.EM_REVISAO)
+                ReportStatus.RASCUNHO -> setOf(ReportStatus.EM_REVISAO, ReportStatus.FINALIZADO)
                 ReportStatus.EM_REVISAO -> setOf(ReportStatus.FINALIZADO, ReportStatus.RASCUNHO)
-                ReportStatus.FINALIZADO -> setOf(ReportStatus.EM_REVISAO)
+                ReportStatus.FINALIZADO -> emptySet()
             }
         if (target !in allowed) {
             throw BusinessException("Transição de status inválida: ${current.name} → ${target.name}")
@@ -81,8 +85,12 @@ class ReportServiceImpl(
 
     @Transactional
     override fun delete(id: UUID) {
-        reportPersistencePort.findById(id)
-            ?: throw ResourceNotFoundException("Relatório", id.toString())
+        val report =
+            reportPersistencePort.findById(id)
+                ?: throw ResourceNotFoundException("Relatório", id.toString())
+        if (report.status == ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório finalizado não pode ser excluído.")
+        }
         reportPersistencePort.softDelete(id)
     }
 
@@ -105,6 +113,10 @@ class ReportServiceImpl(
         val report =
             reportPersistencePort.findById(command.reportId)
                 ?: throw ResourceNotFoundException("Relatório", command.reportId.toString())
+
+        if (report.status == ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório finalizado não permite criação de novas versões.")
+        }
 
         if (reportPersistencePort.countVersionsByReportId(command.reportId) >= MAX_VERSIONS) {
             reportPersistencePort.deleteOldestVersion(command.reportId)

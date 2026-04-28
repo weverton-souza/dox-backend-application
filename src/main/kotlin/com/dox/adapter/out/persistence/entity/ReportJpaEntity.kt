@@ -7,6 +7,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
+import jakarta.persistence.Version
 import org.hibernate.annotations.SQLRestriction
 import org.hibernate.annotations.Type
 import java.util.UUID
@@ -31,4 +32,7 @@ class ReportJpaEntity(
     @Type(JsonType::class)
     @Column(name = "blocks", columnDefinition = "jsonb")
     var blocks: List<Map<String, Any?>> = emptyList(),
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long = 0,
 ) : AbstractJpaEntity()

@@ -18,6 +18,7 @@ import com.dox.application.port.output.TemplatePersistencePort
 import com.dox.application.port.output.TenantPersistencePort
 import com.dox.domain.enum.AiGenerationStatus
 import com.dox.domain.enum.AiTier
+import com.dox.domain.enum.ReportStatus
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.AiGenerationResult
@@ -187,8 +188,13 @@ class AiGenerationService(
             throw BusinessException("Plano do Assistente não ativo")
         }
 
-        reportPersistencePort.findById(reportId)
-            ?: throw ResourceNotFoundException("Relatório", reportId.toString())
+        val report =
+            reportPersistencePort.findById(reportId)
+                ?: throw ResourceNotFoundException("Relatório", reportId.toString())
+
+        if (report.status == ReportStatus.FINALIZADO) {
+            throw BusinessException("Relatório finalizado não permite uso do Assistente.")
+        }
 
         val semaphore =
             tenantSemaphores.computeIfAbsent(tenantId.toString()) {
