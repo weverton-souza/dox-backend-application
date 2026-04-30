@@ -14,6 +14,7 @@ enum class Module(
     CALENDAR("calendar", "Calendário", 3900, gracefulDegradation = DegradationMode.READ_ONLY),
     AI_LIGHT("ai_light", "DOX IA", 9900, dependencies = setOf("reports"), gracePeriodDays = 7),
     AI_PRO("ai_pro", "DOX IA Pro", 19900, dependencies = setOf("reports"), gracePeriodDays = 7),
+    TRACKING("tracking", "Acompanhamento", 9900, dependencies = setOf("customers"), gracefulDegradation = DegradationMode.READ_ONLY),
     PAYMENTS("payments", "DOX Pagamentos", 0, dependencies = setOf("customers"), gracePeriodDays = 14),
     FINANCIAL("financial", "DOX Financeiro", 2900, dependencies = setOf("payments")),
     FILES_OCR("files_ocr", "Arquivos+OCR", 2900, dependencies = setOf("customers"), gracePeriodDays = 14),

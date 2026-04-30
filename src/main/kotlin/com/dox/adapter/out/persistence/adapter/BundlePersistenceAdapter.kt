@@ -18,11 +18,15 @@ class BundlePersistenceAdapter(
         Bundle(
             id = id,
             name = name,
+            description = description,
             modules = modules,
             priceMonthlyCents = priceMonthlyCents,
             priceYearlyCents = priceYearlyCents,
+            seatsIncluded = seatsIncluded,
+            trackingSlotsIncluded = trackingSlotsIncluded,
             highlighted = highlighted,
             active = active,
+            sortOrder = sortOrder,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )
