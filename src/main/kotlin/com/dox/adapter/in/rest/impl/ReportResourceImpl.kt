@@ -10,6 +10,7 @@ import com.dox.application.port.input.CreateReportCommand
 import com.dox.application.port.input.CreateVersionCommand
 import com.dox.application.port.input.ReportUseCase
 import com.dox.application.port.input.UpdateReportCommand
+import com.dox.config.security.RequiresModule
 import com.dox.domain.model.Report
 import com.dox.domain.model.ReportVersion
 import com.dox.shared.ContextHolder
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@RequiresModule("reports")
 class ReportResourceImpl(
     private val reportUseCase: ReportUseCase,
     private val downloadAuditLogPersistenceAdapter: DownloadAuditLogPersistenceAdapter,

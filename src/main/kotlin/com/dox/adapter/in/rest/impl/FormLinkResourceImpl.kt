@@ -6,12 +6,14 @@ import com.dox.adapter.`in`.rest.resource.FormLinkResource
 import com.dox.application.port.input.CreateFormLinkCommand
 import com.dox.application.port.input.FormLinkUseCase
 import com.dox.application.port.input.FormLinkWithToken
+import com.dox.config.security.RequiresModule
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@RequiresModule("forms")
 class FormLinkResourceImpl(
     private val formLinkUseCase: FormLinkUseCase,
 ) : FormLinkResource {

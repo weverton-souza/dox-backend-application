@@ -6,6 +6,7 @@ import com.dox.adapter.`in`.rest.resource.EventTagResource
 import com.dox.application.port.input.CalendarUseCase
 import com.dox.application.port.input.CreateTagCommand
 import com.dox.application.port.input.UpdateTagCommand
+import com.dox.config.security.RequiresModule
 import com.dox.domain.model.EventTag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@RequiresModule("calendar")
 class EventTagResourceImpl(
     private val calendarUseCase: CalendarUseCase,
 ) : EventTagResource {

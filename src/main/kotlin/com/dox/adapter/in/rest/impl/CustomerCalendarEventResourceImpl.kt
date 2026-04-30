@@ -3,11 +3,13 @@ package com.dox.adapter.`in`.rest.impl
 import com.dox.adapter.`in`.rest.dto.customer.CustomerCalendarEventResponse
 import com.dox.adapter.`in`.rest.resource.CustomerCalendarEventResource
 import com.dox.application.port.input.CustomerUseCase
+import com.dox.config.security.RequiresModule
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import java.time.OffsetDateTime
 
 @RestController
+@RequiresModule("customers")
 class CustomerCalendarEventResourceImpl(
     private val customerUseCase: CustomerUseCase,
 ) : CustomerCalendarEventResource {

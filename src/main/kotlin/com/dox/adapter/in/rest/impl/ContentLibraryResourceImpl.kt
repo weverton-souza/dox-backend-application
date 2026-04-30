@@ -6,6 +6,7 @@ import com.dox.adapter.`in`.rest.resource.ContentLibraryResource
 import com.dox.application.port.input.ContentLibraryUseCase
 import com.dox.application.port.input.CreateContentLibraryCommand
 import com.dox.application.port.input.UpdateContentLibraryCommand
+import com.dox.config.security.RequiresModule
 import com.dox.domain.model.ContentLibraryEntry
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@RequiresModule("reports")
 class ContentLibraryResourceImpl(
     private val contentLibraryUseCase: ContentLibraryUseCase,
 ) : ContentLibraryResource {

@@ -13,6 +13,7 @@ import com.dox.application.port.input.CreateCustomerNoteCommand
 import com.dox.application.port.input.CustomerUseCase
 import com.dox.application.port.input.UpdateCustomerCommand
 import com.dox.application.port.input.UpdateCustomerEventCommand
+import com.dox.config.security.RequiresModule
 import com.dox.domain.model.Customer
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@RequiresModule("customers")
 class CustomerResourceImpl(
     private val customerUseCase: CustomerUseCase,
 ) : CustomerResource {
