@@ -8,11 +8,14 @@ import com.dox.adapter.`in`.rest.dto.billing.PriceBreakdownResponse
 import com.dox.adapter.`in`.rest.dto.billing.SubscribeBundleRequest
 import com.dox.adapter.`in`.rest.dto.billing.SubscribeModulesRequest
 import com.dox.adapter.`in`.rest.dto.billing.SubscriptionResponse
+import com.dox.adapter.`in`.rest.dto.billing.TokenizeCreditCardRequest
+import com.dox.adapter.`in`.rest.dto.billing.TokenizedCardResponse
 import com.dox.adapter.`in`.rest.resource.BillingResource
 import com.dox.application.port.input.BillingUseCase
 import com.dox.application.port.input.CancelSubscriptionCommand
 import com.dox.application.port.input.SubscribeBundleCommand
 import com.dox.application.port.input.SubscribeModulesCommand
+import com.dox.application.port.input.TokenizeCreditCardCommand
 import com.dox.domain.billing.BillingCycle
 import com.dox.domain.billing.BillingType
 import com.dox.domain.billing.NfseInvoice
@@ -21,6 +24,7 @@ import com.dox.domain.billing.PriceBreakdown
 import com.dox.domain.billing.Subscription
 import com.dox.domain.exception.BusinessException
 import com.dox.shared.ContextHolder
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
@@ -115,6 +119,40 @@ class BillingResourceImpl(
         val breakdown = billingUseCase.pricePreview(moduleIds, parseCycle(cycle), bundleId)
         return responseEntity(breakdown.toResponse())
     }
+
+    override fun tokenizeCreditCard(
+        request: TokenizeCreditCardRequest,
+        servletRequest: HttpServletRequest,
+    ): ResponseEntity<TokenizedCardResponse> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        val tokenized =
+            billingUseCase.tokenizeCreditCard(
+                TokenizeCreditCardCommand(
+                    tenantId = tenantId,
+                    cardHolderName = request.cardHolderName,
+                    cardNumber = request.cardNumber,
+                    cardExpiryMonth = request.cardExpiryMonth,
+                    cardExpiryYear = request.cardExpiryYear,
+                    cardCcv = request.cardCcv,
+                    billingName = request.billingName,
+                    billingEmail = request.billingEmail,
+                    billingCpfCnpj = request.billingCpfCnpj,
+                    billingPostalCode = request.billingPostalCode,
+                    billingAddressNumber = request.billingAddressNumber,
+                    billingAddressComplement = request.billingAddressComplement,
+                    billingPhone = request.billingPhone,
+                    billingMobilePhone = request.billingMobilePhone,
+                    remoteIp = extractRemoteIp(servletRequest),
+                    makeDefault = request.makeDefault,
+                ),
+            )
+        return responseEntity(TokenizedCardResponse(token = tokenized.token, brand = tokenized.brand, last4 = tokenized.last4))
+    }
+
+    private fun extractRemoteIp(request: HttpServletRequest): String =
+        request.getHeader("X-Forwarded-For")?.split(",")?.firstOrNull()?.trim()
+            ?: request.remoteAddr
+            ?: "0.0.0.0"
 
     private fun parseCycle(value: String): BillingCycle =
         runCatching { BillingCycle.valueOf(value) }

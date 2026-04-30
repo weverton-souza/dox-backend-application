@@ -57,6 +57,34 @@ data class AsaasPaymentSnapshot(
     val pixCopyPaste: String?,
 )
 
+data class TokenizeCardCommand(
+    val asaasCustomerId: String,
+    val holderName: String,
+    val number: String,
+    val expiryMonth: String,
+    val expiryYear: String,
+    val ccv: String,
+    val holderInfo: TokenizeCardHolderInfo,
+    val remoteIp: String,
+)
+
+data class TokenizeCardHolderInfo(
+    val name: String,
+    val email: String,
+    val cpfCnpj: String,
+    val postalCode: String,
+    val addressNumber: String,
+    val addressComplement: String? = null,
+    val phone: String? = null,
+    val mobilePhone: String? = null,
+)
+
+data class TokenizedCardResult(
+    val creditCardToken: String,
+    val brand: String,
+    val last4: String,
+)
+
 interface BillingPort {
     fun createCustomer(command: CreateAsaasCustomerCommand): AsaasCustomerResult
 
@@ -69,4 +97,6 @@ interface BillingPort {
     fun createOneTimePayment(command: CreateOneTimePaymentCommand): AsaasPaymentSnapshot
 
     fun getPayment(asaasPaymentId: String): AsaasPaymentSnapshot
+
+    fun tokenizeCard(command: TokenizeCardCommand): TokenizedCardResult
 }

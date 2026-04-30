@@ -36,6 +36,31 @@ data class CancelSubscriptionCommand(
     val reason: String? = null,
 )
 
+data class TokenizeCreditCardCommand(
+    val tenantId: UUID,
+    val cardHolderName: String,
+    val cardNumber: String,
+    val cardExpiryMonth: String,
+    val cardExpiryYear: String,
+    val cardCcv: String,
+    val billingName: String,
+    val billingEmail: String,
+    val billingCpfCnpj: String,
+    val billingPostalCode: String,
+    val billingAddressNumber: String,
+    val billingAddressComplement: String? = null,
+    val billingPhone: String? = null,
+    val billingMobilePhone: String? = null,
+    val remoteIp: String,
+    val makeDefault: Boolean = false,
+)
+
+data class TokenizedCard(
+    val token: String,
+    val brand: String,
+    val last4: String,
+)
+
 interface BillingUseCase {
     fun subscribeBundle(command: SubscribeBundleCommand): Subscription
 
@@ -70,4 +95,6 @@ interface BillingUseCase {
         cycle: BillingCycle,
         bundleId: String? = null,
     ): PriceBreakdown
+
+    fun tokenizeCreditCard(command: TokenizeCreditCardCommand): TokenizedCard
 }

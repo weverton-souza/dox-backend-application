@@ -7,13 +7,18 @@ import com.dox.application.port.input.CancelSubscriptionCommand
 import com.dox.application.port.input.ModuleAccessUseCase
 import com.dox.application.port.input.SubscribeBundleCommand
 import com.dox.application.port.input.SubscribeModulesCommand
+import com.dox.application.port.input.TokenizeCreditCardCommand
+import com.dox.application.port.input.TokenizedCard
 import com.dox.application.port.output.AsaasCustomerPersistencePort
 import com.dox.application.port.output.BillingPort
 import com.dox.application.port.output.CreateAsaasCustomerCommand
 import com.dox.application.port.output.CreateAsaasSubscriptionCommand
 import com.dox.application.port.output.NfseInvoicePersistencePort
+import com.dox.application.port.output.PaymentMethodCardPersistencePort
 import com.dox.application.port.output.PaymentPersistencePort
 import com.dox.application.port.output.SubscriptionPersistencePort
+import com.dox.application.port.output.TokenizeCardCommand
+import com.dox.application.port.output.TokenizeCardHolderInfo
 import com.dox.application.port.output.UpdateAsaasSubscriptionCommand
 import com.dox.domain.billing.AsaasCustomer
 import com.dox.domain.billing.BillingCalculator
@@ -22,6 +27,7 @@ import com.dox.domain.billing.Module
 import com.dox.domain.billing.ModuleSource
 import com.dox.domain.billing.NfseInvoice
 import com.dox.domain.billing.Payment
+import com.dox.domain.billing.PaymentMethodCard
 import com.dox.domain.billing.PriceBreakdown
 import com.dox.domain.billing.Subscription
 import com.dox.domain.billing.SubscriptionEvent
@@ -42,6 +48,7 @@ class BillingServiceImpl(
     private val subscriptionPort: SubscriptionPersistencePort,
     private val paymentPort: PaymentPersistencePort,
     private val invoicePort: NfseInvoicePersistencePort,
+    private val paymentMethodCardPort: PaymentMethodCardPersistencePort,
     private val bundleUseCase: BundleUseCase,
     private val moduleAccessUseCase: ModuleAccessUseCase,
 ) : BillingUseCase {
@@ -199,6 +206,57 @@ class BillingServiceImpl(
                 priceForCycle(bundle.priceMonthlyCents, bundle.priceYearlyCents, cycle)
             }
         return BillingCalculator.breakdown(modules, cycle, bundlePrice)
+    }
+
+    @Transactional
+    override fun tokenizeCreditCard(command: TokenizeCreditCardCommand): TokenizedCard {
+        val asaasCustomer =
+            asaasCustomerPort.findByTenantId(command.tenantId)
+                ?: ensureAsaasCustomer(
+                    tenantId = command.tenantId,
+                    name = command.billingName,
+                    cpfCnpj = command.billingCpfCnpj,
+                    email = command.billingEmail,
+                )
+        val tokenized =
+            billingPort.tokenizeCard(
+                TokenizeCardCommand(
+                    asaasCustomerId = asaasCustomer.asaasCustomerId,
+                    holderName = command.cardHolderName,
+                    number = command.cardNumber,
+                    expiryMonth = command.cardExpiryMonth,
+                    expiryYear = command.cardExpiryYear,
+                    ccv = command.cardCcv,
+                    holderInfo =
+                        TokenizeCardHolderInfo(
+                            name = command.billingName,
+                            email = command.billingEmail,
+                            cpfCnpj = command.billingCpfCnpj,
+                            postalCode = command.billingPostalCode,
+                            addressNumber = command.billingAddressNumber,
+                            addressComplement = command.billingAddressComplement,
+                            phone = command.billingPhone,
+                            mobilePhone = command.billingMobilePhone,
+                        ),
+                    remoteIp = command.remoteIp,
+                ),
+            )
+        if (command.makeDefault) {
+            paymentMethodCardPort.findByTenantId(command.tenantId).filter { it.isDefault }.forEach {
+                paymentMethodCardPort.save(it.copy(isDefault = false))
+            }
+        }
+        paymentMethodCardPort.save(
+            PaymentMethodCard(
+                tenantId = command.tenantId,
+                asaasCreditCardToken = tokenized.creditCardToken,
+                brand = tokenized.brand,
+                last4 = tokenized.last4,
+                holderName = command.cardHolderName,
+                isDefault = command.makeDefault,
+            ),
+        )
+        return TokenizedCard(token = tokenized.creditCardToken, brand = tokenized.brand, last4 = tokenized.last4)
     }
 
     private fun subscribeAndActivate(
