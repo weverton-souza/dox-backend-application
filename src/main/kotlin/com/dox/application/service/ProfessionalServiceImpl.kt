@@ -19,8 +19,16 @@ class ProfessionalServiceImpl(
         val updated =
             current.copy(
                 name = command.name ?: "",
+                socialName = command.socialName,
+                gender = command.gender,
                 crp = command.crp,
+                councilType = command.councilType,
+                councilNumber = command.councilNumber,
+                councilState = command.councilState,
                 specialization = command.specialization ?: "",
+                bio = command.bio,
+                addressCity = command.addressCity,
+                addressState = command.addressState,
                 phone = command.phone,
                 instagram = command.instagram,
                 email = command.email,
