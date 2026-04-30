@@ -84,11 +84,31 @@ management:
       show-details: ${ACTUATOR_SHOW_DETAILS:never}
 
 springdoc:
-  swagger-ui:
-    tags-sorter: alpha
-    operations-sorter: alpha
-    enabled: ${SWAGGER_ENABLED:false}
-    doc-expansion: none
   api-docs:
     path: /v3-docs
     enabled: ${SWAGGER_ENABLED:false}
+
+scalar:
+  enabled: ${SWAGGER_ENABLED:false}
+  path: /scalar
+  theme: deepSpace
+  layout: modern
+  force-theme-mode: dark
+  show-sidebar: true
+  hide-models: false
+  hide-client-button: true
+  tag-sorter: alpha
+  operation-sorter: method
+  default-http-client:
+    target-key: shell
+    client-key: curl
+  favicon: /scalar-assets/dox-favicon.svg
+  meta-data:
+    title: Dox - Pense diferente. Faça melhor
+  agent:
+    disabled: true
+  custom-css: |
+    .dark-mode {
+      --scalar-color-accent: #007AFF;
+      --scalar-background-accent: rgba(0, 122, 255, 0.12);
+    }

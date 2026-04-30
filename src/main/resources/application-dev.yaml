@@ -11,10 +11,11 @@ dox:
     enabled: false
 
 springdoc:
-  swagger-ui:
-    enabled: true
   api-docs:
     enabled: true
+
+scalar:
+  enabled: true
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS}

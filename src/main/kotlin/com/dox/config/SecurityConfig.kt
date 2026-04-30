@@ -6,9 +6,11 @@ import com.dox.adapter.`in`.filter.RateLimitFilter
 import com.dox.adapter.`in`.filter.RequestSizeLimitFilter
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -18,6 +20,15 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 
+private const val DOCS_CSP =
+    "default-src 'self' data: blob:; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+        "style-src 'self' 'unsafe-inline' https:; " +
+        "img-src 'self' data: https:; " +
+        "font-src 'self' data: https:; " +
+        "connect-src 'self' https://proxy.scalar.com https://api.scalar.com; " +
+        "frame-ancestors 'none'"
+
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
@@ -26,8 +37,6 @@ class SecurityConfig(
     private val rateLimitFilter: RateLimitFilter,
     private val requestSizeLimitFilter: RequestSizeLimitFilter,
     private val corsConfig: CorsConfig,
-    @param:Value("\${SWAGGER_ENABLED:false}")
-    private val swaggerEnabled: Boolean,
     @param:Value("\${dox.hsts.enabled:false}")
     private val hstsEnabled: Boolean,
 ) {
@@ -47,6 +56,24 @@ class SecurityConfig(
     fun requestSizeLimitFilterRegistration(filter: RequestSizeLimitFilter): FilterRegistrationBean<RequestSizeLimitFilter> = FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
+    @Order(1)
+    @ConditionalOnProperty(name = ["scalar.enabled"], havingValue = "true")
+    fun docsSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        return http
+            .securityMatcher("/scalar/**", "/v3-docs/**", "/scalar-assets/**")
+            .cors { it.configurationSource(corsConfig.corsConfigurationSource()) }
+            .csrf { it.disable() }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .headers { headers ->
+                headers.contentSecurityPolicy { it.policyDirectives(DOCS_CSP) }
+                headers.referrerPolicy { it.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
+            }
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .build()
+    }
+
+    @Bean
+    @Order(2)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
             .cors { it.configurationSource(corsConfig.corsConfigurationSource()) }
@@ -86,14 +113,9 @@ class SecurityConfig(
             "/webhooks/**",
             "/actuator/health",
             "/error",
+            "/favicon.ico",
+            "/favicon.svg",
         ).permitAll()
-        if (swaggerEnabled) {
-            auth.requestMatchers(
-                "/v3-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-            ).permitAll()
-        }
         auth.anyRequest().authenticated()
     }
 }
