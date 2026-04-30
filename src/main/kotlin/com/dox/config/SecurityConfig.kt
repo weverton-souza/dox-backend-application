@@ -80,6 +80,7 @@ class SecurityConfig(
             "/auth/login",
             "/auth/refresh",
             "/public/**",
+            "/modules/catalog",
             "/actuator/health",
             "/error",
         ).permitAll()
