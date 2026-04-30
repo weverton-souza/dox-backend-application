@@ -22,10 +22,26 @@ class ProfessionalSettingsJpaEntity(
     var id: UUID = UUID.randomUUID(),
     @Column(name = "name", nullable = false)
     var name: String = "",
+    @Column(name = "social_name")
+    var socialName: String? = null,
+    @Column(name = "gender")
+    var gender: String? = null,
     @Column(name = "crp")
     var crp: String? = null,
+    @Column(name = "council_type")
+    var councilType: String? = null,
+    @Column(name = "council_number")
+    var councilNumber: String? = null,
+    @Column(name = "council_state")
+    var councilState: String? = null,
     @Column(name = "specialization", nullable = false)
     var specialization: String = "",
+    @Column(name = "bio")
+    var bio: String? = null,
+    @Column(name = "address_city")
+    var addressCity: String? = null,
+    @Column(name = "address_state")
+    var addressState: String? = null,
     @Column(name = "phone")
     var phone: String? = null,
     @Column(name = "instagram")

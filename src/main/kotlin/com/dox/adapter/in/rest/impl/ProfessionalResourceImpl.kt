@@ -20,8 +20,16 @@ class ProfessionalResourceImpl(
             professionalUseCase.update(
                 UpdateProfessionalCommand(
                     name = request.name,
+                    socialName = request.socialName,
+                    gender = request.gender,
                     crp = request.crp,
+                    councilType = request.councilType,
+                    councilNumber = request.councilNumber,
+                    councilState = request.councilState,
                     specialization = request.specialization,
+                    bio = request.bio,
+                    addressCity = request.addressCity,
+                    addressState = request.addressState,
                     phone = request.phone,
                     instagram = request.instagram,
                     email = request.email,
@@ -33,6 +41,22 @@ class ProfessionalResourceImpl(
 
     private fun ProfessionalSettings.toResponse() =
         ProfessionalResponse(
-            id, name, crp, specialization, phone, instagram, email, logo, contactItems,
+            id = id,
+            name = name,
+            socialName = socialName,
+            gender = gender,
+            crp = crp,
+            councilType = councilType,
+            councilNumber = councilNumber,
+            councilState = councilState,
+            specialization = specialization,
+            bio = bio,
+            addressCity = addressCity,
+            addressState = addressState,
+            phone = phone,
+            instagram = instagram,
+            email = email,
+            logo = logo,
+            contactItems = contactItems,
         )
 }

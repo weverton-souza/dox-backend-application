@@ -17,8 +17,16 @@ class ProfessionalSettingsPersistenceAdapter(
             repository.findFirstByOrderByCreatedAtAsc()
                 ?: ProfessionalSettingsJpaEntity()
         entity.name = settings.name
+        entity.socialName = settings.socialName
+        entity.gender = settings.gender
         entity.crp = settings.crp
+        entity.councilType = settings.councilType
+        entity.councilNumber = settings.councilNumber
+        entity.councilState = settings.councilState
         entity.specialization = settings.specialization
+        entity.bio = settings.bio
+        entity.addressCity = settings.addressCity
+        entity.addressState = settings.addressState
         entity.phone = settings.phone
         entity.instagram = settings.instagram
         entity.email = settings.email
@@ -31,8 +39,16 @@ class ProfessionalSettingsPersistenceAdapter(
         ProfessionalSettings(
             id = id,
             name = name,
+            socialName = socialName,
+            gender = gender,
             crp = crp,
+            councilType = councilType,
+            councilNumber = councilNumber,
+            councilState = councilState,
             specialization = specialization,
+            bio = bio,
+            addressCity = addressCity,
+            addressState = addressState,
             phone = phone,
             instagram = instagram,
             email = email,
