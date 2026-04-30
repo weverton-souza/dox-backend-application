@@ -29,8 +29,8 @@ class PublishedReportJpaEntity(
     var finalizedAt: LocalDateTime,
     @Column(name = "professional_name", length = 255)
     var professionalName: String? = null,
-    @Column(name = "professional_crp", length = 50)
-    var professionalCrp: String? = null,
+    @Column(name = "professional_council", length = 100)
+    var professionalCouncil: String? = null,
     @Column(name = "customer_initials", length = 20)
     var customerInitials: String? = null,
     @CreatedDate

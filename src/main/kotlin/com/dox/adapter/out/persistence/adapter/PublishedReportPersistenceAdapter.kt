@@ -16,7 +16,7 @@ class PublishedReportPersistenceAdapter(
         contentHash: String,
         finalizedAt: LocalDateTime,
         professionalName: String?,
-        professionalCrp: String?,
+        professionalCouncil: String?,
         customerName: String?,
     ) {
         val existing = repository.findByTenantIdAndReportId(tenantId, reportId)
@@ -30,7 +30,7 @@ class PublishedReportPersistenceAdapter(
                 contentHash = contentHash,
                 finalizedAt = finalizedAt,
                 professionalName = professionalName,
-                professionalCrp = professionalCrp,
+                professionalCouncil = professionalCouncil,
                 customerInitials = customerName?.let(::extractInitials),
             ),
         )

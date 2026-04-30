@@ -217,7 +217,7 @@ Siga a instrução acima ao redigir esta seção, mantendo fundamentação nos d
         """
             |## Dados do profissional
             |- Nome: ${promptSanitizer.sanitize(professional.name)}
-            |- Registro: ${promptSanitizer.sanitize(professional.crp ?: "")}
+            |- Registro: ${promptSanitizer.sanitize(professional.formattedCouncil())}
             |- Especialização: ${promptSanitizer.sanitize(professional.specialization)}
         """.trimMargin()
 

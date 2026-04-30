@@ -23,4 +23,14 @@ data class ProfessionalSettings(
     val contactItems: List<Map<String, Any?>> = emptyList(),
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
-)
+) {
+    fun formattedCouncil(): String =
+        when {
+            !councilType.isNullOrBlank() && !councilNumber.isNullOrBlank() -> {
+                val state = councilState?.takeIf { it.isNotBlank() }?.let { "/$it" } ?: ""
+                "$councilType $councilNumber$state"
+            }
+            !crp.isNullOrBlank() -> "CRP $crp"
+            else -> ""
+        }
+}

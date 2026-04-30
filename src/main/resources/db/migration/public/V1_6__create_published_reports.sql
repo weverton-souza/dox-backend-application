@@ -6,7 +6,7 @@ CREATE TABLE public.published_reports (
     content_hash        VARCHAR(64)  NOT NULL,
     finalized_at        TIMESTAMP    NOT NULL,
     professional_name   VARCHAR(255),
-    professional_crp    VARCHAR(50),
+    professional_council VARCHAR(100),
     customer_initials   VARCHAR(20),
     published_at        TIMESTAMP    NOT NULL DEFAULT NOW()
 );

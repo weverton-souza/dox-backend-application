@@ -126,7 +126,7 @@ class ReportServiceImpl(
             contentHash = contentHash,
             finalizedAt = finalizedAt,
             professionalName = professional?.name?.takeIf { it.isNotBlank() },
-            professionalCrp = professional?.crp?.takeIf { it.isNotBlank() },
+            professionalCouncil = professional?.formattedCouncil()?.takeIf { it.isNotBlank() },
             customerName = customerName,
         )
     }
