@@ -26,7 +26,7 @@ class SecurityConfig(
     private val rateLimitFilter: RateLimitFilter,
     private val requestSizeLimitFilter: RequestSizeLimitFilter,
     private val corsConfig: CorsConfig,
-    @param:Value("\${SWAGGER_ENABLED:false}")
+    @param:Value("\${springdoc.swagger-ui.enabled:false}")
     private val swaggerEnabled: Boolean,
     @param:Value("\${dox.hsts.enabled:false}")
     private val hstsEnabled: Boolean,
