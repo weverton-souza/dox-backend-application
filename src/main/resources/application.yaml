@@ -53,6 +53,13 @@ dox:
   hsts:
     enabled: ${HSTS_ENABLED:false}
 
+asaas:
+  api-key: ${ASAAS_API_KEY:}
+  webhook-token: ${ASAAS_WEBHOOK_TOKEN:}
+  base-url: ${ASAAS_BASE_URL:https://sandbox.asaas.com/api/v3}
+  nfse:
+    template-id: ${ASAAS_NFSE_TEMPLATE_ID:}
+
 spring.ai:
   anthropic:
     api-key: ${ANTHROPIC_API_KEY:}
