@@ -10,6 +10,12 @@ data class AsaasProperties(
     val nfse: NfseProperties = NfseProperties(),
 ) {
     data class NfseProperties(
-        val templateId: String = "",
+        val enabled: Boolean = false,
+        val serviceDescription: String = "Assinatura DOX",
+        val municipalServiceId: String = "",
+        val municipalServiceCode: String = "",
+        val municipalServiceName: String = "",
+        val retainIss: Boolean = false,
+        val issPercentage: String = "0",
     )
 }
