@@ -83,6 +83,7 @@ class SecurityConfig(
             "/modules/catalog",
             "/bundles",
             "/bundles/*",
+            "/webhooks/**",
             "/actuator/health",
             "/error",
         ).permitAll()
