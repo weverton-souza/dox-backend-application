@@ -1,17 +1,18 @@
 package com.dox.domain.billing
 
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class Bundle(
+data class Addon(
     val id: String,
     val name: String,
     val description: String? = null,
-    val modules: List<String>,
-    val priceMonthlyCents: Int,
-    val priceYearlyCents: Int,
-    val seatsIncluded: Int = 1,
-    val trackingSlotsIncluded: Int = 0,
-    val highlighted: Boolean = false,
+    val type: AddonType,
+    val targetModuleId: String? = null,
+    val priceMonthlyCents: Int = 0,
+    val priceUnitCents: Int? = null,
+    val feePercentage: BigDecimal? = null,
+    val availableForBundles: List<String> = emptyList(),
     val active: Boolean = true,
     val sortOrder: Int = 0,
     val createdAt: LocalDateTime? = null,

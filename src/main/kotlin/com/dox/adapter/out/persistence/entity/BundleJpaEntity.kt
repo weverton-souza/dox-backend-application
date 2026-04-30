@@ -21,6 +21,8 @@ class BundleJpaEntity(
     var id: String,
     @Column(name = "name", nullable = false, length = 100)
     var name: String,
+    @Column(name = "description")
+    var description: String? = null,
     @Type(JsonType::class)
     @Column(name = "modules", columnDefinition = "jsonb", nullable = false)
     var modules: List<String> = emptyList(),
@@ -28,10 +30,16 @@ class BundleJpaEntity(
     var priceMonthlyCents: Int = 0,
     @Column(name = "price_yearly_cents", nullable = false)
     var priceYearlyCents: Int = 0,
+    @Column(name = "seats_included", nullable = false)
+    var seatsIncluded: Int = 1,
+    @Column(name = "tracking_slots_included", nullable = false)
+    var trackingSlotsIncluded: Int = 0,
     @Column(name = "highlighted", nullable = false)
     var highlighted: Boolean = false,
     @Column(name = "active", nullable = false)
     var active: Boolean = true,
+    @Column(name = "sort_order", nullable = false)
+    var sortOrder: Int = 0,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,
