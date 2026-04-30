@@ -45,7 +45,7 @@ class AccessDeniedException(
         errorCode = ErrorCode.ACCESS_DENIED,
     )
 
-class BusinessException(
+open class BusinessException(
     detail: String,
 ) : DomainException(
         message = detail,
