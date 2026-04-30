@@ -57,11 +57,13 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.6.3")
     kapt("org.mapstruct:mapstruct-processor:1.6.3")
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-scalar:2.8.17")
 
     implementation("org.jsoup:jsoup:1.18.3")
 
-    implementation("org.springframework.ai:spring-ai-anthropic-spring-boot-starter")
+    implementation("org.springframework.ai:spring-ai-anthropic-spring-boot-starter") {
+        exclude(group = "io.swagger.core.v3", module = "swagger-annotations")
+    }
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
