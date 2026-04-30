@@ -81,6 +81,8 @@ class SecurityConfig(
             "/auth/refresh",
             "/public/**",
             "/modules/catalog",
+            "/bundles",
+            "/bundles/*",
             "/actuator/health",
             "/error",
         ).permitAll()
