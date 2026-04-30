@@ -25,6 +25,7 @@ class BundleResourceImpl(
         BundleResponse(
             id = id,
             name = name,
+            description = description,
             modules =
                 modules.mapNotNull { moduleId ->
                     Module.fromId(moduleId)?.let {
@@ -33,6 +34,9 @@ class BundleResourceImpl(
                 },
             priceMonthlyCents = priceMonthlyCents,
             priceYearlyCents = priceYearlyCents,
+            seatsIncluded = seatsIncluded,
+            trackingSlotsIncluded = trackingSlotsIncluded,
             highlighted = highlighted,
+            sortOrder = sortOrder,
         )
 }
