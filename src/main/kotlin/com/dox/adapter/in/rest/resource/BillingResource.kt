@@ -8,8 +8,11 @@ import com.dox.adapter.`in`.rest.dto.billing.PriceBreakdownResponse
 import com.dox.adapter.`in`.rest.dto.billing.SubscribeBundleRequest
 import com.dox.adapter.`in`.rest.dto.billing.SubscribeModulesRequest
 import com.dox.adapter.`in`.rest.dto.billing.SubscriptionResponse
+import com.dox.adapter.`in`.rest.dto.billing.TokenizeCreditCardRequest
+import com.dox.adapter.`in`.rest.dto.billing.TokenizedCardResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -80,4 +83,11 @@ interface BillingResource : BaseResource {
         @RequestParam cycle: String,
         @RequestParam(required = false) bundleId: String?,
     ): ResponseEntity<PriceBreakdownResponse>
+
+    @Operation(summary = "Tokenizar cartão de crédito via Asaas (não persiste PAN)")
+    @PostMapping("/credit-card/tokenize")
+    fun tokenizeCreditCard(
+        @Valid @RequestBody request: TokenizeCreditCardRequest,
+        servletRequest: HttpServletRequest,
+    ): ResponseEntity<TokenizedCardResponse>
 }

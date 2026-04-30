@@ -7,6 +7,8 @@ import com.dox.application.port.output.BillingPort
 import com.dox.application.port.output.CreateAsaasCustomerCommand
 import com.dox.application.port.output.CreateAsaasSubscriptionCommand
 import com.dox.application.port.output.CreateOneTimePaymentCommand
+import com.dox.application.port.output.TokenizeCardCommand
+import com.dox.application.port.output.TokenizedCardResult
 import com.dox.application.port.output.UpdateAsaasSubscriptionCommand
 import com.dox.domain.billing.BillingType
 import com.dox.domain.exception.BusinessException
@@ -122,6 +124,43 @@ class AsaasBillingAdapter(
                 .retrieve()
                 .body(Map::class.java) ?: throw BusinessException("Asaas GET /payments/$asaasPaymentId retornou vazio")
         return mapPaymentSnapshot(response)
+    }
+
+    override fun tokenizeCard(command: TokenizeCardCommand): TokenizedCardResult {
+        val body =
+            mapOf(
+                "customer" to command.asaasCustomerId,
+                "creditCard" to
+                    mapOf(
+                        "holderName" to command.holderName,
+                        "number" to command.number.filter { it.isDigit() },
+                        "expiryMonth" to command.expiryMonth,
+                        "expiryYear" to command.expiryYear,
+                        "ccv" to command.ccv,
+                    ),
+                "creditCardHolderInfo" to
+                    mapOf(
+                        "name" to command.holderInfo.name,
+                        "email" to command.holderInfo.email,
+                        "cpfCnpj" to command.holderInfo.cpfCnpj.filter { it.isDigit() },
+                        "postalCode" to command.holderInfo.postalCode.filter { it.isDigit() },
+                        "addressNumber" to command.holderInfo.addressNumber,
+                        "addressComplement" to command.holderInfo.addressComplement,
+                        "phone" to command.holderInfo.phone,
+                        "mobilePhone" to command.holderInfo.mobilePhone,
+                    ).filterValues { it != null },
+                "remoteIp" to command.remoteIp,
+            )
+        val response =
+            client.post()
+                .uri("/creditCard/tokenize")
+                .body(body)
+                .retrieve()
+                .body(Map::class.java) ?: throw BusinessException("Asaas /creditCard/tokenize retornou vazio")
+        val token = response["creditCardToken"] as? String ?: throw BusinessException("Asaas tokenize sem creditCardToken")
+        val brand = response["creditCardBrand"] as? String ?: "UNKNOWN"
+        val last4 = (response["creditCardNumber"] as? String)?.takeLast(4) ?: ""
+        return TokenizedCardResult(creditCardToken = token, brand = brand, last4 = last4)
     }
 
     private fun mapPaymentSnapshot(response: Map<*, *>): AsaasPaymentSnapshot {

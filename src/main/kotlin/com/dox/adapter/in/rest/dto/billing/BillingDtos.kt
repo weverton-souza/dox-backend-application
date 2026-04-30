@@ -97,3 +97,48 @@ data class PriceBreakdownResponse(
     val finalPriceCents: Int,
     val cycle: String,
 )
+
+data class TokenizeCreditCardRequest(
+    @field:NotBlank
+    @field:Size(max = 255)
+    val cardHolderName: String,
+    @field:NotBlank
+    val cardNumber: String,
+    @field:NotBlank
+    @field:Size(min = 1, max = 2)
+    val cardExpiryMonth: String,
+    @field:NotBlank
+    @field:Size(min = 4, max = 4)
+    val cardExpiryYear: String,
+    @field:NotBlank
+    @field:Size(min = 3, max = 4)
+    val cardCcv: String,
+    @field:NotBlank
+    @field:Size(max = 255)
+    val billingName: String,
+    @field:NotBlank
+    @field:Email
+    val billingEmail: String,
+    @field:NotBlank
+    @field:Size(max = 20)
+    val billingCpfCnpj: String,
+    @field:NotBlank
+    @field:Size(max = 10)
+    val billingPostalCode: String,
+    @field:NotBlank
+    @field:Size(max = 20)
+    val billingAddressNumber: String,
+    @field:Size(max = 100)
+    val billingAddressComplement: String? = null,
+    @field:Size(max = 20)
+    val billingPhone: String? = null,
+    @field:Size(max = 20)
+    val billingMobilePhone: String? = null,
+    val makeDefault: Boolean = false,
+)
+
+data class TokenizedCardResponse(
+    val token: String,
+    val brand: String,
+    val last4: String,
+)
