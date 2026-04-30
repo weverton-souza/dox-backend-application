@@ -16,7 +16,7 @@ class JwtAuthenticationFilter(
     private val authTokenPort: AuthTokenPort,
 ) : OncePerRequestFilter() {
     companion object {
-        private val PUBLIC_PATHS = listOf("/auth/login", "/auth/register", "/auth/refresh", "/public/")
+        private val PUBLIC_PATHS = listOf("/auth/login", "/auth/register", "/auth/refresh", "/public/", "/webhooks/")
     }
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean = PUBLIC_PATHS.any { request.servletPath.startsWith(it) }
