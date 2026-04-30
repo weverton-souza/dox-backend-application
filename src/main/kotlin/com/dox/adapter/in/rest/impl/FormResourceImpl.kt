@@ -12,6 +12,7 @@ import com.dox.application.port.input.FormUseCase
 import com.dox.application.port.input.FormWithCurrentVersion
 import com.dox.application.port.input.UpdateFormCommand
 import com.dox.application.port.input.UpdateFormResponseCommand
+import com.dox.config.security.RequiresModule
 import com.dox.domain.model.FormResponse
 import com.dox.domain.model.FormVersion
 import org.springframework.http.HttpStatus
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@RequiresModule("forms")
 class FormResourceImpl(
     private val formUseCase: FormUseCase,
 ) : FormResource {

@@ -28,6 +28,7 @@ import com.dox.application.port.input.ReportGenerationUseCase
 import com.dox.application.port.input.ReviewTextCommand
 import com.dox.application.port.input.UpdateAiQuotaCommand
 import com.dox.application.port.output.AiConfigPort
+import com.dox.config.security.RequiresModule
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.AiGenerationResult
 import com.dox.domain.model.AiUsage
@@ -42,6 +43,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 @RestController
+@RequiresModule("ai_light")
 class AiResourceImpl(
     private val reportGenerationUseCase: ReportGenerationUseCase,
     private val objectMapper: ObjectMapper,
