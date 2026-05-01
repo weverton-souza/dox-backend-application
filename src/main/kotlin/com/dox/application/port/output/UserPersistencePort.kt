@@ -10,5 +10,7 @@ interface UserPersistencePort {
 
     fun findByEmail(email: String): User?
 
+    fun findByPersonalTenantId(tenantId: UUID): User?
+
     fun existsByEmail(email: String): Boolean
 }
