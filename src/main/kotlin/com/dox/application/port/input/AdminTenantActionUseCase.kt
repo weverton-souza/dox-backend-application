@@ -16,6 +16,14 @@ data class ExtendTrialCommand(
     val notes: String?,
 )
 
+data class LockPriceCommand(
+    val reason: String,
+)
+
+data class UnlockPriceCommand(
+    val reason: String?,
+)
+
 interface AdminTenantActionUseCase {
     fun grantModule(
         tenantId: UUID,
@@ -28,4 +36,16 @@ interface AdminTenantActionUseCase {
         command: ExtendTrialCommand,
         actorAdminId: UUID,
     ): Subscription
+
+    fun lockPrice(
+        tenantId: UUID,
+        command: LockPriceCommand,
+        actorAdminId: UUID,
+    ): List<TenantModule>
+
+    fun unlockPrice(
+        tenantId: UUID,
+        command: UnlockPriceCommand,
+        actorAdminId: UUID,
+    ): List<TenantModule>
 }

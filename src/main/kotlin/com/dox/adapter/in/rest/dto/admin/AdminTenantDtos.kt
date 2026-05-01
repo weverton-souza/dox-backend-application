@@ -29,6 +29,17 @@ data class ExtendTrialRequest(
     val notes: String? = null,
 )
 
+data class LockPriceRequest(
+    @field:NotBlank(message = "Motivo é obrigatório")
+    @field:Size(max = 500, message = "Motivo deve ter no máximo 500 caracteres")
+    val reason: String,
+)
+
+data class UnlockPriceRequest(
+    @field:Size(max = 500, message = "Motivo deve ter no máximo 500 caracteres")
+    val reason: String? = null,
+)
+
 data class AdminPagedResponse<T>(
     val content: List<T>,
     val page: Int,
