@@ -1,12 +1,16 @@
 package com.dox.adapter.`in`.rest.impl.admin
 
+import com.dox.adapter.`in`.rest.dto.admin.AdminBundleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModuleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModulePriceResponse
+import com.dox.adapter.`in`.rest.dto.admin.UpdateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateModulePriceRequest
 import com.dox.adapter.`in`.rest.resource.admin.AdminCatalogResource
 import com.dox.application.port.input.AdminCatalogUseCase
 import com.dox.application.port.input.AdminModuleCatalogItem
+import com.dox.application.port.input.UpdateBundleCommand
 import com.dox.application.port.input.UpdateModulePriceCommand
+import com.dox.domain.billing.Bundle
 import com.dox.domain.billing.ModulePrice
 import com.dox.shared.ContextHolder
 import org.springframework.http.ResponseEntity
@@ -44,6 +48,48 @@ class AdminCatalogResourceImpl(
         val history = adminCatalogUseCase.listModulePriceHistory(moduleId, safeLimit)
         return responseEntity(history.map { it.toResponse() })
     }
+
+    override fun listBundles(): ResponseEntity<List<AdminBundleListItem>> = responseEntity(adminCatalogUseCase.listBundles().map { it.toListItem() })
+
+    override fun updateBundle(
+        bundleId: String,
+        request: UpdateBundleRequest,
+    ): ResponseEntity<AdminBundleListItem> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val saved =
+            adminCatalogUseCase.updateBundle(
+                bundleId = bundleId,
+                command =
+                    UpdateBundleCommand(
+                        priceMonthlyCents = request.priceMonthlyCents,
+                        priceYearlyCents = request.priceYearlyCents,
+                        description = request.description,
+                        seatsIncluded = request.seatsIncluded,
+                        trackingSlotsIncluded = request.trackingSlotsIncluded,
+                        highlighted = request.highlighted,
+                        sortOrder = request.sortOrder,
+                        notes = request.notes,
+                    ),
+                actorAdminId = actorAdminId,
+            )
+        return responseEntity(saved.toListItem())
+    }
+
+    private fun Bundle.toListItem() =
+        AdminBundleListItem(
+            id = id,
+            name = name,
+            description = description,
+            modules = modules,
+            priceMonthlyCents = priceMonthlyCents,
+            priceYearlyCents = priceYearlyCents,
+            seatsIncluded = seatsIncluded,
+            trackingSlotsIncluded = trackingSlotsIncluded,
+            highlighted = highlighted,
+            active = active,
+            sortOrder = sortOrder,
+            updatedAt = updatedAt,
+        )
 
     private fun AdminModuleCatalogItem.toListItem() =
         AdminModuleListItem(
