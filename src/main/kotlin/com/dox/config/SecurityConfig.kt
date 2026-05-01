@@ -106,6 +106,7 @@ class SecurityConfig(
             "/auth/register",
             "/auth/login",
             "/auth/refresh",
+            "/admin/auth/login",
             "/public/**",
             "/modules/catalog",
             "/bundles",
@@ -116,6 +117,7 @@ class SecurityConfig(
             "/favicon.ico",
             "/favicon.svg",
         ).permitAll()
+        auth.requestMatchers("/admin/**").hasAuthority("ADMIN")
         auth.anyRequest().authenticated()
     }
 }

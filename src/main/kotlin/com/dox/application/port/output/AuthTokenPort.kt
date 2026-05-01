@@ -1,5 +1,6 @@
 package com.dox.application.port.output
 
+import com.dox.domain.enum.AdminRole
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -29,4 +30,14 @@ interface AuthTokenPort {
     ): String
 
     fun extractFormLinkData(token: String): FormLinkTokenData
+
+    fun generateAdminAccessToken(
+        adminId: UUID,
+        email: String,
+        role: AdminRole,
+    ): String
+
+    fun isAdminToken(token: String): Boolean
+
+    fun extractAdminRole(token: String): AdminRole
 }
