@@ -1,7 +1,10 @@
 package com.dox.adapter.`in`.rest.dto.admin
 
+import com.dox.domain.billing.AddonType
+import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Size
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -61,6 +64,35 @@ data class UpdateBundleRequest(
     @field:Min(value = 0, message = "Slots de tracking devem ser maior ou igual a zero")
     val trackingSlotsIncluded: Int? = null,
     val highlighted: Boolean? = null,
+    val sortOrder: Int? = null,
+    @field:Size(max = 500, message = "Notas devem ter no máximo 500 caracteres")
+    val notes: String? = null,
+)
+
+data class AdminAddonListItem(
+    val id: String,
+    val name: String,
+    val description: String?,
+    val type: AddonType,
+    val targetModuleId: String?,
+    val priceMonthlyCents: Int,
+    val priceUnitCents: Int?,
+    val feePercentage: BigDecimal?,
+    val availableForBundles: List<String>,
+    val active: Boolean,
+    val sortOrder: Int,
+    val updatedAt: LocalDateTime?,
+)
+
+data class UpdateAddonRequest(
+    @field:Min(value = 0, message = "Preço mensal deve ser maior ou igual a zero")
+    val priceMonthlyCents: Int? = null,
+    @field:Min(value = 0, message = "Preço unitário deve ser maior ou igual a zero")
+    val priceUnitCents: Int? = null,
+    @field:DecimalMin(value = "0.0", message = "Taxa percentual deve ser maior ou igual a zero")
+    val feePercentage: BigDecimal? = null,
+    val active: Boolean? = null,
+    val availableForBundles: List<String>? = null,
     val sortOrder: Int? = null,
     @field:Size(max = 500, message = "Notas devem ter no máximo 500 caracteres")
     val notes: String? = null,

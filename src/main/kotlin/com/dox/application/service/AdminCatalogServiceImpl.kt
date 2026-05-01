@@ -2,11 +2,14 @@ package com.dox.application.service
 
 import com.dox.application.port.input.AdminCatalogUseCase
 import com.dox.application.port.input.AdminModuleCatalogItem
+import com.dox.application.port.input.UpdateAddonCommand
 import com.dox.application.port.input.UpdateBundleCommand
 import com.dox.application.port.input.UpdateModulePriceCommand
+import com.dox.application.port.output.AddonPersistencePort
 import com.dox.application.port.output.BillingAuditLogPersistencePort
 import com.dox.application.port.output.BundlePersistencePort
 import com.dox.application.port.output.ModulePricePersistencePort
+import com.dox.domain.billing.Addon
 import com.dox.domain.billing.BillingAuditAction
 import com.dox.domain.billing.BillingAuditLog
 import com.dox.domain.billing.Bundle
@@ -23,6 +26,7 @@ import java.util.UUID
 class AdminCatalogServiceImpl(
     private val modulePricePersistencePort: ModulePricePersistencePort,
     private val bundlePersistencePort: BundlePersistencePort,
+    private val addonPersistencePort: AddonPersistencePort,
     private val billingAuditLogPersistencePort: BillingAuditLogPersistencePort,
 ) : AdminCatalogUseCase {
     @Transactional(readOnly = true)
@@ -161,6 +165,69 @@ class AdminCatalogServiceImpl(
             "seatsIncluded" to seatsIncluded,
             "trackingSlotsIncluded" to trackingSlotsIncluded,
             "highlighted" to highlighted,
+            "active" to active,
+            "sortOrder" to sortOrder,
+        )
+
+    @Transactional(readOnly = true)
+    override fun listAddons(): List<Addon> = addonPersistencePort.findAll()
+
+    @Transactional
+    override fun updateAddon(
+        addonId: String,
+        command: UpdateAddonCommand,
+        actorAdminId: UUID,
+    ): Addon {
+        val existing =
+            addonPersistencePort.findById(addonId)
+                ?: throw ResourceNotFoundException("Addon", addonId)
+
+        command.priceMonthlyCents?.let {
+            if (it < 0) throw BusinessException("Preço mensal deve ser maior ou igual a zero")
+        }
+        command.priceUnitCents?.let {
+            if (it < 0) throw BusinessException("Preço unitário deve ser maior ou igual a zero")
+        }
+        command.feePercentage?.let {
+            if (it.signum() < 0) throw BusinessException("Taxa percentual deve ser maior ou igual a zero")
+        }
+
+        val updated =
+            existing.copy(
+                priceMonthlyCents = command.priceMonthlyCents ?: existing.priceMonthlyCents,
+                priceUnitCents = command.priceUnitCents ?: existing.priceUnitCents,
+                feePercentage = command.feePercentage ?: existing.feePercentage,
+                active = command.active ?: existing.active,
+                availableForBundles = command.availableForBundles ?: existing.availableForBundles,
+                sortOrder = command.sortOrder ?: existing.sortOrder,
+            )
+
+        val saved = addonPersistencePort.save(updated)
+
+        billingAuditLogPersistencePort.save(
+            BillingAuditLog(
+                tenantId = null,
+                actorAdminId = actorAdminId,
+                action = BillingAuditAction.EDIT_ADDON,
+                beforeState = existing.toAuditMap(),
+                afterState = saved.toAuditMap(),
+                notes = command.notes,
+            ),
+        )
+
+        return saved
+    }
+
+    private fun Addon.toAuditMap(): Map<String, Any?> =
+        mapOf(
+            "id" to id,
+            "name" to name,
+            "type" to type.name,
+            "targetModuleId" to targetModuleId,
+            "priceMonthlyCents" to priceMonthlyCents,
+            "priceUnitCents" to priceUnitCents,
+            "feePercentage" to feePercentage?.toPlainString(),
+            "availableForBundles" to availableForBundles,
             "active" to active,
             "sortOrder" to sortOrder,
         )
