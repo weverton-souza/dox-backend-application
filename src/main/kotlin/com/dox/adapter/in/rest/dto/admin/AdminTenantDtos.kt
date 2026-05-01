@@ -7,9 +7,27 @@ import com.dox.domain.billing.ModuleStatus
 import com.dox.domain.billing.SubscriptionStatus
 import com.dox.domain.enum.TenantType
 import com.dox.domain.enum.Vertical
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
+
+data class GrantModuleRequest(
+    @field:NotBlank(message = "Módulo é obrigatório")
+    val moduleId: String,
+    val expiresAt: LocalDateTime? = null,
+    @field:Size(max = 500, message = "Notas devem ter no máximo 500 caracteres")
+    val notes: String? = null,
+)
+
+data class ExtendTrialRequest(
+    @field:Min(value = 1, message = "Dias deve ser positivo")
+    val days: Int,
+    @field:Size(max = 500, message = "Notas devem ter no máximo 500 caracteres")
+    val notes: String? = null,
+)
 
 data class AdminPagedResponse<T>(
     val content: List<T>,
