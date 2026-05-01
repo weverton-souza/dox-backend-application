@@ -39,6 +39,7 @@ class RateLimitFilter(
         mapOf(
             "/auth/login" to { Pair(loginMaxAttempts, loginWindowSeconds) },
             "/auth/register" to { Pair(registerMaxAttempts, registerWindowSeconds) },
+            "/admin/auth/login" to { Pair(loginMaxAttempts, loginWindowSeconds) },
         )
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean = request.method != "POST" || rateLimitedPaths.keys.none { request.servletPath == it }
