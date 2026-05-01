@@ -5,4 +5,5 @@ data class PriceBreakdown(
     val bundleDiscountCents: Int = 0,
     val finalPriceCents: Int,
     val cycle: BillingCycle = BillingCycle.MONTHLY,
+    val appliedPromotions: List<AppliedDiscount> = emptyList(),
 )
