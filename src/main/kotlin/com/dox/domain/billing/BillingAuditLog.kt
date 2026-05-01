@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class BillingAuditLog(
     val id: UUID = UUID.randomUUID(),
-    val tenantId: UUID,
+    val tenantId: UUID? = null,
     val actorAdminId: UUID,
     val action: BillingAuditAction,
     val beforeState: Map<String, Any?>? = null,
