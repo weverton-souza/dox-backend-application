@@ -1,6 +1,7 @@
 package com.dox.application.port.output
 
 import com.dox.domain.billing.TenantPromotion
+import java.time.LocalDateTime
 import java.util.UUID
 
 interface TenantPromotionPersistencePort {
@@ -14,4 +15,6 @@ interface TenantPromotionPersistencePort {
     ): TenantPromotion?
 
     fun save(tenantPromotion: TenantPromotion): TenantPromotion
+
+    fun markExpiredOlderThan(now: LocalDateTime): Int
 }
