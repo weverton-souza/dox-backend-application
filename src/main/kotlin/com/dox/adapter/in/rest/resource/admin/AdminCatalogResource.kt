@@ -1,7 +1,9 @@
 package com.dox.adapter.`in`.rest.resource.admin
 
+import com.dox.adapter.`in`.rest.dto.admin.AdminBundleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModuleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModulePriceResponse
+import com.dox.adapter.`in`.rest.dto.admin.UpdateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateModulePriceRequest
 import com.dox.adapter.`in`.rest.resource.BaseResource
 import io.swagger.v3.oas.annotations.Operation
@@ -35,4 +37,15 @@ interface AdminCatalogResource : BaseResource {
         @PathVariable moduleId: String,
         @RequestParam(defaultValue = "20") limit: Int,
     ): ResponseEntity<List<AdminModulePriceResponse>>
+
+    @Operation(summary = "Lista todos os bundles (tiers comerciais), inclusive inativos")
+    @GetMapping("/bundles")
+    fun listBundles(): ResponseEntity<List<AdminBundleListItem>>
+
+    @Operation(summary = "Atualiza campos editáveis do bundle (preços, seats, slots, highlighted, sortOrder, description)")
+    @PutMapping("/bundles/{bundleId}")
+    fun updateBundle(
+        @PathVariable bundleId: String,
+        @Valid @RequestBody request: UpdateBundleRequest,
+    ): ResponseEntity<AdminBundleListItem>
 }
