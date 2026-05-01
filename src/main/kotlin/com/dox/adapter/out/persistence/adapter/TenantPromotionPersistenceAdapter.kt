@@ -6,6 +6,8 @@ import com.dox.application.port.output.TenantPromotionPersistencePort
 import com.dox.domain.billing.TenantPromotion
 import com.dox.domain.billing.TenantPromotionStatus
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
@@ -40,6 +42,9 @@ class TenantPromotionPersistenceAdapter(
         entity.notes = tenantPromotion.notes
         return repository.save(entity).toDomain()
     }
+
+    @Transactional
+    override fun markExpiredOlderThan(now: LocalDateTime): Int = repository.markExpiredOlderThan(now)
 
     private fun TenantPromotionJpaEntity.toDomain() =
         TenantPromotion(
