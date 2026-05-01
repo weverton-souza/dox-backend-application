@@ -11,13 +11,17 @@ import com.dox.adapter.`in`.rest.dto.admin.AdminTenantOwner
 import com.dox.adapter.`in`.rest.dto.admin.AdminTenantSummary
 import com.dox.adapter.`in`.rest.dto.admin.ExtendTrialRequest
 import com.dox.adapter.`in`.rest.dto.admin.GrantModuleRequest
+import com.dox.adapter.`in`.rest.dto.admin.LockPriceRequest
+import com.dox.adapter.`in`.rest.dto.admin.UnlockPriceRequest
 import com.dox.adapter.`in`.rest.resource.admin.AdminTenantResource
 import com.dox.application.port.input.AdminTenantActionUseCase
 import com.dox.application.port.input.AdminTenantDetailResult
 import com.dox.application.port.input.AdminTenantUseCase
 import com.dox.application.port.input.ExtendTrialCommand
 import com.dox.application.port.input.GrantModuleCommand
+import com.dox.application.port.input.LockPriceCommand
 import com.dox.application.port.input.TenantWithSubscription
+import com.dox.application.port.input.UnlockPriceCommand
 import com.dox.domain.billing.Bundle
 import com.dox.domain.billing.Payment
 import com.dox.domain.billing.Subscription
@@ -91,6 +95,34 @@ class AdminTenantResourceImpl(
                 actorAdminId = actorAdminId,
             )
         return responseEntity(updated.toInfo())
+    }
+
+    override fun lockPrice(
+        id: UUID,
+        request: LockPriceRequest,
+    ): ResponseEntity<List<AdminTenantModuleInfo>> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val modules =
+            adminTenantActionUseCase.lockPrice(
+                tenantId = id,
+                command = LockPriceCommand(reason = request.reason),
+                actorAdminId = actorAdminId,
+            )
+        return responseEntity(modules.map { it.toInfo() })
+    }
+
+    override fun unlockPrice(
+        id: UUID,
+        request: UnlockPriceRequest,
+    ): ResponseEntity<List<AdminTenantModuleInfo>> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val modules =
+            adminTenantActionUseCase.unlockPrice(
+                tenantId = id,
+                command = UnlockPriceCommand(reason = request.reason),
+                actorAdminId = actorAdminId,
+            )
+        return responseEntity(modules.map { it.toInfo() })
     }
 
     private fun TenantWithSubscription.toListItem() =

@@ -3,6 +3,8 @@ package com.dox.application.service
 import com.dox.application.port.input.AdminTenantActionUseCase
 import com.dox.application.port.input.ExtendTrialCommand
 import com.dox.application.port.input.GrantModuleCommand
+import com.dox.application.port.input.LockPriceCommand
+import com.dox.application.port.input.UnlockPriceCommand
 import com.dox.application.port.output.BillingAuditLogPersistencePort
 import com.dox.application.port.output.SubscriptionPersistencePort
 import com.dox.application.port.output.TenantModulePersistencePort
@@ -121,6 +123,64 @@ class AdminTenantActionServiceImpl(
         )
 
         return saved
+    }
+
+    @Transactional
+    override fun lockPrice(
+        tenantId: UUID,
+        command: LockPriceCommand,
+        actorAdminId: UUID,
+    ): List<TenantModule> = togglePriceLock(tenantId, locked = true, reason = command.reason, actorAdminId = actorAdminId)
+
+    @Transactional
+    override fun unlockPrice(
+        tenantId: UUID,
+        command: UnlockPriceCommand,
+        actorAdminId: UUID,
+    ): List<TenantModule> = togglePriceLock(tenantId, locked = false, reason = command.reason, actorAdminId = actorAdminId)
+
+    private fun togglePriceLock(
+        tenantId: UUID,
+        locked: Boolean,
+        reason: String?,
+        actorAdminId: UUID,
+    ): List<TenantModule> {
+        tenantPersistencePort.findById(tenantId)
+            ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
+
+        val activeModules =
+            tenantModulePersistencePort.findByTenantId(tenantId)
+                .filter { it.canceledAt == null }
+
+        if (activeModules.isEmpty()) {
+            throw BusinessException("Tenant não possui módulos ativos para alterar bloqueio de preço")
+        }
+
+        val now = LocalDateTime.now()
+        val before = activeModules.map { it.toAuditMap() }
+        val updated =
+            activeModules.map { module ->
+                tenantModulePersistencePort.save(
+                    module.copy(
+                        priceLocked = locked,
+                        priceLockedAt = if (locked) now else null,
+                    ),
+                )
+            }
+        val after = updated.map { it.toAuditMap() }
+
+        billingAuditLogPersistencePort.save(
+            BillingAuditLog(
+                tenantId = tenantId,
+                actorAdminId = actorAdminId,
+                action = if (locked) BillingAuditAction.LOCK_PRICE else BillingAuditAction.UNLOCK_PRICE,
+                beforeState = mapOf("modules" to before),
+                afterState = mapOf("modules" to after),
+                notes = reason,
+            ),
+        )
+
+        return updated
     }
 
     private fun TenantModule.toAuditMap(): Map<String, Any?> =

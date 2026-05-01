@@ -7,6 +7,8 @@ import com.dox.adapter.`in`.rest.dto.admin.AdminTenantListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminTenantModuleInfo
 import com.dox.adapter.`in`.rest.dto.admin.ExtendTrialRequest
 import com.dox.adapter.`in`.rest.dto.admin.GrantModuleRequest
+import com.dox.adapter.`in`.rest.dto.admin.LockPriceRequest
+import com.dox.adapter.`in`.rest.dto.admin.UnlockPriceRequest
 import com.dox.adapter.`in`.rest.resource.BaseResource
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -50,4 +52,18 @@ interface AdminTenantResource : BaseResource {
         @PathVariable id: UUID,
         @Valid @RequestBody request: ExtendTrialRequest,
     ): ResponseEntity<AdminSubscriptionInfo>
+
+    @Operation(summary = "Bloqueia o preço atual de todos os módulos ativos (Founding Member)")
+    @PostMapping("/{id}/lock-price")
+    fun lockPrice(
+        @PathVariable id: UUID,
+        @Valid @RequestBody request: LockPriceRequest,
+    ): ResponseEntity<List<AdminTenantModuleInfo>>
+
+    @Operation(summary = "Desbloqueia o preço dos módulos ativos do tenant")
+    @PostMapping("/{id}/unlock-price")
+    fun unlockPrice(
+        @PathVariable id: UUID,
+        @Valid @RequestBody request: UnlockPriceRequest,
+    ): ResponseEntity<List<AdminTenantModuleInfo>>
 }
