@@ -1,8 +1,10 @@
 package com.dox.adapter.`in`.rest.resource.admin
 
+import com.dox.adapter.`in`.rest.dto.admin.AdminAddonListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminBundleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModuleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModulePriceResponse
+import com.dox.adapter.`in`.rest.dto.admin.UpdateAddonRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateModulePriceRequest
 import com.dox.adapter.`in`.rest.resource.BaseResource
@@ -48,4 +50,15 @@ interface AdminCatalogResource : BaseResource {
         @PathVariable bundleId: String,
         @Valid @RequestBody request: UpdateBundleRequest,
     ): ResponseEntity<AdminBundleListItem>
+
+    @Operation(summary = "Lista todos os add-ons (inclusive inativos)")
+    @GetMapping("/addons")
+    fun listAddons(): ResponseEntity<List<AdminAddonListItem>>
+
+    @Operation(summary = "Atualiza campos editáveis do add-on (preços, fee, active, availableForBundles, sortOrder)")
+    @PutMapping("/addons/{addonId}")
+    fun updateAddon(
+        @PathVariable addonId: String,
+        @Valid @RequestBody request: UpdateAddonRequest,
+    ): ResponseEntity<AdminAddonListItem>
 }

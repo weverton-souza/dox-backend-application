@@ -1,8 +1,10 @@
 package com.dox.application.port.input
 
+import com.dox.domain.billing.Addon
 import com.dox.domain.billing.Bundle
 import com.dox.domain.billing.Module
 import com.dox.domain.billing.ModulePrice
+import java.math.BigDecimal
 import java.util.UUID
 
 data class AdminModuleCatalogItem(
@@ -22,6 +24,16 @@ data class UpdateBundleCommand(
     val seatsIncluded: Int? = null,
     val trackingSlotsIncluded: Int? = null,
     val highlighted: Boolean? = null,
+    val sortOrder: Int? = null,
+    val notes: String? = null,
+)
+
+data class UpdateAddonCommand(
+    val priceMonthlyCents: Int? = null,
+    val priceUnitCents: Int? = null,
+    val feePercentage: BigDecimal? = null,
+    val active: Boolean? = null,
+    val availableForBundles: List<String>? = null,
     val sortOrder: Int? = null,
     val notes: String? = null,
 )
@@ -47,4 +59,12 @@ interface AdminCatalogUseCase {
         command: UpdateBundleCommand,
         actorAdminId: UUID,
     ): Bundle
+
+    fun listAddons(): List<Addon>
+
+    fun updateAddon(
+        addonId: String,
+        command: UpdateAddonCommand,
+        actorAdminId: UUID,
+    ): Addon
 }

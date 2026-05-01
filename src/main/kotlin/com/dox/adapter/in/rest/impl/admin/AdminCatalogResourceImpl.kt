@@ -1,15 +1,19 @@
 package com.dox.adapter.`in`.rest.impl.admin
 
+import com.dox.adapter.`in`.rest.dto.admin.AdminAddonListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminBundleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModuleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModulePriceResponse
+import com.dox.adapter.`in`.rest.dto.admin.UpdateAddonRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateModulePriceRequest
 import com.dox.adapter.`in`.rest.resource.admin.AdminCatalogResource
 import com.dox.application.port.input.AdminCatalogUseCase
 import com.dox.application.port.input.AdminModuleCatalogItem
+import com.dox.application.port.input.UpdateAddonCommand
 import com.dox.application.port.input.UpdateBundleCommand
 import com.dox.application.port.input.UpdateModulePriceCommand
+import com.dox.domain.billing.Addon
 import com.dox.domain.billing.Bundle
 import com.dox.domain.billing.ModulePrice
 import com.dox.shared.ContextHolder
@@ -113,5 +117,46 @@ class AdminCatalogResourceImpl(
             notes = notes,
             createdByUserId = createdByUserId,
             createdAt = createdAt,
+        )
+
+    override fun listAddons(): ResponseEntity<List<AdminAddonListItem>> = responseEntity(adminCatalogUseCase.listAddons().map { it.toListItem() })
+
+    override fun updateAddon(
+        addonId: String,
+        request: UpdateAddonRequest,
+    ): ResponseEntity<AdminAddonListItem> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val saved =
+            adminCatalogUseCase.updateAddon(
+                addonId = addonId,
+                command =
+                    UpdateAddonCommand(
+                        priceMonthlyCents = request.priceMonthlyCents,
+                        priceUnitCents = request.priceUnitCents,
+                        feePercentage = request.feePercentage,
+                        active = request.active,
+                        availableForBundles = request.availableForBundles,
+                        sortOrder = request.sortOrder,
+                        notes = request.notes,
+                    ),
+                actorAdminId = actorAdminId,
+            )
+        return responseEntity(saved.toListItem())
+    }
+
+    private fun Addon.toListItem() =
+        AdminAddonListItem(
+            id = id,
+            name = name,
+            description = description,
+            type = type,
+            targetModuleId = targetModuleId,
+            priceMonthlyCents = priceMonthlyCents,
+            priceUnitCents = priceUnitCents,
+            feePercentage = feePercentage,
+            availableForBundles = availableForBundles,
+            active = active,
+            sortOrder = sortOrder,
+            updatedAt = updatedAt,
         )
 }
