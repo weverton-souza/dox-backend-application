@@ -1,6 +1,8 @@
 package com.dox.adapter.out.persistence.repository
 
 import com.dox.adapter.out.persistence.entity.PromotionJpaEntity
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -12,6 +14,8 @@ interface PromotionJpaRepository : JpaRepository<PromotionJpaEntity, UUID> {
     fun findByCode(code: String): PromotionJpaEntity?
 
     fun findAllByArchivedAtIsNull(): List<PromotionJpaEntity>
+
+    fun findAllByArchivedAtIsNull(pageable: Pageable): Page<PromotionJpaEntity>
 
     @Modifying
     @Query(
