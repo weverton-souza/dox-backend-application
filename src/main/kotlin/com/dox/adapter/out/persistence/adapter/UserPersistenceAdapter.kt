@@ -28,6 +28,8 @@ class UserPersistenceAdapter(
 
     override fun findByEmail(email: String): User? = userJpaRepository.findByEmail(email)?.toDomain()
 
+    override fun findByPersonalTenantId(tenantId: UUID): User? = userJpaRepository.findByPersonalTenantId(tenantId)?.toDomain()
+
     override fun existsByEmail(email: String): Boolean = userJpaRepository.existsByEmail(email)
 
     private fun UserJpaEntity.toDomain() =
