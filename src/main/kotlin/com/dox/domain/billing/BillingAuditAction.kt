@@ -8,4 +8,7 @@ enum class BillingAuditAction {
     EDIT_MODULE_PRICE,
     EDIT_BUNDLE,
     EDIT_ADDON,
+    CREATE_PROMOTION,
+    UPDATE_PROMOTION,
+    ARCHIVE_PROMOTION,
 }

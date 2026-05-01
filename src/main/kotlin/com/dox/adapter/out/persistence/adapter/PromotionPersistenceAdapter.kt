@@ -4,6 +4,8 @@ import com.dox.adapter.out.persistence.entity.PromotionJpaEntity
 import com.dox.adapter.out.persistence.repository.PromotionJpaRepository
 import com.dox.application.port.output.PromotionPersistencePort
 import com.dox.domain.billing.Promotion
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -53,6 +55,15 @@ class PromotionPersistenceAdapter(
         val entities =
             if (includeArchived) repository.findAll() else repository.findAllByArchivedAtIsNull()
         return entities.map { it.toDomain() }
+    }
+
+    override fun findPaginated(
+        includeArchived: Boolean,
+        pageable: Pageable,
+    ): Page<Promotion> {
+        val page =
+            if (includeArchived) repository.findAll(pageable) else repository.findAllByArchivedAtIsNull(pageable)
+        return page.map { it.toDomain() }
     }
 
     @Transactional

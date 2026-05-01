@@ -10,7 +10,10 @@ CREATE TABLE billing_audit_log (
                                      'UNLOCK_PRICE',
                                      'EDIT_MODULE_PRICE',
                                      'EDIT_BUNDLE',
-                                     'EDIT_ADDON'
+                                     'EDIT_ADDON',
+                                     'CREATE_PROMOTION',
+                                     'UPDATE_PROMOTION',
+                                     'ARCHIVE_PROMOTION'
                                  )),
     before_state    JSONB,
     after_state     JSONB,
