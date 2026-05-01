@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -16,7 +17,15 @@ class JwtAuthenticationFilter(
     private val authTokenPort: AuthTokenPort,
 ) : OncePerRequestFilter() {
     companion object {
-        private val PUBLIC_PATHS = listOf("/auth/login", "/auth/register", "/auth/refresh", "/public/", "/webhooks/")
+        private val PUBLIC_PATHS =
+            listOf(
+                "/auth/login",
+                "/auth/register",
+                "/auth/refresh",
+                "/admin/auth/login",
+                "/public/",
+                "/webhooks/",
+            )
     }
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean = PUBLIC_PATHS.any { request.servletPath.startsWith(it) }
@@ -42,18 +51,38 @@ class JwtAuthenticationFilter(
 
             val userId = authTokenPort.extractUserId(token)
             val email = authTokenPort.extractEmail(token)
-            val tenantId = authTokenPort.extractTenantId(token)
+            val isAdmin = authTokenPort.isAdminToken(token)
 
-            val auth = UsernamePasswordAuthenticationToken(email, null, emptyList())
-            SecurityContextHolder.getContext().authentication = auth
+            if (isAdmin) {
+                val auth =
+                    UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        listOf(SimpleGrantedAuthority("ADMIN")),
+                    )
+                SecurityContextHolder.getContext().authentication = auth
 
-            ContextHolder.context =
-                Context(
-                    tenantId = tenantId,
-                    userId = userId,
-                    ipAddress = resolveClientIp(request),
-                    userAgent = request.getHeader("User-Agent")?.take(500),
-                )
+                ContextHolder.context =
+                    Context(
+                        tenantId = null,
+                        userId = userId,
+                        ipAddress = resolveClientIp(request),
+                        userAgent = request.getHeader("User-Agent")?.take(500),
+                    )
+            } else {
+                val tenantId = authTokenPort.extractTenantId(token)
+
+                val auth = UsernamePasswordAuthenticationToken(email, null, emptyList())
+                SecurityContextHolder.getContext().authentication = auth
+
+                ContextHolder.context =
+                    Context(
+                        tenantId = tenantId,
+                        userId = userId,
+                        ipAddress = resolveClientIp(request),
+                        userAgent = request.getHeader("User-Agent")?.take(500),
+                    )
+            }
         }
 
         try {

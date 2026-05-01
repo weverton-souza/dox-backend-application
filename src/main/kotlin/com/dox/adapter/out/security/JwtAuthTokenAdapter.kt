@@ -3,6 +3,7 @@ package com.dox.adapter.out.security
 import com.dox.application.port.output.AuthTokenPort
 import com.dox.application.port.output.FormLinkTokenData
 import com.dox.config.SecurityProperties
+import com.dox.domain.enum.AdminRole
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.slf4j.LoggerFactory
@@ -97,4 +98,32 @@ class JwtAuthTokenAdapter(
             formLinkId = UUID.fromString(claims["formLinkId"] as String),
         )
     }
+
+    override fun generateAdminAccessToken(
+        adminId: UUID,
+        email: String,
+        role: AdminRole,
+    ): String {
+        val now = Date()
+        val expiry = Date(now.time + securityProperties.adminAccessTokenExpiration)
+
+        return Jwts.builder()
+            .subject(adminId.toString())
+            .claim("email", email)
+            .claim("isAdmin", true)
+            .claim("adminRole", role.name)
+            .issuedAt(now)
+            .expiration(expiry)
+            .signWith(key)
+            .compact()
+    }
+
+    override fun isAdminToken(token: String): Boolean =
+        try {
+            parseClaims(token)["isAdmin"] == true
+        } catch (e: Exception) {
+            false
+        }
+
+    override fun extractAdminRole(token: String): AdminRole = AdminRole.valueOf(parseClaims(token)["adminRole"] as String)
 }
