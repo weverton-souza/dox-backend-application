@@ -19,8 +19,8 @@ class BillingAuditLogJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-    @Column(name = "tenant_id", nullable = false)
-    var tenantId: UUID,
+    @Column(name = "tenant_id")
+    var tenantId: UUID? = null,
     @Column(name = "actor_admin_id", nullable = false)
     var actorAdminId: UUID,
     @Column(name = "action", nullable = false, length = 50)
