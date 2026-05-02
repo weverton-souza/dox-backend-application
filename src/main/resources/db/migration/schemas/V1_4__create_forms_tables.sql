@@ -13,7 +13,7 @@ CREATE TABLE form_versions (
     title           VARCHAR(255) NOT NULL,
     description     TEXT,
     fields          JSONB     NOT NULL DEFAULT '[]'::JSONB,
-    field_mappings  JSONB     DEFAULT '{}'::JSONB,
+    field_mappings  JSONB     DEFAULT '[]'::JSONB,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE(form_id, version)
 );
@@ -27,7 +27,7 @@ CREATE TABLE form_responses (
     customer_id         UUID REFERENCES customers(id) ON DELETE SET NULL,
     customer_name       VARCHAR(255),
     status              VARCHAR(50)  NOT NULL DEFAULT 'EM_ANDAMENTO',
-    answers             JSONB     NOT NULL DEFAULT '{}'::JSONB,
+    answers             JSONB     NOT NULL DEFAULT '[]'::JSONB,
     generated_report_id UUID REFERENCES reports(id) ON DELETE SET NULL,
     created_at          TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMP NOT NULL DEFAULT NOW()
