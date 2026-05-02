@@ -14,6 +14,7 @@ CREATE TABLE form_versions (
     description     TEXT,
     fields          JSONB     NOT NULL DEFAULT '[]'::JSONB,
     field_mappings  JSONB     DEFAULT '[]'::JSONB,
+    scoring_config  JSONB     NOT NULL DEFAULT '{}'::JSONB,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE(form_id, version)
 );

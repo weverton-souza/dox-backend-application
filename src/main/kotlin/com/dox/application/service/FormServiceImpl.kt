@@ -34,6 +34,7 @@ class FormServiceImpl(
                     description = command.description,
                     fields = command.fields,
                     fieldMappings = command.fieldMappings,
+                    scoringConfig = command.scoringConfig,
                 ),
             )
         return FormWithCurrentVersion(form, version)
@@ -95,6 +96,7 @@ class FormServiceImpl(
                     description = command.description,
                     fields = command.fields,
                     fieldMappings = command.fieldMappings,
+                    scoringConfig = command.scoringConfig,
                 ),
             )
         return FormWithCurrentVersion(form, updatedVersion)
@@ -114,6 +116,7 @@ class FormServiceImpl(
                     description = command.description,
                     fields = command.fields,
                     fieldMappings = command.fieldMappings,
+                    scoringConfig = command.scoringConfig,
                 ),
             )
         val formWithNewVersion =

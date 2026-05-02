@@ -33,6 +33,9 @@ class FormVersionJpaEntity(
     @Type(JsonType::class)
     @Column(name = "field_mappings", columnDefinition = "jsonb")
     var fieldMappings: List<Map<String, Any?>> = emptyList(),
+    @Type(JsonType::class)
+    @Column(name = "scoring_config", columnDefinition = "jsonb")
+    var scoringConfig: Map<String, Any?> = emptyMap(),
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

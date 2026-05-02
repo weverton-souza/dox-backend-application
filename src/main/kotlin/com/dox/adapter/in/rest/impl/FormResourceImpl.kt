@@ -36,6 +36,7 @@ class FormResourceImpl(
                     fields = request.fields,
                     linkedTemplateId = request.linkedTemplateId,
                     fieldMappings = request.fieldMappings,
+                    scoringConfig = request.scoringConfig,
                 ),
             ).toResponse(),
             HttpStatus.CREATED,
@@ -56,6 +57,7 @@ class FormResourceImpl(
                     fields = request.fields,
                     linkedTemplateId = request.linkedTemplateId,
                     fieldMappings = request.fieldMappings,
+                    scoringConfig = request.scoringConfig,
                 ),
             ).toResponse(),
         )
@@ -142,6 +144,7 @@ class FormResourceImpl(
             fields = version.fields,
             linkedTemplateId = form.linkedTemplateId,
             fieldMappings = version.fieldMappings,
+            scoringConfig = version.scoringConfig,
             currentVersion = form.currentVersion,
             createdAt = form.createdAt,
             updatedAt = form.updatedAt,
@@ -156,6 +159,7 @@ class FormResourceImpl(
             description,
             fields,
             fieldMappings,
+            scoringConfig,
             createdAt,
         )
 
