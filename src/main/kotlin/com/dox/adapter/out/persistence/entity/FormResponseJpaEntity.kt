@@ -1,6 +1,7 @@
 package com.dox.adapter.out.persistence.entity
 
 import com.dox.domain.enum.FormResponseStatus
+import com.dox.domain.enum.RespondentType
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -31,6 +32,13 @@ class FormResponseJpaEntity(
     var customerId: UUID? = null,
     @Column(name = "customer_name")
     var customerName: String? = null,
+    @Column(name = "customer_contact_id")
+    var customerContactId: UUID? = null,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "respondent_type", nullable = false, length = 50)
+    var respondentType: RespondentType = RespondentType.CUSTOMER,
+    @Column(name = "respondent_name")
+    var respondentName: String? = null,
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: FormResponseStatus = FormResponseStatus.EM_ANDAMENTO,

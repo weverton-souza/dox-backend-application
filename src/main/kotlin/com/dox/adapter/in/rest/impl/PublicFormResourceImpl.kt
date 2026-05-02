@@ -21,6 +21,8 @@ class PublicFormResourceImpl(
                 formDescription = data.formDescription,
                 fields = data.fields,
                 customerName = data.customerName,
+                respondentName = data.respondentName,
+                respondentType = data.respondentType,
                 expiresAt = data.expiresAt,
             ),
         )

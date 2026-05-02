@@ -68,6 +68,9 @@ class FormPersistenceAdapter(
         entity.formVersionId = response.formVersionId
         entity.customerId = response.customerId
         entity.customerName = response.customerName
+        entity.customerContactId = response.customerContactId
+        entity.respondentType = response.respondentType
+        entity.respondentName = response.respondentName
         entity.status = response.status
         entity.answers = response.answers
         entity.generatedReportId = response.generatedReportId
@@ -110,6 +113,18 @@ class FormPersistenceAdapter(
 
     private fun FormResponseJpaEntity.toDomain() =
         FormResponse(
-            id, formId, formVersionId, customerId, customerName, status, answers, generatedReportId, createdAt, updatedAt,
+            id = id,
+            formId = formId,
+            formVersionId = formVersionId,
+            customerId = customerId,
+            customerName = customerName,
+            customerContactId = customerContactId,
+            respondentType = respondentType,
+            respondentName = respondentName,
+            status = status,
+            answers = answers,
+            generatedReportId = generatedReportId,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         )
 }

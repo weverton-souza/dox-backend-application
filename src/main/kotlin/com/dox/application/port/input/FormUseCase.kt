@@ -1,6 +1,7 @@
 package com.dox.application.port.input
 
 import com.dox.domain.enum.FormResponseStatus
+import com.dox.domain.enum.RespondentType
 import com.dox.domain.model.Form
 import com.dox.domain.model.FormResponse
 import com.dox.domain.model.FormVersion
@@ -27,8 +28,12 @@ data class UpdateFormCommand(
 
 data class CreateFormResponseCommand(
     val formId: UUID,
+    val formVersionId: UUID? = null,
     val customerId: UUID? = null,
     val customerName: String? = null,
+    val customerContactId: UUID? = null,
+    val respondentType: RespondentType = RespondentType.CUSTOMER,
+    val respondentName: String? = null,
     val answers: List<Map<String, Any?>> = emptyList(),
 )
 

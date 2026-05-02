@@ -16,7 +16,10 @@ class FormLinkPersistenceAdapter(
             formLinkJpaRepository.findById(formLink.id).orElse(null)
                 ?: FormLinkJpaEntity().apply { id = formLink.id }
         entity.formId = formLink.formId
+        entity.formVersionId = formLink.formVersionId
         entity.customerId = formLink.customerId
+        entity.customerContactId = formLink.customerContactId
+        entity.respondentType = formLink.respondentType
         entity.createdBy = formLink.createdBy
         entity.status = formLink.status
         entity.expiresAt = formLink.expiresAt
@@ -31,13 +34,16 @@ class FormLinkPersistenceAdapter(
 
     private fun FormLinkJpaEntity.toDomain() =
         FormLink(
-            id,
-            formId,
-            customerId,
-            createdBy,
-            status,
-            expiresAt,
-            createdAt,
-            updatedAt,
+            id = id,
+            formId = formId,
+            formVersionId = formVersionId,
+            customerId = customerId,
+            customerContactId = customerContactId,
+            respondentType = respondentType,
+            createdBy = createdBy,
+            status = status,
+            expiresAt = expiresAt,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         )
 }
