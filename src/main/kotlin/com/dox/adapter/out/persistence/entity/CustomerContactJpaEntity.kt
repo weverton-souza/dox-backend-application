@@ -1,6 +1,6 @@
 package com.dox.adapter.out.persistence.entity
 
-import com.dox.domain.enum.PatientContactRelationType
+import com.dox.domain.enum.CustomerContactRelationType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -10,9 +10,9 @@ import org.hibernate.annotations.SQLRestriction
 import java.util.UUID
 
 @Entity
-@Table(name = "patient_contacts")
+@Table(name = "customer_contacts")
 @SQLRestriction("deleted = false")
-class PatientContactJpaEntity(
+class CustomerContactJpaEntity(
     id: UUID = UUID.randomUUID(),
     @Column(name = "customer_id", nullable = false)
     var customerId: UUID = UUID.randomUUID(),
@@ -20,7 +20,7 @@ class PatientContactJpaEntity(
     var name: String = "",
     @Enumerated(EnumType.STRING)
     @Column(name = "relation_type", nullable = false)
-    var relationType: PatientContactRelationType = PatientContactRelationType.OUTRO,
+    var relationType: CustomerContactRelationType = CustomerContactRelationType.OTHER,
     @Column(name = "email")
     var email: String? = null,
     @Column(name = "phone")

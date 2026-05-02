@@ -1,10 +1,10 @@
 package com.dox.application.port.input
 
-import com.dox.domain.enum.PatientContactRelationType
+import com.dox.domain.enum.CustomerContactRelationType
 import com.dox.domain.model.Customer
+import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
-import com.dox.domain.model.PatientContact
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.LocalDateTime
@@ -33,21 +33,21 @@ data class UpdateCustomerEventCommand(
     val date: LocalDateTime,
 )
 
-data class CreatePatientContactCommand(
+data class CreateCustomerContactCommand(
     val customerId: UUID,
     val name: String,
-    val relationType: PatientContactRelationType,
+    val relationType: CustomerContactRelationType,
     val email: String? = null,
     val phone: String? = null,
     val notes: String? = null,
     val canReceiveForms: Boolean = true,
 )
 
-data class UpdatePatientContactCommand(
+data class UpdateCustomerContactCommand(
     val id: UUID,
     val customerId: UUID,
     val name: String,
-    val relationType: PatientContactRelationType,
+    val relationType: CustomerContactRelationType,
     val email: String? = null,
     val phone: String? = null,
     val notes: String? = null,
@@ -87,11 +87,11 @@ interface CustomerUseCase {
         to: LocalDateTime,
     ): List<Pair<CustomerEvent, String>>
 
-    fun getContacts(customerId: UUID): List<PatientContact>
+    fun getContacts(customerId: UUID): List<CustomerContact>
 
-    fun addContact(command: CreatePatientContactCommand): PatientContact
+    fun addContact(command: CreateCustomerContactCommand): CustomerContact
 
-    fun updateContact(command: UpdatePatientContactCommand): PatientContact
+    fun updateContact(command: UpdateCustomerContactCommand): CustomerContact
 
     fun deleteContact(contactId: UUID)
 }

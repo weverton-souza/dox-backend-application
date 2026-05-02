@@ -34,7 +34,7 @@ CREATE TABLE customer_events (
 CREATE INDEX idx_customer_events_customer ON customer_events(customer_id);
 CREATE INDEX idx_customer_events_date     ON customer_events(date);
 
-CREATE TABLE patient_contacts (
+CREATE TABLE customer_contacts (
     id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     customer_id        UUID         NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
     name               VARCHAR(255) NOT NULL,
@@ -48,4 +48,4 @@ CREATE TABLE patient_contacts (
     updated_at         TIMESTAMP    NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_patient_contacts_customer ON patient_contacts(customer_id) WHERE deleted = false;
+CREATE INDEX idx_customer_contacts_customer ON customer_contacts(customer_id) WHERE deleted = false;

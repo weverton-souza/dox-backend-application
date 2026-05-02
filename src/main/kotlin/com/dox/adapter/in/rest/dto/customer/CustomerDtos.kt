@@ -1,6 +1,6 @@
 package com.dox.adapter.`in`.rest.dto.customer
 
-import com.dox.domain.enum.PatientContactRelationType
+import com.dox.domain.enum.CustomerContactRelationType
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -68,12 +68,12 @@ data class CustomerCalendarEventResponse(
     val createdAt: LocalDateTime?,
 )
 
-data class PatientContactRequest(
+data class CustomerContactRequest(
     @field:NotBlank(message = "Nome é obrigatório")
     @field:Size(max = 255, message = "Nome deve ter no máximo 255 caracteres")
     val name: String,
     @field:NotNull(message = "Tipo de relação é obrigatório")
-    val relationType: PatientContactRelationType,
+    val relationType: CustomerContactRelationType,
     @field:Email(message = "Email inválido")
     @field:Size(max = 255, message = "Email deve ter no máximo 255 caracteres")
     val email: String? = null,
@@ -84,11 +84,11 @@ data class PatientContactRequest(
     val canReceiveForms: Boolean = true,
 )
 
-data class PatientContactResponse(
+data class CustomerContactResponse(
     val id: UUID,
     val customerId: UUID,
     val name: String,
-    val relationType: PatientContactRelationType,
+    val relationType: CustomerContactRelationType,
     val email: String?,
     val phone: String?,
     val notes: String?,

@@ -1,6 +1,6 @@
 package com.dox.domain.model
 
-import com.dox.domain.enum.PatientContactRelationType
+import com.dox.domain.enum.CustomerContactRelationType
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -14,11 +14,11 @@ data class Customer(
     fun displayName(): String? = data["name"] as? String
 }
 
-data class PatientContact(
+data class CustomerContact(
     val id: UUID = UUID.randomUUID(),
     val customerId: UUID,
     val name: String,
-    val relationType: PatientContactRelationType,
+    val relationType: CustomerContactRelationType,
     val email: String? = null,
     val phone: String? = null,
     val notes: String? = null,
