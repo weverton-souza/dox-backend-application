@@ -33,3 +33,19 @@ CREATE TABLE customer_events (
 
 CREATE INDEX idx_customer_events_customer ON customer_events(customer_id);
 CREATE INDEX idx_customer_events_date     ON customer_events(date);
+
+CREATE TABLE customer_contacts (
+    id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    customer_id        UUID         NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+    name               VARCHAR(255) NOT NULL,
+    relation_type      VARCHAR(50)  NOT NULL,
+    email              VARCHAR(255),
+    phone              VARCHAR(50),
+    notes              TEXT,
+    can_receive_forms  BOOLEAN      NOT NULL DEFAULT TRUE,
+    deleted            BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at         TIMESTAMP    NOT NULL DEFAULT NOW(),
+    updated_at         TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_customer_contacts_customer ON customer_contacts(customer_id) WHERE deleted = false;

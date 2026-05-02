@@ -1,5 +1,7 @@
 package com.dox.adapter.`in`.rest.dto.customer
 
+import com.dox.domain.enum.CustomerContactRelationType
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -64,4 +66,33 @@ data class CustomerCalendarEventResponse(
     val description: String?,
     val date: LocalDateTime,
     val createdAt: LocalDateTime?,
+)
+
+data class CustomerContactRequest(
+    @field:NotBlank(message = "Nome é obrigatório")
+    @field:Size(max = 255, message = "Nome deve ter no máximo 255 caracteres")
+    val name: String,
+    @field:NotNull(message = "Tipo de relação é obrigatório")
+    val relationType: CustomerContactRelationType,
+    @field:Email(message = "Email inválido")
+    @field:Size(max = 255, message = "Email deve ter no máximo 255 caracteres")
+    val email: String? = null,
+    @field:Size(max = 50, message = "Telefone deve ter no máximo 50 caracteres")
+    val phone: String? = null,
+    @field:Size(max = 2000, message = "Observações devem ter no máximo 2000 caracteres")
+    val notes: String? = null,
+    val canReceiveForms: Boolean = true,
+)
+
+data class CustomerContactResponse(
+    val id: UUID,
+    val customerId: UUID,
+    val name: String,
+    val relationType: CustomerContactRelationType,
+    val email: String?,
+    val phone: String?,
+    val notes: String?,
+    val canReceiveForms: Boolean,
+    val createdAt: LocalDateTime?,
+    val updatedAt: LocalDateTime?,
 )

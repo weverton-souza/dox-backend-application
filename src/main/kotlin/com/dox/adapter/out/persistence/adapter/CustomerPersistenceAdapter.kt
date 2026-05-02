@@ -1,13 +1,16 @@
 package com.dox.adapter.out.persistence.adapter
 
+import com.dox.adapter.out.persistence.entity.CustomerContactJpaEntity
 import com.dox.adapter.out.persistence.entity.CustomerEventJpaEntity
 import com.dox.adapter.out.persistence.entity.CustomerJpaEntity
 import com.dox.adapter.out.persistence.entity.CustomerNoteJpaEntity
+import com.dox.adapter.out.persistence.repository.CustomerContactJpaRepository
 import com.dox.adapter.out.persistence.repository.CustomerEventJpaRepository
 import com.dox.adapter.out.persistence.repository.CustomerJpaRepository
 import com.dox.adapter.out.persistence.repository.CustomerNoteJpaRepository
 import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.domain.model.Customer
+import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import com.dox.extensions.softDeleteById
@@ -24,6 +27,7 @@ class CustomerPersistenceAdapter(
     private val customerJpaRepository: CustomerJpaRepository,
     private val noteJpaRepository: CustomerNoteJpaRepository,
     private val eventJpaRepository: CustomerEventJpaRepository,
+    private val contactJpaRepository: CustomerContactJpaRepository,
 ) : CustomerPersistencePort {
     override fun save(customer: Customer): Customer {
         val entity =
@@ -95,6 +99,42 @@ class CustomerPersistenceAdapter(
         from: LocalDateTime,
         to: LocalDateTime,
     ): List<CustomerEvent> = eventJpaRepository.findByDateBetweenOrderByDateAsc(from, to).map { it.toDomain() }
+
+    override fun saveContact(contact: CustomerContact): CustomerContact {
+        val entity =
+            contactJpaRepository.findById(contact.id).orElse(null)
+                ?: CustomerContactJpaEntity().apply { id = contact.id }
+        entity.customerId = contact.customerId
+        entity.name = contact.name
+        entity.relationType = contact.relationType
+        entity.email = contact.email
+        entity.phone = contact.phone
+        entity.notes = contact.notes
+        entity.canReceiveForms = contact.canReceiveForms
+        return contactJpaRepository.save(entity).toDomain()
+    }
+
+    override fun findContactById(contactId: UUID): CustomerContact? = contactJpaRepository.findById(contactId).orElse(null)?.toDomain()
+
+    override fun findContactsByCustomerId(customerId: UUID): List<CustomerContact> = contactJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
+
+    override fun deleteContact(contactId: UUID) {
+        contactJpaRepository.softDeleteById(contactId, "Contato")
+    }
+
+    private fun CustomerContactJpaEntity.toDomain() =
+        CustomerContact(
+            id = id,
+            customerId = customerId,
+            name = name,
+            relationType = relationType,
+            email = email,
+            phone = phone,
+            notes = notes,
+            canReceiveForms = canReceiveForms,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+        )
 
     private fun CustomerJpaEntity.toDomain() =
         Customer(

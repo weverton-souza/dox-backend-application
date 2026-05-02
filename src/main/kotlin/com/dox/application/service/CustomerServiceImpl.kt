@@ -1,15 +1,18 @@
 package com.dox.application.service
 
 import com.dox.application.port.input.CreateCustomerCommand
+import com.dox.application.port.input.CreateCustomerContactCommand
 import com.dox.application.port.input.CreateCustomerEventCommand
 import com.dox.application.port.input.CreateCustomerNoteCommand
 import com.dox.application.port.input.CustomerUseCase
 import com.dox.application.port.input.UpdateCustomerCommand
+import com.dox.application.port.input.UpdateCustomerContactCommand
 import com.dox.application.port.input.UpdateCustomerEventCommand
 import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Customer
+import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import com.dox.domain.validation.CnpjValidator
@@ -110,6 +113,52 @@ class CustomerServiceImpl(
         customerPersistencePort.findEventById(eventId)
             ?: throw ResourceNotFoundException("Evento", eventId.toString())
         customerPersistencePort.deleteEvent(eventId)
+    }
+
+    override fun getContacts(customerId: UUID): List<CustomerContact> {
+        findById(customerId)
+        return customerPersistencePort.findContactsByCustomerId(customerId)
+    }
+
+    @Transactional
+    override fun addContact(command: CreateCustomerContactCommand): CustomerContact {
+        findById(command.customerId)
+        return customerPersistencePort.saveContact(
+            CustomerContact(
+                customerId = command.customerId,
+                name = command.name,
+                relationType = command.relationType,
+                email = command.email,
+                phone = command.phone,
+                notes = command.notes,
+                canReceiveForms = command.canReceiveForms,
+            ),
+        )
+    }
+
+    @Transactional
+    override fun updateContact(command: UpdateCustomerContactCommand): CustomerContact {
+        customerPersistencePort.findContactById(command.id)
+            ?: throw ResourceNotFoundException("Contato", command.id.toString())
+        return customerPersistencePort.saveContact(
+            CustomerContact(
+                id = command.id,
+                customerId = command.customerId,
+                name = command.name,
+                relationType = command.relationType,
+                email = command.email,
+                phone = command.phone,
+                notes = command.notes,
+                canReceiveForms = command.canReceiveForms,
+            ),
+        )
+    }
+
+    @Transactional
+    override fun deleteContact(contactId: UUID) {
+        customerPersistencePort.findContactById(contactId)
+            ?: throw ResourceNotFoundException("Contato", contactId.toString())
+        customerPersistencePort.deleteContact(contactId)
     }
 
     private fun validateAndNormalizeDocuments(data: Map<String, Any?>): Map<String, Any?> {

@@ -1,5 +1,7 @@
 package com.dox.adapter.`in`.rest.resource
 
+import com.dox.adapter.`in`.rest.dto.customer.CustomerContactRequest
+import com.dox.adapter.`in`.rest.dto.customer.CustomerContactResponse
 import com.dox.adapter.`in`.rest.dto.customer.CustomerEventRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerEventResponse
 import com.dox.adapter.`in`.rest.dto.customer.CustomerNoteRequest
@@ -124,5 +126,33 @@ interface CustomerResource : BaseResource {
     fun deleteEvent(
         @PathVariable id: UUID,
         @PathVariable eventId: UUID,
+    ): ResponseEntity<Void>
+
+    @Operation(summary = "Listar contatos do paciente")
+    @GetMapping("/{id}/contacts")
+    fun getContacts(
+        @PathVariable id: UUID,
+    ): ResponseEntity<List<CustomerContactResponse>>
+
+    @Operation(summary = "Adicionar contato ao paciente")
+    @PostMapping("/{id}/contacts")
+    fun addContact(
+        @PathVariable id: UUID,
+        @Valid @RequestBody request: CustomerContactRequest,
+    ): ResponseEntity<CustomerContactResponse>
+
+    @Operation(summary = "Atualizar contato do paciente")
+    @PutMapping("/{id}/contacts/{contactId}")
+    fun updateContact(
+        @PathVariable id: UUID,
+        @PathVariable contactId: UUID,
+        @Valid @RequestBody request: CustomerContactRequest,
+    ): ResponseEntity<CustomerContactResponse>
+
+    @Operation(summary = "Excluir contato")
+    @DeleteMapping("/{id}/contacts/{contactId}")
+    fun deleteContact(
+        @PathVariable id: UUID,
+        @PathVariable contactId: UUID,
     ): ResponseEntity<Void>
 }

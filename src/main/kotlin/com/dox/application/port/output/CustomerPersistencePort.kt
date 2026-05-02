@@ -1,6 +1,7 @@
 package com.dox.application.port.output
 
 import com.dox.domain.model.Customer
+import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import org.springframework.data.domain.Page
@@ -44,4 +45,12 @@ interface CustomerPersistencePort {
         from: LocalDateTime,
         to: LocalDateTime,
     ): List<CustomerEvent>
+
+    fun saveContact(contact: CustomerContact): CustomerContact
+
+    fun findContactById(contactId: UUID): CustomerContact?
+
+    fun findContactsByCustomerId(customerId: UUID): List<CustomerContact>
+
+    fun deleteContact(contactId: UUID)
 }

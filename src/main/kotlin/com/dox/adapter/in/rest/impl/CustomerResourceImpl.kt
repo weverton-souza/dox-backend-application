@@ -1,5 +1,7 @@
 package com.dox.adapter.`in`.rest.impl
 
+import com.dox.adapter.`in`.rest.dto.customer.CustomerContactRequest
+import com.dox.adapter.`in`.rest.dto.customer.CustomerContactResponse
 import com.dox.adapter.`in`.rest.dto.customer.CustomerEventRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerEventResponse
 import com.dox.adapter.`in`.rest.dto.customer.CustomerNoteRequest
@@ -8,13 +10,16 @@ import com.dox.adapter.`in`.rest.dto.customer.CustomerRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerResponse
 import com.dox.adapter.`in`.rest.resource.CustomerResource
 import com.dox.application.port.input.CreateCustomerCommand
+import com.dox.application.port.input.CreateCustomerContactCommand
 import com.dox.application.port.input.CreateCustomerEventCommand
 import com.dox.application.port.input.CreateCustomerNoteCommand
 import com.dox.application.port.input.CustomerUseCase
 import com.dox.application.port.input.UpdateCustomerCommand
+import com.dox.application.port.input.UpdateCustomerContactCommand
 import com.dox.application.port.input.UpdateCustomerEventCommand
 import com.dox.config.security.RequiresModule
 import com.dox.domain.model.Customer
+import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
 import org.springframework.data.domain.Page
@@ -99,9 +104,60 @@ class CustomerResourceImpl(
         return noContent()
     }
 
+    override fun getContacts(id: UUID): ResponseEntity<List<CustomerContactResponse>> = responseEntity(customerUseCase.getContacts(id).map { it.toResponse() })
+
+    override fun addContact(
+        id: UUID,
+        request: CustomerContactRequest,
+    ): ResponseEntity<CustomerContactResponse> =
+        responseEntity(
+            customerUseCase.addContact(
+                CreateCustomerContactCommand(
+                    customerId = id,
+                    name = request.name,
+                    relationType = request.relationType,
+                    email = request.email,
+                    phone = request.phone,
+                    notes = request.notes,
+                    canReceiveForms = request.canReceiveForms,
+                ),
+            ).toResponse(),
+            HttpStatus.CREATED,
+        )
+
+    override fun updateContact(
+        id: UUID,
+        contactId: UUID,
+        request: CustomerContactRequest,
+    ): ResponseEntity<CustomerContactResponse> =
+        responseEntity(
+            customerUseCase.updateContact(
+                UpdateCustomerContactCommand(
+                    id = contactId,
+                    customerId = id,
+                    name = request.name,
+                    relationType = request.relationType,
+                    email = request.email,
+                    phone = request.phone,
+                    notes = request.notes,
+                    canReceiveForms = request.canReceiveForms,
+                ),
+            ).toResponse(),
+        )
+
+    override fun deleteContact(
+        id: UUID,
+        contactId: UUID,
+    ): ResponseEntity<Void> {
+        customerUseCase.deleteContact(contactId)
+        return noContent()
+    }
+
     private fun Customer.toResponse() = CustomerResponse(id, data, createdAt, updatedAt)
 
     private fun CustomerNote.toResponse() = CustomerNoteResponse(id, customerId, content, createdAt, updatedAt)
 
     private fun CustomerEvent.toResponse() = CustomerEventResponse(id, customerId, type, title, description, date, createdAt)
+
+    private fun CustomerContact.toResponse() = CustomerContactResponse(id, customerId, name, relationType, email, phone, notes, canReceiveForms, createdAt, updatedAt)
 }
