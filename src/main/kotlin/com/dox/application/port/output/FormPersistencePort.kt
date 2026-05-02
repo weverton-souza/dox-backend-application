@@ -39,5 +39,11 @@ interface FormPersistencePort {
 
     fun findResponsesByIds(ids: List<UUID>): List<FormResponse>
 
+    fun findResponsesByCustomerAndFormVersion(
+        customerId: UUID,
+        formId: UUID,
+        formVersionId: UUID,
+    ): List<FormResponse>
+
     fun deleteResponse(id: UUID)
 }

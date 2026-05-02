@@ -12,4 +12,10 @@ interface FormResponseJpaRepository : JpaRepository<FormResponseJpaEntity, UUID>
     fun findAllByIdIn(ids: List<UUID>): List<FormResponseJpaEntity>
 
     fun countByFormVersionId(formVersionId: UUID): Long
+
+    fun findByCustomerIdAndFormIdAndFormVersionId(
+        customerId: UUID,
+        formId: UUID,
+        formVersionId: UUID,
+    ): List<FormResponseJpaEntity>
 }
