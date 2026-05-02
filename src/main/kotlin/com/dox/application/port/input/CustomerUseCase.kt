@@ -1,8 +1,10 @@
 package com.dox.application.port.input
 
+import com.dox.domain.enum.PatientContactRelationType
 import com.dox.domain.model.Customer
 import com.dox.domain.model.CustomerEvent
 import com.dox.domain.model.CustomerNote
+import com.dox.domain.model.PatientContact
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.LocalDateTime
@@ -29,6 +31,27 @@ data class UpdateCustomerEventCommand(
     val title: String,
     val description: String?,
     val date: LocalDateTime,
+)
+
+data class CreatePatientContactCommand(
+    val customerId: UUID,
+    val name: String,
+    val relationType: PatientContactRelationType,
+    val email: String? = null,
+    val phone: String? = null,
+    val notes: String? = null,
+    val canReceiveForms: Boolean = true,
+)
+
+data class UpdatePatientContactCommand(
+    val id: UUID,
+    val customerId: UUID,
+    val name: String,
+    val relationType: PatientContactRelationType,
+    val email: String? = null,
+    val phone: String? = null,
+    val notes: String? = null,
+    val canReceiveForms: Boolean = true,
 )
 
 interface CustomerUseCase {
@@ -63,4 +86,12 @@ interface CustomerUseCase {
         from: LocalDateTime,
         to: LocalDateTime,
     ): List<Pair<CustomerEvent, String>>
+
+    fun getContacts(customerId: UUID): List<PatientContact>
+
+    fun addContact(command: CreatePatientContactCommand): PatientContact
+
+    fun updateContact(command: UpdatePatientContactCommand): PatientContact
+
+    fun deleteContact(contactId: UUID)
 }

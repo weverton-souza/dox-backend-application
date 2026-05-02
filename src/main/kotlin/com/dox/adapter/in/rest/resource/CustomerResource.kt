@@ -6,6 +6,8 @@ import com.dox.adapter.`in`.rest.dto.customer.CustomerNoteRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerNoteResponse
 import com.dox.adapter.`in`.rest.dto.customer.CustomerRequest
 import com.dox.adapter.`in`.rest.dto.customer.CustomerResponse
+import com.dox.adapter.`in`.rest.dto.customer.PatientContactRequest
+import com.dox.adapter.`in`.rest.dto.customer.PatientContactResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Parameters
@@ -124,5 +126,33 @@ interface CustomerResource : BaseResource {
     fun deleteEvent(
         @PathVariable id: UUID,
         @PathVariable eventId: UUID,
+    ): ResponseEntity<Void>
+
+    @Operation(summary = "Listar contatos do paciente")
+    @GetMapping("/{id}/contacts")
+    fun getContacts(
+        @PathVariable id: UUID,
+    ): ResponseEntity<List<PatientContactResponse>>
+
+    @Operation(summary = "Adicionar contato ao paciente")
+    @PostMapping("/{id}/contacts")
+    fun addContact(
+        @PathVariable id: UUID,
+        @Valid @RequestBody request: PatientContactRequest,
+    ): ResponseEntity<PatientContactResponse>
+
+    @Operation(summary = "Atualizar contato do paciente")
+    @PutMapping("/{id}/contacts/{contactId}")
+    fun updateContact(
+        @PathVariable id: UUID,
+        @PathVariable contactId: UUID,
+        @Valid @RequestBody request: PatientContactRequest,
+    ): ResponseEntity<PatientContactResponse>
+
+    @Operation(summary = "Excluir contato")
+    @DeleteMapping("/{id}/contacts/{contactId}")
+    fun deleteContact(
+        @PathVariable id: UUID,
+        @PathVariable contactId: UUID,
     ): ResponseEntity<Void>
 }
