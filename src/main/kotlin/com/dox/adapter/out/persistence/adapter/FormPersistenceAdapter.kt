@@ -87,6 +87,15 @@ class FormPersistenceAdapter(
 
     override fun findResponsesByIds(ids: List<UUID>): List<FormResponse> = formResponseJpaRepository.findAllByIdIn(ids).map { it.toDomain() }
 
+    override fun findResponsesByCustomerAndFormVersion(
+        customerId: UUID,
+        formId: UUID,
+        formVersionId: UUID,
+    ): List<FormResponse> =
+        formResponseJpaRepository
+            .findByCustomerIdAndFormIdAndFormVersionId(customerId, formId, formVersionId)
+            .map { it.toDomain() }
+
     override fun deleteResponse(id: UUID) = formResponseJpaRepository.deleteById(id)
 
     private fun FormJpaEntity.toDomain() =

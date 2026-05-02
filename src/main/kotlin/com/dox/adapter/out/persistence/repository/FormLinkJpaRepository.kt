@@ -8,4 +8,10 @@ interface FormLinkJpaRepository : JpaRepository<FormLinkJpaEntity, UUID> {
     fun findAllByOrderByCreatedAtDesc(): List<FormLinkJpaEntity>
 
     fun findByCustomerIdOrderByCreatedAtDesc(customerId: UUID): List<FormLinkJpaEntity>
+
+    fun findByCustomerIdAndFormIdAndFormVersionIdOrderByCreatedAtAsc(
+        customerId: UUID,
+        formId: UUID,
+        formVersionId: UUID,
+    ): List<FormLinkJpaEntity>
 }

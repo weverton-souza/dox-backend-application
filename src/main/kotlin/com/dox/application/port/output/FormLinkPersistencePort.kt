@@ -11,4 +11,10 @@ interface FormLinkPersistencePort {
     fun findAll(): List<FormLink>
 
     fun findByCustomerId(customerId: UUID): List<FormLink>
+
+    fun findByCustomerAndFormVersion(
+        customerId: UUID,
+        formId: UUID,
+        formVersionId: UUID,
+    ): List<FormLink>
 }
