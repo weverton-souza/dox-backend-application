@@ -1,6 +1,7 @@
 package com.dox.domain.model
 
 import com.dox.domain.enum.FormResponseStatus
+import com.dox.domain.enum.RespondentType
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -30,6 +31,9 @@ data class FormResponse(
     val formVersionId: UUID,
     val customerId: UUID? = null,
     val customerName: String? = null,
+    val customerContactId: UUID? = null,
+    val respondentType: RespondentType = RespondentType.CUSTOMER,
+    val respondentName: String? = null,
     val status: FormResponseStatus = FormResponseStatus.EM_ANDAMENTO,
     val answers: List<Map<String, Any?>> = emptyList(),
     val generatedReportId: UUID? = null,

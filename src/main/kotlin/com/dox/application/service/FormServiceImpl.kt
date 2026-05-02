@@ -153,15 +153,21 @@ class FormServiceImpl(
         val form =
             formPersistencePort.findFormById(command.formId)
                 ?: throw ResourceNotFoundException("Formulário", command.formId.toString())
-        val currentVersion =
-            formPersistencePort.findVersionByFormIdAndVersion(form.id, form.currentVersion)
-                ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersion}")
+        val resolvedVersionId =
+            command.formVersionId
+                ?: (
+                    formPersistencePort.findVersionByFormIdAndVersion(form.id, form.currentVersion)
+                        ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersion}")
+                ).id
         return formPersistencePort.saveResponse(
             FormResponse(
                 formId = command.formId,
-                formVersionId = currentVersion.id,
+                formVersionId = resolvedVersionId,
                 customerId = command.customerId,
                 customerName = command.customerName,
+                customerContactId = command.customerContactId,
+                respondentType = command.respondentType,
+                respondentName = command.respondentName,
                 answers = command.answers,
             ),
         )

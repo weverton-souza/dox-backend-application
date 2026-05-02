@@ -2,6 +2,7 @@ package com.dox.adapter.`in`.rest.resource
 
 import com.dox.adapter.`in`.rest.dto.formlink.CreateFormLinkRequest
 import com.dox.adapter.`in`.rest.dto.formlink.FormLinkResponse
+import com.dox.adapter.`in`.rest.dto.formlink.MultiSendRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -18,11 +19,17 @@ import java.util.UUID
 @Tag(name = "Links de Formulário", description = "Gerenciamento de links públicos para formulários")
 @RequestMapping("/form-links")
 interface FormLinkResource : BaseResource {
-    @Operation(summary = "Criar link público para formulário")
+    @Operation(summary = "Criar link público para formulário (single, cliente)")
     @PostMapping
     fun create(
         @Valid @RequestBody request: CreateFormLinkRequest,
     ): ResponseEntity<FormLinkResponse>
+
+    @Operation(summary = "Enviar formulário para múltiplos respondentes (cliente + contatos)")
+    @PostMapping("/multi-send")
+    fun multiSend(
+        @Valid @RequestBody request: MultiSendRequest,
+    ): ResponseEntity<List<FormLinkResponse>>
 
     @Operation(summary = "Listar links do tenant, opcionalmente filtrado por cliente")
     @GetMapping

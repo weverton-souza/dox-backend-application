@@ -1,6 +1,7 @@
 package com.dox.adapter.out.persistence.entity
 
 import com.dox.domain.enum.FormLinkStatus
+import com.dox.domain.enum.RespondentType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
@@ -23,8 +24,15 @@ class FormLinkJpaEntity(
     var id: UUID = UUID.randomUUID(),
     @Column(name = "form_id", nullable = false)
     var formId: UUID = UUID.randomUUID(),
+    @Column(name = "form_version_id", nullable = false)
+    var formVersionId: UUID = UUID.randomUUID(),
     @Column(name = "customer_id", nullable = false)
     var customerId: UUID = UUID.randomUUID(),
+    @Column(name = "customer_contact_id")
+    var customerContactId: UUID? = null,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "respondent_type", nullable = false, length = 50)
+    var respondentType: RespondentType = RespondentType.CUSTOMER,
     @Column(name = "created_by", nullable = false)
     var createdBy: UUID = UUID.randomUUID(),
     @Enumerated(EnumType.STRING)
