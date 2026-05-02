@@ -50,3 +50,12 @@ CREATE TABLE form_links (
 );
 
 CREATE INDEX idx_form_links_status ON form_links(status);
+
+CREATE TABLE form_drafts (
+    id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    form_link_id      UUID        NOT NULL UNIQUE REFERENCES form_links(id) ON DELETE CASCADE,
+    partial_response  JSONB       NOT NULL DEFAULT '{}'::JSONB,
+    saved_at          TIMESTAMP   NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_form_drafts_link ON form_drafts(form_link_id);

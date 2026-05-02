@@ -16,6 +16,16 @@ data class PublicFormSubmitCommand(
     val answers: List<Map<String, Any?>> = emptyList(),
 )
 
+data class SaveFormDraftCommand(
+    val token: String,
+    val partialResponse: Map<String, Any?>,
+)
+
+data class PublicFormDraftData(
+    val partialResponse: Map<String, Any?>,
+    val savedAt: LocalDateTime,
+)
+
 data class PublicFormData(
     val formTitle: String,
     val formDescription: String?,
@@ -41,4 +51,8 @@ interface FormLinkUseCase {
     fun resolvePublicForm(token: String): PublicFormData
 
     fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse
+
+    fun findPublicFormDraft(token: String): PublicFormDraftData?
+
+    fun savePublicFormDraft(command: SaveFormDraftCommand): PublicFormDraftData
 }
