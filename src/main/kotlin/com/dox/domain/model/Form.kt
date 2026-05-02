@@ -20,6 +20,7 @@ data class FormVersion(
     val description: String? = null,
     val fields: List<Map<String, Any?>> = emptyList(),
     val fieldMappings: List<Map<String, Any?>> = emptyList(),
+    val scoringConfig: Map<String, Any?> = emptyMap(),
     val createdAt: LocalDateTime? = null,
 )
 

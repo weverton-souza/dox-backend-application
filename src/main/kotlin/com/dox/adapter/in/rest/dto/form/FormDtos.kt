@@ -17,6 +17,7 @@ data class FormRequest(
     val linkedTemplateId: UUID? = null,
     @field:Size(max = 200, message = "Máximo de 200 mapeamentos permitidos")
     val fieldMappings: List<Map<String, Any?>> = emptyList(),
+    val scoringConfig: Map<String, Any?> = emptyMap(),
 )
 
 data class FormResponseDto(
@@ -26,6 +27,7 @@ data class FormResponseDto(
     val fields: List<Map<String, Any?>>,
     val linkedTemplateId: UUID?,
     val fieldMappings: List<Map<String, Any?>>,
+    val scoringConfig: Map<String, Any?>,
     val currentVersion: Int,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
@@ -39,6 +41,7 @@ data class FormVersionResponseDto(
     val description: String?,
     val fields: List<Map<String, Any?>>,
     val fieldMappings: List<Map<String, Any?>>,
+    val scoringConfig: Map<String, Any?>,
     val createdAt: LocalDateTime?,
 )
 

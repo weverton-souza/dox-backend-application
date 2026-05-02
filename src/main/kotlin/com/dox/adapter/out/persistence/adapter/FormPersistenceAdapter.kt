@@ -45,6 +45,7 @@ class FormPersistenceAdapter(
         entity.description = version.description
         entity.fields = version.fields
         entity.fieldMappings = version.fieldMappings
+        entity.scoringConfig = version.scoringConfig
         return formVersionJpaRepository.save(entity).toDomain()
     }
 
@@ -103,6 +104,7 @@ class FormPersistenceAdapter(
             description,
             fields,
             fieldMappings,
+            scoringConfig,
             createdAt,
         )
 
