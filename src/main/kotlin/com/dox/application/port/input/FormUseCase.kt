@@ -11,7 +11,7 @@ data class CreateFormCommand(
     val description: String? = null,
     val fields: List<Map<String, Any?>> = emptyList(),
     val linkedTemplateId: UUID? = null,
-    val fieldMappings: Map<String, Any?> = emptyMap(),
+    val fieldMappings: List<Map<String, Any?>> = emptyList(),
 )
 
 data class UpdateFormCommand(
@@ -20,7 +20,7 @@ data class UpdateFormCommand(
     val description: String? = null,
     val fields: List<Map<String, Any?>> = emptyList(),
     val linkedTemplateId: UUID? = null,
-    val fieldMappings: Map<String, Any?> = emptyMap(),
+    val fieldMappings: List<Map<String, Any?>> = emptyList(),
 )
 
 data class CreateFormResponseCommand(
