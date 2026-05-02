@@ -9,7 +9,7 @@ import com.dox.adapter.`in`.rest.resource.PublicFormResource
 import com.dox.application.port.input.FormLinkUseCase
 import com.dox.application.port.input.PublicFormSubmitCommand
 import com.dox.application.port.input.SaveFormDraftCommand
-import com.dox.domain.exception.ResourceNotFoundException
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -43,7 +43,7 @@ class PublicFormResourceImpl(
     override fun getDraft(token: String): ResponseEntity<PublicFormDraftResponse> {
         val draft =
             formLinkUseCase.findPublicFormDraft(token)
-                ?: throw ResourceNotFoundException("Rascunho", token)
+                ?: return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
         return responseEntity(
             PublicFormDraftResponse(partialResponse = draft.partialResponse, savedAt = draft.savedAt),
         )
