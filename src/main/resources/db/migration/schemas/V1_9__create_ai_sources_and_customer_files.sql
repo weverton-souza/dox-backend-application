@@ -1,6 +1,6 @@
 CREATE TABLE ai_generation_sources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    report_id UUID NOT NULL,
+    report_id UUID NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
     generation_id UUID NOT NULL,
     source_type VARCHAR(30) NOT NULL,
     source_id UUID NOT NULL,
@@ -15,7 +15,7 @@ CREATE INDEX idx_ai_gen_sources_generation ON ai_generation_sources(generation_i
 
 CREATE TABLE customer_files (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_id UUID NOT NULL,
+    customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
     file_name VARCHAR(500) NOT NULL,
     file_type VARCHAR(50),
     category VARCHAR(100),

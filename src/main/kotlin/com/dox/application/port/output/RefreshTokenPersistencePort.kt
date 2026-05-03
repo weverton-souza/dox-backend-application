@@ -10,5 +10,7 @@ interface RefreshTokenPersistencePort {
 
     fun deleteByUserId(userId: UUID)
 
+    fun deleteById(id: UUID)
+
     fun deleteExpired()
 }

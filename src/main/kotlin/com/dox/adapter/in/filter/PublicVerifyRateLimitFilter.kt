@@ -1,5 +1,6 @@
 package com.dox.adapter.`in`.filter
 
+import com.dox.extensions.extractClientIp
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -28,7 +29,7 @@ class PublicVerifyRateLimitFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
-        val ip = resolveIp(request)
+        val ip = request.extractClientIp() ?: "unknown"
         if (!allow(ip)) {
             FilterProblemDetailWriter.write(
                 response = response,
@@ -40,14 +41,6 @@ class PublicVerifyRateLimitFilter : OncePerRequestFilter() {
             return
         }
         filterChain.doFilter(request, response)
-    }
-
-    private fun resolveIp(request: HttpServletRequest): String {
-        val forwarded = request.getHeader("X-Forwarded-For")
-        if (!forwarded.isNullOrBlank()) {
-            return forwarded.split(",").first().trim().take(45)
-        }
-        return request.remoteAddr?.take(45) ?: "unknown"
     }
 
     private fun allow(ip: String): Boolean {

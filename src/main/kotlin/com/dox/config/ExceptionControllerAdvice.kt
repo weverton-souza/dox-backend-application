@@ -2,6 +2,7 @@ package com.dox.config
 
 import com.dox.domain.exception.AccessDeniedException
 import com.dox.domain.exception.BusinessException
+import com.dox.domain.exception.BusinessValidationException
 import com.dox.domain.exception.DomainException
 import com.dox.domain.exception.DuplicateResourceException
 import com.dox.domain.exception.ErrorCode
@@ -53,7 +54,7 @@ class DomainExceptionHandler {
         logger.warn("[{}] {}", ex.errorCode.code, ex.message)
 
         val httpStatus = resolveHttpStatus(ex)
-        val pd = buildProblemDetail(httpStatus, ex.errorCode.title, ex.message!!, ex.errorCode.code)
+        val pd = buildProblemDetail(httpStatus, ex.errorCode.title, ex.message ?: ex.errorCode.title, ex.errorCode.code)
 
         when (ex) {
             is ResourceNotFoundException -> {
@@ -63,6 +64,9 @@ class DomainExceptionHandler {
             is DuplicateResourceException -> {
                 pd.setProperty("field", ex.field)
                 pd.setProperty("value", ex.value)
+            }
+            is BusinessValidationException -> {
+                pd.setProperty("violations", ex.violations)
             }
             else -> {}
         }

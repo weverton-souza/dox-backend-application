@@ -12,6 +12,7 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class CalendarServiceImpl(
     private val calendarPersistencePort: CalendarPersistencePort,
     private val customerPersistencePort: CustomerPersistencePort,

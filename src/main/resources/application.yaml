@@ -27,6 +27,10 @@ spring:
         tenant_identifier_resolver: com.dox.adapter.out.tenant.TenantIdentifierResolver
         multi_tenant_connection_provider: com.dox.adapter.out.tenant.TenantConnectionProvider
         generate_statistics: false
+        jdbc.batch_size: 25
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
     generate-ddl: false
     show-sql: ${SHOW_SQL:false}
     open-in-view: false

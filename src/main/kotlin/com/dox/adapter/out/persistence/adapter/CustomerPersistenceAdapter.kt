@@ -116,6 +116,8 @@ class CustomerPersistenceAdapter(
 
     override fun findContactById(contactId: UUID): CustomerContact? = contactJpaRepository.findById(contactId).orElse(null)?.toDomain()
 
+    override fun findContactsByIds(ids: Set<UUID>): List<CustomerContact> = if (ids.isEmpty()) emptyList() else contactJpaRepository.findAllById(ids).map { it.toDomain() }
+
     override fun findContactsByCustomerId(customerId: UUID): List<CustomerContact> = contactJpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).map { it.toDomain() }
 
     override fun deleteContact(contactId: UUID) {

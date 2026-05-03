@@ -29,9 +29,9 @@ import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.time.LocalDateTime
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
@@ -54,6 +54,7 @@ class AiGenerationService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val tenantSemaphores = ConcurrentHashMap<String, Semaphore>()
+    private val regenLocks = ConcurrentHashMap<UUID, Any>()
 
     private companion object {
         private const val MAX_SEMAPHORE_CACHE_SIZE = 1000
@@ -101,19 +102,22 @@ class AiGenerationService(
     }
 
     fun regenerateSection(command: RegenerateSectionCommand): AiGenerationResult {
-        val regenCount = aiUsagePort.countByReportId(command.reportId)
-        if (regenCount >= aiConfigPort.regenerationLimit()) {
-            throw BusinessException(
-                "Limite de regenerações atingido ($regenCount de ${aiConfigPort.regenerationLimit()})",
+        val lock = regenLocks.computeIfAbsent(command.reportId) { Any() }
+        synchronized(lock) {
+            val regenCount = aiUsagePort.countByReportId(command.reportId)
+            if (regenCount >= aiConfigPort.regenerationLimit()) {
+                throw BusinessException(
+                    "Limite de regenerações atingido ($regenCount de ${aiConfigPort.regenerationLimit()})",
+                )
+            }
+
+            return generateSection(
+                GenerateSectionCommand(
+                    reportId = command.reportId,
+                    sectionType = command.sectionType,
+                ),
             )
         }
-
-        return generateSection(
-            GenerateSectionCommand(
-                reportId = command.reportId,
-                sectionType = command.sectionType,
-            ),
-        )
     }
 
     fun reviewText(command: ReviewTextCommand): AiGenerationResult {
@@ -194,6 +198,17 @@ class AiGenerationService(
 
         if (report.status == ReportStatus.FINALIZADO) {
             throw BusinessException("Relatório finalizado não permite uso do Assistente.")
+        }
+
+        if (quota.monthlyLimit > 0 && quota.overagePriceCents == 0) {
+            val userId = ContextHolder.getUserIdOrThrow()
+            val now = LocalDateTime.now()
+            val usedThisMonth = aiUsagePort.countByProfessionalAndMonth(userId, now.monthValue, now.year)
+            if (usedThisMonth >= quota.monthlyLimit) {
+                throw BusinessException(
+                    "Limite mensal de gerações atingido ($usedThisMonth/${quota.monthlyLimit}). Faça upgrade do plano.",
+                )
+            }
         }
 
         val semaphore =
@@ -344,7 +359,6 @@ class AiGenerationService(
             .setScale(4, RoundingMode.HALF_UP)
     }
 
-    @Transactional
     fun recordUsage(
         reportId: UUID,
         userId: UUID,
@@ -372,7 +386,6 @@ class AiGenerationService(
         aiUsagePort.save(usage)
     }
 
-    @Transactional
     fun recordFailure(
         reportId: UUID,
         userId: UUID,

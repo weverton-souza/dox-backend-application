@@ -2,6 +2,7 @@ package com.dox.adapter.out.persistence.adapter
 
 import com.dox.adapter.out.persistence.entity.DownloadAuditLogJpaEntity
 import com.dox.adapter.out.persistence.repository.DownloadAuditLogJpaRepository
+import com.dox.application.port.output.DownloadAuditLogPort
 import com.dox.domain.enum.ReportStatus
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -9,8 +10,8 @@ import java.util.UUID
 @Component
 class DownloadAuditLogPersistenceAdapter(
     private val repository: DownloadAuditLogJpaRepository,
-) {
-    fun record(
+) : DownloadAuditLogPort {
+    override fun record(
         reportId: UUID,
         userId: UUID,
         statusAtDownload: ReportStatus,

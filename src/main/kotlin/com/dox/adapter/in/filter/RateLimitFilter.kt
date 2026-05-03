@@ -51,7 +51,7 @@ class RateLimitFilter(
     ) {
         val clientIp = resolveClientIp(request)
         val path = request.servletPath
-        val (maxAttempts, windowSeconds) = rateLimitedPaths[path]!!.invoke()
+        val (maxAttempts, windowSeconds) = rateLimitedPaths.getValue(path).invoke()
 
         cleanupStaleEntries(windowSeconds)
 

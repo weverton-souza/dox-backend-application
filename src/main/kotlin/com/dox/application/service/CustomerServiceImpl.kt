@@ -9,7 +9,7 @@ import com.dox.application.port.input.UpdateCustomerCommand
 import com.dox.application.port.input.UpdateCustomerContactCommand
 import com.dox.application.port.input.UpdateCustomerEventCommand
 import com.dox.application.port.output.CustomerPersistencePort
-import com.dox.domain.exception.BusinessException
+import com.dox.domain.exception.BusinessValidationException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.Customer
 import com.dox.domain.model.CustomerContact
@@ -21,13 +21,19 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class CustomerServiceImpl(
     private val customerPersistencePort: CustomerPersistencePort,
 ) : CustomerUseCase {
+    private companion object {
+        private const val MAX_AGE_YEARS = 120L
+    }
+
     @Transactional
     override fun create(command: CreateCustomerCommand): Customer {
         val normalizedData = validateAndNormalizeDocuments(command.data)
@@ -163,19 +169,39 @@ class CustomerServiceImpl(
 
     private fun validateAndNormalizeDocuments(data: Map<String, Any?>): Map<String, Any?> {
         val mutable = data.toMutableMap()
+        val violations = mutableListOf<String>()
 
         val cpf = data["cpf"]?.toString()
         if (!cpf.isNullOrBlank()) {
-            if (!CpfValidator.isValidCpf(cpf)) throw BusinessException("CPF inválido")
-            mutable["cpf"] = cpf.replace(Regex("[^0-9]"), "")
+            if (!CpfValidator.isValidCpf(cpf)) {
+                violations.add("CPF inválido")
+            } else {
+                mutable["cpf"] = cpf.replace(Regex("[^0-9]"), "")
+            }
         }
 
         val cnpj = data["cnpj"]?.toString()
         if (!cnpj.isNullOrBlank()) {
-            if (!CnpjValidator.isValidCnpj(cnpj)) throw BusinessException("CNPJ inválido")
-            mutable["cnpj"] = cnpj.replace(Regex("[^0-9]"), "")
+            if (!CnpjValidator.isValidCnpj(cnpj)) {
+                violations.add("CNPJ inválido")
+            } else {
+                mutable["cnpj"] = cnpj.replace(Regex("[^0-9]"), "")
+            }
         }
 
+        val birthDate = data["birthDate"]?.toString()
+        if (!birthDate.isNullOrBlank()) {
+            val parsed = runCatching { LocalDate.parse(birthDate) }.getOrNull()
+            when {
+                parsed == null -> violations.add("Data de nascimento inválida")
+                parsed.isAfter(LocalDate.now()) ->
+                    violations.add("Data de nascimento não pode ser no futuro")
+                parsed.isBefore(LocalDate.now().minusYears(MAX_AGE_YEARS)) ->
+                    violations.add("Data de nascimento implica idade superior a $MAX_AGE_YEARS anos")
+            }
+        }
+
+        if (violations.isNotEmpty()) throw BusinessValidationException(violations)
         return mutable
     }
 

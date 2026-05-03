@@ -16,9 +16,11 @@ import com.dox.domain.model.AiQuota
 import com.dox.domain.model.AiUsage
 import com.dox.shared.ContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class AiUsageService(
     private val aiUsagePort: AiUsagePort,
     private val aiQuotaPort: AiQuotaPort,
@@ -53,6 +55,7 @@ class AiUsageService(
 
     fun getQuota(): AiQuota? = aiQuotaPort.findQuota()
 
+    @Transactional
     fun updateQuota(command: UpdateAiQuotaCommand): AiQuota {
         val existing = aiQuotaPort.findQuota() ?: AiQuota()
         val updated =

@@ -20,10 +20,12 @@ import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.FormLink
 import com.dox.domain.model.FormResponse
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class CustomerFormsAggregationServiceImpl(
     private val formLinkPersistencePort: FormLinkPersistencePort,
     private val formPersistencePort: FormPersistencePort,
@@ -48,9 +50,8 @@ class CustomerFormsAggregationServiceImpl(
 
         val contactIds = links.mapNotNull { it.customerContactId }.toSet()
         val contactsById =
-            contactIds.mapNotNull { id ->
-                customerPersistencePort.findContactById(id)?.let { id to it }
-            }.toMap()
+            customerPersistencePort.findContactsByIds(contactIds)
+                .associateBy { it.id }
 
         val groupedKeys = links.map { it.formId to it.formVersionId }.toSet()
         val responsesByLinkId =
@@ -125,9 +126,8 @@ class CustomerFormsAggregationServiceImpl(
 
         val contactIds = links.mapNotNull { it.customerContactId }.toSet()
         val contactsById =
-            contactIds.mapNotNull { id ->
-                customerPersistencePort.findContactById(id)?.let { id to it }
-            }.toMap()
+            customerPersistencePort.findContactsByIds(contactIds)
+                .associateBy { it.id }
 
         val responses = formPersistencePort.findResponsesByCustomerAndFormVersion(customerId, formId, formVersionId)
         val responsesByLinkId = mapResponsesToLinks(links, responses)

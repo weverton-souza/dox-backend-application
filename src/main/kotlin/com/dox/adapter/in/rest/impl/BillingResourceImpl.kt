@@ -23,6 +23,7 @@ import com.dox.domain.billing.Payment
 import com.dox.domain.billing.PriceBreakdown
 import com.dox.domain.billing.Subscription
 import com.dox.domain.exception.BusinessException
+import com.dox.extensions.extractClientIp
 import com.dox.shared.ContextHolder
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
@@ -149,10 +150,7 @@ class BillingResourceImpl(
         return responseEntity(TokenizedCardResponse(token = tokenized.token, brand = tokenized.brand, last4 = tokenized.last4))
     }
 
-    private fun extractRemoteIp(request: HttpServletRequest): String =
-        request.getHeader("X-Forwarded-For")?.split(",")?.firstOrNull()?.trim()
-            ?: request.remoteAddr
-            ?: "0.0.0.0"
+    private fun extractRemoteIp(request: HttpServletRequest): String = request.extractClientIp() ?: "0.0.0.0"
 
     private fun parseCycle(value: String): BillingCycle =
         runCatching { BillingCycle.valueOf(value) }

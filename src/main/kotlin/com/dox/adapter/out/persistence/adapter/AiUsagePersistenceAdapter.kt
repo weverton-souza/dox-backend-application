@@ -69,11 +69,11 @@ class AiUsagePersistenceAdapter(
         val (start, end) = monthRange(month, year)
         val row = aiUsageJpaRepository.sumTokensByProfessionalAndPeriod(professionalId, start, end)
         return TokenSummary(
-            totalInputTokens = (row[0] as Number).toLong(),
-            totalOutputTokens = (row[1] as Number).toLong(),
-            totalCacheReadTokens = (row[2] as Number).toLong(),
-            totalCacheWriteTokens = (row[3] as Number).toLong(),
-            totalCostBrl = (row[4] as Number).let { BigDecimal(it.toString()) },
+            totalInputTokens = (row[0] as? Number)?.toLong() ?: 0L,
+            totalOutputTokens = (row[1] as? Number)?.toLong() ?: 0L,
+            totalCacheReadTokens = (row[2] as? Number)?.toLong() ?: 0L,
+            totalCacheWriteTokens = (row[3] as? Number)?.toLong() ?: 0L,
+            totalCostBrl = (row[4] as? Number)?.let { BigDecimal(it.toString()) } ?: BigDecimal.ZERO,
         )
     }
 

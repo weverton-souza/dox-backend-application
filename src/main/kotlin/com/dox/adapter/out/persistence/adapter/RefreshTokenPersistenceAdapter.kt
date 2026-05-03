@@ -32,6 +32,11 @@ class RefreshTokenPersistenceAdapter(
     }
 
     @Transactional
+    override fun deleteById(id: UUID) {
+        refreshTokenJpaRepository.deleteById(id)
+    }
+
+    @Transactional
     override fun deleteExpired() {
         refreshTokenJpaRepository.deleteByExpiresAtBefore(LocalDateTime.now())
     }

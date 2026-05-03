@@ -61,8 +61,15 @@ class WebhookServiceImpl(
 
     private fun validateToken(received: String?) {
         val expected = asaasProperties.webhookToken
-        if (expected.isBlank()) return
-        if (received != expected) throw AccessDeniedException("Webhook token inválido")
+        if (expected.isBlank()) {
+            throw AccessDeniedException("Webhook token não configurado")
+        }
+        if (received.isNullOrBlank()) {
+            throw AccessDeniedException("Webhook token ausente")
+        }
+        if (!java.security.MessageDigest.isEqual(received.toByteArray(), expected.toByteArray())) {
+            throw AccessDeniedException("Webhook token inválido")
+        }
     }
 
     private fun upsertPayment(payload: Map<String, Any?>) {

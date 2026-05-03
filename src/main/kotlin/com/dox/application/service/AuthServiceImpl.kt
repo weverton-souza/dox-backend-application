@@ -103,13 +103,13 @@ class AuthServiceImpl(
             userPersistencePort.findById(storedToken.userId)
                 ?: throw ResourceNotFoundException("Usuário")
 
-        refreshTokenPersistencePort.deleteByUserId(user.id)
+        refreshTokenPersistencePort.deleteById(storedToken.id)
 
         val tenantId =
             user.personalTenantId
                 ?: throw BusinessException("Usuário sem workspace pessoal")
 
-        return generateAuthResult(user, tenantId)
+        return generateAuthResult(user, tenantId, deleteOtherTokens = false)
     }
 
     @Transactional
@@ -155,8 +155,11 @@ class AuthServiceImpl(
     private fun generateAuthResult(
         user: User,
         tenantId: UUID,
+        deleteOtherTokens: Boolean = true,
     ): AuthResult {
-        refreshTokenPersistencePort.deleteByUserId(user.id)
+        if (deleteOtherTokens) {
+            refreshTokenPersistencePort.deleteByUserId(user.id)
+        }
 
         val tenant =
             tenantPersistencePort.findById(tenantId)

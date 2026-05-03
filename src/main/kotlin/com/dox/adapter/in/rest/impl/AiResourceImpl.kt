@@ -14,7 +14,6 @@ import com.dox.adapter.`in`.rest.dto.ai.ReviewTextRequest
 import com.dox.adapter.`in`.rest.dto.ai.ReviewTextResponse
 import com.dox.adapter.`in`.rest.dto.ai.UpdateAiQuotaRequest
 import com.dox.adapter.`in`.rest.resource.AiResource
-import com.dox.adapter.out.tenant.TenantContext
 import com.dox.application.port.input.ComputedChartData
 import com.dox.application.port.input.ComputedChartSeries
 import com.dox.application.port.input.ComputedTableData
@@ -33,6 +32,7 @@ import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.AiGenerationResult
 import com.dox.domain.model.AiUsage
 import com.dox.shared.ContextHolder
+import com.dox.shared.TenantContext
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity

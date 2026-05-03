@@ -1,6 +1,5 @@
 package com.dox.application.service
 
-import com.dox.adapter.out.tenant.TenantContext
 import com.dox.application.port.input.CreateFormLinkCommand
 import com.dox.application.port.input.CreateFormResponseCommand
 import com.dox.application.port.input.FormLinkUseCase
@@ -22,6 +21,7 @@ import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.FormLink
 import com.dox.domain.model.FormResponse
 import com.dox.shared.ContextHolder
+import com.dox.shared.TenantContext
 import io.jsonwebtoken.JwtException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -30,6 +30,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class FormLinkServiceImpl(
     private val formLinkPersistencePort: FormLinkPersistencePort,
     private val formUseCase: FormUseCase,
@@ -167,23 +168,38 @@ class FormLinkServiceImpl(
 
     override fun findFormLinksByTenant(): List<FormLinkWithToken> {
         val tenantId = ContextHolder.getTenantIdOrThrow()
-        return formLinkPersistencePort.findAll().map { it.toWithToken(tenantId) }
+        val links = formLinkPersistencePort.findAll()
+        return enrichLinksWithToken(links, tenantId)
     }
 
     override fun findFormLinksByCustomer(customerId: UUID): List<FormLinkWithToken> {
         val tenantId = ContextHolder.getTenantIdOrThrow()
-        return formLinkPersistencePort.findByCustomerId(customerId).map { it.toWithToken(tenantId) }
+        val links = formLinkPersistencePort.findByCustomerId(customerId)
+        return enrichLinksWithToken(links, tenantId)
     }
 
-    private fun FormLink.toWithToken(tenantId: UUID): FormLinkWithToken {
-        val token = authTokenPort.generateFormLinkToken(tenantId, id, expiresAt)
-        val customerName = customerPersistencePort.findById(customerId)?.displayName()
-        val contact = customerContactId?.let { customerPersistencePort.findContactById(it) }
-        return FormLinkWithToken(
-            formLink = this,
-            token = token,
-            respondent = buildRespondentInfo(respondentType, customerName, contact),
-        )
+    private fun enrichLinksWithToken(
+        links: List<FormLink>,
+        tenantId: UUID,
+    ): List<FormLinkWithToken> {
+        if (links.isEmpty()) return emptyList()
+        val customerIds = links.map { it.customerId }.toSet()
+        val contactIds = links.mapNotNull { it.customerContactId }.toSet()
+        val customersById =
+            customerPersistencePort.findByIds(customerIds).associateBy { it.id }
+        val contactsById =
+            customerPersistencePort.findContactsByIds(contactIds).associateBy { it.id }
+
+        return links.map { link ->
+            val token = authTokenPort.generateFormLinkToken(tenantId, link.id, link.expiresAt)
+            val customerName = customersById[link.customerId]?.displayName()
+            val contact = link.customerContactId?.let { contactsById[it] }
+            FormLinkWithToken(
+                formLink = link,
+                token = token,
+                respondent = buildRespondentInfo(link.respondentType, customerName, contact),
+            )
+        }
     }
 
     @Transactional
