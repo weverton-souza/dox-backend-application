@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class TemplateServiceImpl(
     private val templatePersistencePort: TemplatePersistencePort,
 ) : TemplateUseCase {

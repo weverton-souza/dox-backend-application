@@ -5,14 +5,15 @@ import com.dox.adapter.`in`.rest.dto.report.ReportResponse
 import com.dox.adapter.`in`.rest.dto.report.ReportVersionRequest
 import com.dox.adapter.`in`.rest.dto.report.ReportVersionResponse
 import com.dox.adapter.`in`.rest.resource.ReportResource
-import com.dox.adapter.out.persistence.adapter.DownloadAuditLogPersistenceAdapter
 import com.dox.application.port.input.CreateReportCommand
 import com.dox.application.port.input.CreateVersionCommand
 import com.dox.application.port.input.ReportUseCase
 import com.dox.application.port.input.UpdateReportCommand
+import com.dox.application.port.output.DownloadAuditLogPort
 import com.dox.config.security.RequiresModule
 import com.dox.domain.model.Report
 import com.dox.domain.model.ReportVersion
+import com.dox.extensions.extractClientIp
 import com.dox.shared.ContextHolder
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.data.domain.Page
@@ -25,7 +26,7 @@ import java.util.UUID
 @RequiresModule("reports")
 class ReportResourceImpl(
     private val reportUseCase: ReportUseCase,
-    private val downloadAuditLogPersistenceAdapter: DownloadAuditLogPersistenceAdapter,
+    private val downloadAuditLogPort: DownloadAuditLogPort,
     private val request: HttpServletRequest,
 ) : ReportResource {
     override fun findAll(parameters: Map<String, Any>): ResponseEntity<Page<ReportResponse>> = responseEntity(reportUseCase.findAll(retrievePageableParameter(parameters)).map { it.toResponse() })
@@ -71,22 +72,14 @@ class ReportResourceImpl(
 
     override fun getExportData(id: UUID): ResponseEntity<ReportResponse> {
         val report = reportUseCase.getExportData(id)
-        downloadAuditLogPersistenceAdapter.record(
+        downloadAuditLogPort.record(
             reportId = report.id,
             userId = ContextHolder.getUserIdOrThrow(),
             statusAtDownload = report.status,
-            ipAddress = resolveClientIp(),
+            ipAddress = request.extractClientIp(),
             userAgent = request.getHeader("User-Agent"),
         )
         return responseEntity(report.toResponse())
-    }
-
-    private fun resolveClientIp(): String? {
-        val forwarded = request.getHeader("X-Forwarded-For")
-        if (!forwarded.isNullOrBlank()) {
-            return forwarded.split(",").first().trim().take(45)
-        }
-        return request.remoteAddr?.take(45)
     }
 
     override fun getVersions(id: UUID): ResponseEntity<List<ReportVersionResponse>> = responseEntity(reportUseCase.getVersions(id).map { it.toResponse() })

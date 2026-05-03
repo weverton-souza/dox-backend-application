@@ -50,6 +50,8 @@ interface CustomerPersistencePort {
 
     fun findContactById(contactId: UUID): CustomerContact?
 
+    fun findContactsByIds(ids: Set<UUID>): List<CustomerContact>
+
     fun findContactsByCustomerId(customerId: UUID): List<CustomerContact>
 
     fun deleteContact(contactId: UUID)

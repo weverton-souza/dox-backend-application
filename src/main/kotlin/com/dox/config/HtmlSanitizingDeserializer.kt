@@ -12,10 +12,6 @@ class HtmlSanitizingDeserializer : StringDeserializer() {
         ctxt: DeserializationContext,
     ): String? {
         val value = super.deserialize(p, ctxt) ?: return null
-        val cleaned = Jsoup.clean(value, Safelist.none())
-        return cleaned
-            .replace("&gt;", ">")
-            .replace("&lt;", "<")
-            .replace("&amp;", "&")
+        return Jsoup.clean(value, Safelist.none())
     }
 }

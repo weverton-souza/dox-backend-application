@@ -1,6 +1,7 @@
 package com.dox.adapter.out.tenant
 
 import com.dox.shared.TenancyConstant
+import com.dox.shared.TenantContext
 import org.hibernate.cfg.AvailableSettings
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer

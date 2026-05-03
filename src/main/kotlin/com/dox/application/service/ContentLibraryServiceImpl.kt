@@ -7,9 +7,11 @@ import com.dox.application.port.output.ContentLibraryPersistencePort
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.ContentLibraryEntry
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class ContentLibraryServiceImpl(
     private val persistencePort: ContentLibraryPersistencePort,
 ) : ContentLibraryUseCase {
@@ -22,6 +24,7 @@ class ContentLibraryServiceImpl(
         type: String?,
     ) = persistencePort.search(query, type)
 
+    @Transactional
     override fun create(command: CreateContentLibraryCommand): ContentLibraryEntry =
         persistencePort.save(
             ContentLibraryEntry(
@@ -36,6 +39,7 @@ class ContentLibraryServiceImpl(
             ),
         )
 
+    @Transactional
     override fun update(command: UpdateContentLibraryCommand): ContentLibraryEntry {
         persistencePort.findById(command.id) ?: throw ResourceNotFoundException("Conteúdo", command.id.toString())
         return persistencePort.save(
@@ -47,6 +51,7 @@ class ContentLibraryServiceImpl(
         )
     }
 
+    @Transactional
     override fun delete(id: UUID) {
         persistencePort.findById(id) ?: throw ResourceNotFoundException("Conteúdo", id.toString())
         persistencePort.deleteById(id)

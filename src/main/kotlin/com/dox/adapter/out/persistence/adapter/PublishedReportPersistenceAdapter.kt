@@ -2,6 +2,8 @@ package com.dox.adapter.out.persistence.adapter
 
 import com.dox.adapter.out.persistence.entity.PublishedReportJpaEntity
 import com.dox.adapter.out.persistence.repository.PublishedReportJpaRepository
+import com.dox.application.port.output.PublishedReportPersistencePort
+import com.dox.domain.report.PublishedReport
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.UUID
@@ -9,8 +11,8 @@ import java.util.UUID
 @Component
 class PublishedReportPersistenceAdapter(
     private val repository: PublishedReportJpaRepository,
-) {
-    fun publish(
+) : PublishedReportPersistencePort {
+    override fun publish(
         reportId: UUID,
         tenantId: UUID,
         contentHash: String,
@@ -36,10 +38,10 @@ class PublishedReportPersistenceAdapter(
         )
     }
 
-    fun findByVerificationCode(code: String): PublishedReportJpaEntity? {
+    override fun findByVerificationCode(code: String): PublishedReport? {
         val sanitized = code.replace("-", "").trim().uppercase()
         if (sanitized.length != 16 || !sanitized.all { it.isDigit() || it in 'A'..'F' }) return null
-        return repository.findByVerificationCode(sanitized)
+        return repository.findByVerificationCode(sanitized)?.toDomain()
     }
 
     private fun extractInitials(name: String): String {
@@ -52,4 +54,18 @@ class PublishedReportPersistenceAdapter(
             .let { if (it.isNotEmpty()) "$it." else "" }
             .take(20)
     }
+
+    private fun PublishedReportJpaEntity.toDomain() =
+        PublishedReport(
+            id = id,
+            reportId = reportId,
+            tenantId = tenantId,
+            verificationCode = verificationCode,
+            contentHash = contentHash,
+            finalizedAt = finalizedAt,
+            professionalName = professionalName,
+            professionalCouncil = professionalCouncil,
+            customerInitials = customerInitials,
+            publishedAt = publishedAt,
+        )
 }

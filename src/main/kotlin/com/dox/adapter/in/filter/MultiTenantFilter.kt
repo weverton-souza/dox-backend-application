@@ -1,7 +1,7 @@
 package com.dox.adapter.`in`.filter
 
-import com.dox.adapter.out.tenant.TenantContext
 import com.dox.shared.ContextHolder
+import com.dox.shared.TenantContext
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

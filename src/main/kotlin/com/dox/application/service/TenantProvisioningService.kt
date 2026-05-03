@@ -1,11 +1,11 @@
 package com.dox.application.service
 
-import com.dox.adapter.out.tenant.TenantContext
 import com.dox.application.port.output.TenantPersistencePort
 import com.dox.application.port.output.TenantProvisioningPort
 import com.dox.domain.enum.TenantType
 import com.dox.domain.enum.Vertical
 import com.dox.domain.model.Tenant
+import com.dox.shared.TenantContext
 import org.springframework.stereotype.Service
 import java.util.UUID
 

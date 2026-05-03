@@ -51,3 +51,11 @@ open class BusinessException(
         message = detail,
         errorCode = ErrorCode.BUSINESS_RULE_VIOLATION,
     )
+
+class BusinessValidationException(
+    val violations: List<String>,
+) : BusinessException(violations.joinToString("; ")) {
+    init {
+        require(violations.isNotEmpty()) { "violations não pode ser vazia" }
+    }
+}

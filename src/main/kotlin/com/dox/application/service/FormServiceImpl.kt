@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class FormServiceImpl(
     private val formPersistencePort: FormPersistencePort,
 ) : FormUseCase {
@@ -52,9 +53,16 @@ class FormServiceImpl(
 
     override fun findAllForms(): List<FormWithCurrentVersion> {
         val forms = formPersistencePort.findAllForms()
+        if (forms.isEmpty()) return emptyList()
+
+        val formIds = forms.map { it.id }.toSet()
+        val versionsByFormId =
+            formPersistencePort.findVersionsByFormIds(formIds)
+                .groupBy { it.formId }
+
         return forms.map { form ->
             val version =
-                formPersistencePort.findVersionByFormIdAndVersion(form.id, form.currentVersion)
+                versionsByFormId[form.id]?.firstOrNull { it.version == form.currentVersion }
                     ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersion}")
             FormWithCurrentVersion(form, version)
         }

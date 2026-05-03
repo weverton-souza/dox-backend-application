@@ -1,12 +1,12 @@
 package com.dox.application.service
 
-import com.dox.adapter.out.persistence.adapter.PublishedReportPersistenceAdapter
 import com.dox.application.port.input.CreateReportCommand
 import com.dox.application.port.input.CreateVersionCommand
 import com.dox.application.port.input.ReportUseCase
 import com.dox.application.port.input.UpdateReportCommand
 import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.application.port.output.ProfessionalSettingsPersistencePort
+import com.dox.application.port.output.PublishedReportPersistencePort
 import com.dox.application.port.output.ReportPersistencePort
 import com.dox.domain.enum.ReportStatus
 import com.dox.domain.exception.BusinessException
@@ -25,9 +25,10 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class ReportServiceImpl(
     private val reportPersistencePort: ReportPersistencePort,
-    private val publishedReportPersistenceAdapter: PublishedReportPersistenceAdapter,
+    private val publishedReportPersistencePort: PublishedReportPersistencePort,
     private val professionalSettingsPersistencePort: ProfessionalSettingsPersistencePort,
     private val customerPersistencePort: CustomerPersistencePort,
     objectMapper: ObjectMapper,
@@ -82,7 +83,7 @@ class ReportServiceImpl(
 
         val targetStatus = command.status ?: existing.status
         val targetBlocks = command.blocks ?: existing.blocks
-        val finalizing = targetStatus == ReportStatus.FINALIZADO && existing.status != ReportStatus.FINALIZADO
+        val finalizing = targetStatus == ReportStatus.FINALIZADO
         val finalizedAt = if (finalizing) LocalDateTime.now() else existing.finalizedAt
         val contentHash = if (finalizing) computeContentHash(targetBlocks) else existing.contentHash
         val finalizedByUserId = if (finalizing) ContextHolder.context.userId else existing.finalizedByUserId
@@ -120,7 +121,7 @@ class ReportServiceImpl(
         val customer = report.customerId?.let { runCatching { customerPersistencePort.findById(it) }.getOrNull() }
         val customerName = customer?.let { extractCustomerName(it) } ?: report.customerName
 
-        publishedReportPersistenceAdapter.publish(
+        publishedReportPersistencePort.publish(
             reportId = report.id,
             tenantId = tenantId,
             contentHash = contentHash,

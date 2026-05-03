@@ -1,6 +1,5 @@
-package com.dox.adapter.out.tenant
+package com.dox.shared
 
-import com.dox.shared.TenancyConstant
 import java.util.UUID
 
 object TenantContext {

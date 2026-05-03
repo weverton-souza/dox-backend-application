@@ -37,7 +37,7 @@ CREATE INDEX idx_report_versions_report ON report_versions(report_id);
 CREATE OR REPLACE FUNCTION prevent_finalized_report_update()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF OLD.status = 'FINALIZADO' AND NEW.deleted = OLD.deleted THEN
+    IF OLD.status = 'FINALIZADO' THEN
         IF NEW.status            <> OLD.status
            OR NEW.blocks::text   <> OLD.blocks::text
            OR COALESCE(NEW.customer_name, '')              <> COALESCE(OLD.customer_name, '')

@@ -4,6 +4,7 @@ import com.dox.application.port.output.AuthTokenPort
 import com.dox.application.port.output.FormLinkTokenData
 import com.dox.config.SecurityProperties
 import com.dox.domain.enum.AdminRole
+import com.dox.domain.exception.InvalidTokenException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.slf4j.LoggerFactory
@@ -70,9 +71,16 @@ class JwtAuthTokenAdapter(
 
     override fun extractUserId(token: String): UUID = UUID.fromString(parseClaims(token).subject)
 
-    override fun extractEmail(token: String): String = parseClaims(token)["email"] as String
+    override fun extractEmail(token: String): String =
+        parseClaims(token)["email"] as? String
+            ?: throw InvalidTokenException("Token sem email")
 
-    override fun extractTenantId(token: String): UUID = UUID.fromString(parseClaims(token)["tenantId"] as String)
+    override fun extractTenantId(token: String): UUID {
+        val tenantId =
+            parseClaims(token)["tenantId"] as? String
+                ?: throw InvalidTokenException("Token sem tenantId")
+        return UUID.fromString(tenantId)
+    }
 
     override fun generateFormLinkToken(
         tenantId: UUID,
@@ -92,10 +100,16 @@ class JwtAuthTokenAdapter(
 
     override fun extractFormLinkData(token: String): FormLinkTokenData {
         val claims = parseClaims(token)
-        require(claims["type"] == "form_link") { "Token type invalid" }
+        if (claims["type"] != "form_link") throw InvalidTokenException("Tipo de token inválido")
+        val tenantId =
+            claims["tenantId"] as? String
+                ?: throw InvalidTokenException("Token sem tenantId")
+        val formLinkId =
+            claims["formLinkId"] as? String
+                ?: throw InvalidTokenException("Token sem formLinkId")
         return FormLinkTokenData(
-            tenantId = UUID.fromString(claims["tenantId"] as String),
-            formLinkId = UUID.fromString(claims["formLinkId"] as String),
+            tenantId = UUID.fromString(tenantId),
+            formLinkId = UUID.fromString(formLinkId),
         )
     }
 
@@ -125,5 +139,10 @@ class JwtAuthTokenAdapter(
             false
         }
 
-    override fun extractAdminRole(token: String): AdminRole = AdminRole.valueOf(parseClaims(token)["adminRole"] as String)
+    override fun extractAdminRole(token: String): AdminRole {
+        val role =
+            parseClaims(token)["adminRole"] as? String
+                ?: throw InvalidTokenException("Token sem adminRole")
+        return AdminRole.valueOf(role)
+    }
 }

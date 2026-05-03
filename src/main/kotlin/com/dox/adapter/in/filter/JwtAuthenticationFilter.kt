@@ -1,6 +1,7 @@
 package com.dox.adapter.`in`.filter
 
 import com.dox.application.port.output.AuthTokenPort
+import com.dox.extensions.extractClientIp
 import com.dox.shared.Context
 import com.dox.shared.ContextHolder
 import jakarta.servlet.FilterChain
@@ -66,7 +67,7 @@ class JwtAuthenticationFilter(
                     Context(
                         tenantId = null,
                         userId = userId,
-                        ipAddress = resolveClientIp(request),
+                        ipAddress = request.extractClientIp(),
                         userAgent = request.getHeader("User-Agent")?.take(500),
                     )
             } else {
@@ -79,7 +80,7 @@ class JwtAuthenticationFilter(
                     Context(
                         tenantId = tenantId,
                         userId = userId,
-                        ipAddress = resolveClientIp(request),
+                        ipAddress = request.extractClientIp(),
                         userAgent = request.getHeader("User-Agent")?.take(500),
                     )
             }
@@ -95,13 +96,5 @@ class JwtAuthenticationFilter(
     private fun extractToken(request: HttpServletRequest): String? {
         val header = request.getHeader("Authorization") ?: return null
         return if (header.startsWith("Bearer ")) header.substring(7) else null
-    }
-
-    private fun resolveClientIp(request: HttpServletRequest): String? {
-        val forwarded = request.getHeader("X-Forwarded-For")
-        if (!forwarded.isNullOrBlank()) {
-            return forwarded.split(",").first().trim().take(45)
-        }
-        return request.remoteAddr?.take(45)
     }
 }
