@@ -177,6 +177,8 @@ class FormServiceImpl(
                 respondentType = command.respondentType,
                 respondentName = command.respondentName,
                 answers = command.answers,
+                additionalEvaluators = command.additionalEvaluators,
+                pageDurationsMs = command.pageDurationsMs,
             ),
         )
     }
@@ -198,6 +200,8 @@ class FormServiceImpl(
             existing.copy(
                 status = command.status ?: existing.status,
                 answers = command.answers ?: existing.answers,
+                additionalEvaluators = command.additionalEvaluators ?: existing.additionalEvaluators,
+                pageDurationsMs = command.pageDurationsMs ?: existing.pageDurationsMs,
             ),
         )
     }

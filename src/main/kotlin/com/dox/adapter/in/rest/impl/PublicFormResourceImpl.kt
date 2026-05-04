@@ -33,7 +33,11 @@ class PublicFormResourceImpl(
         request: PublicFormSubmitRequest,
     ): ResponseEntity<PublicFormSubmitResponse> {
         formLinkUseCase.submitPublicForm(
-            PublicFormSubmitCommand(token = token, answers = request.answers),
+            PublicFormSubmitCommand(
+                token = token,
+                answers = request.answers,
+                pageDurationsMs = request.pageDurationsMs,
+            ),
         )
         return responseEntity(PublicFormSubmitResponse())
     }

@@ -45,6 +45,12 @@ class FormResponseJpaEntity(
     @Type(JsonType::class)
     @Column(name = "answers", columnDefinition = "jsonb")
     var answers: List<Map<String, Any?>> = emptyList(),
+    @Type(JsonType::class)
+    @Column(name = "additional_evaluators", columnDefinition = "jsonb")
+    var additionalEvaluators: List<Map<String, Any?>> = emptyList(),
+    @Type(JsonType::class)
+    @Column(name = "page_durations_ms", columnDefinition = "jsonb")
+    var pageDurationsMs: Map<String, Long> = emptyMap(),
     @Column(name = "generated_report_id")
     var generatedReportId: UUID? = null,
     @CreatedDate

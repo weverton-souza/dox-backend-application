@@ -30,7 +30,6 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
-@Transactional(readOnly = true)
 class FormLinkServiceImpl(
     private val formLinkPersistencePort: FormLinkPersistencePort,
     private val formUseCase: FormUseCase,
@@ -223,7 +222,7 @@ class FormLinkServiceImpl(
             PublicFormData(
                 formTitle = formWithVersion.version.title,
                 formDescription = formWithVersion.version.description,
-                fields = formWithVersion.version.fields,
+                fields = filterOutPresencialFields(formWithVersion.version.fields),
                 customerName = customer?.displayName(),
                 respondentName = respondentName,
                 respondentType = formLink.respondentType,
@@ -231,6 +230,8 @@ class FormLinkServiceImpl(
             )
         }
     }
+
+    private fun filterOutPresencialFields(fields: List<Map<String, Any?>>): List<Map<String, Any?>> = fields.filter { (it["collectionMode"] as? String) != "presencial" }
 
     override fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse {
         val tokenData = extractAndValidateToken(command.token)
@@ -252,6 +253,7 @@ class FormLinkServiceImpl(
                         respondentType = formLink.respondentType,
                         respondentName = respondentName,
                         answers = command.answers,
+                        pageDurationsMs = command.pageDurationsMs,
                     ),
                 )
 

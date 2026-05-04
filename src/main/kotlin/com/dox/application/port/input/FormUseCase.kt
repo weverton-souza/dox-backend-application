@@ -35,12 +35,16 @@ data class CreateFormResponseCommand(
     val respondentType: RespondentType = RespondentType.CUSTOMER,
     val respondentName: String? = null,
     val answers: List<Map<String, Any?>> = emptyList(),
+    val additionalEvaluators: List<Map<String, Any?>> = emptyList(),
+    val pageDurationsMs: Map<String, Long> = emptyMap(),
 )
 
 data class UpdateFormResponseCommand(
     val id: UUID,
     val status: FormResponseStatus? = null,
     val answers: List<Map<String, Any?>>? = null,
+    val additionalEvaluators: List<Map<String, Any?>>? = null,
+    val pageDurationsMs: Map<String, Long>? = null,
 )
 
 data class FormWithCurrentVersion(
