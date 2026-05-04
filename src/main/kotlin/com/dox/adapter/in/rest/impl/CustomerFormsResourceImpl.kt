@@ -51,6 +51,7 @@ class CustomerFormsResourceImpl(
     private fun AggregatedRespondent.toResponse(): AggregatedRespondentResponse =
         AggregatedRespondentResponse(
             linkId = linkId,
+            responseId = responseId,
             respondentType = respondentType,
             respondentName = respondentName,
             customerContactId = customerContactId,
@@ -72,6 +73,7 @@ class CustomerFormsResourceImpl(
     private fun ComparisonRespondent.toResponse(): ComparisonRespondentResponse =
         ComparisonRespondentResponse(
             linkId = linkId,
+            responseId = responseId,
             respondentType = respondentType,
             respondentName = respondentName,
             customerContactId = customerContactId,

@@ -30,7 +30,6 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
-@Transactional(readOnly = true)
 class FormLinkServiceImpl(
     private val formLinkPersistencePort: FormLinkPersistencePort,
     private val formUseCase: FormUseCase,

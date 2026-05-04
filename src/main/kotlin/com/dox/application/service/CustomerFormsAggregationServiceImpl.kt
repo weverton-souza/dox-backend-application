@@ -151,6 +151,7 @@ class CustomerFormsAggregationServiceImpl(
 
                 ComparisonRespondent(
                     linkId = link.id,
+                    responseId = response?.id,
                     respondentType = link.respondentType,
                     respondentName = resolveRespondentName(link.respondentType, customerName, contact),
                     customerContactId = link.customerContactId,
@@ -196,6 +197,7 @@ class CustomerFormsAggregationServiceImpl(
     ): AggregatedRespondent =
         AggregatedRespondent(
             linkId = link.id,
+            responseId = response?.id,
             respondentType = link.respondentType,
             respondentName = resolveRespondentName(link.respondentType, customerName, contact),
             customerContactId = link.customerContactId,

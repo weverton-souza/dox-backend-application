@@ -19,6 +19,7 @@ data class FormVersionSummaryResponse(
 
 data class AggregatedRespondentResponse(
     val linkId: UUID,
+    val responseId: UUID?,
     val respondentType: RespondentType,
     val respondentName: String?,
     val customerContactId: UUID?,
@@ -46,6 +47,7 @@ data class ScoreResultResponse(
 
 data class ComparisonRespondentResponse(
     val linkId: UUID,
+    val responseId: UUID?,
     val respondentType: RespondentType,
     val respondentName: String?,
     val customerContactId: UUID?,
