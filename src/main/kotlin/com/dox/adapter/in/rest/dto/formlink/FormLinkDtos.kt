@@ -73,6 +73,7 @@ data class PublicFormResponse(
 data class PublicFormSubmitRequest(
     @field:Size(max = 200, message = "Máximo de 200 respostas permitidas")
     val answers: List<Map<String, Any?>> = emptyList(),
+    val pageDurationsMs: Map<String, Long> = emptyMap(),
 )
 
 data class PublicFormSubmitResponse(

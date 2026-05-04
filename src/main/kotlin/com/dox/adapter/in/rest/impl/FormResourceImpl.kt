@@ -92,6 +92,8 @@ class FormResourceImpl(
                     customerId = request.customerId,
                     customerName = request.customerName,
                     answers = request.answers,
+                    additionalEvaluators = request.additionalEvaluators ?: emptyList(),
+                    pageDurationsMs = request.pageDurationsMs ?: emptyMap(),
                 ),
             ).toResponse(null),
             HttpStatus.CREATED,
@@ -113,6 +115,8 @@ class FormResourceImpl(
                     id = responseId,
                     status = request.status,
                     answers = request.answers,
+                    additionalEvaluators = request.additionalEvaluators,
+                    pageDurationsMs = request.pageDurationsMs,
                 ),
             ).toResponse(null),
         )
@@ -165,6 +169,18 @@ class FormResourceImpl(
 
     private fun FormResponse.toResponse(versionNumber: Int?) =
         FormResponseResponseDto(
-            id, formId, formVersionId, customerId, customerName, status, answers, generatedReportId, versionNumber, createdAt, updatedAt,
+            id = id,
+            formId = formId,
+            formVersionId = formVersionId,
+            customerId = customerId,
+            customerName = customerName,
+            status = status,
+            answers = answers,
+            additionalEvaluators = additionalEvaluators,
+            pageDurationsMs = pageDurationsMs,
+            generatedReportId = generatedReportId,
+            version = versionNumber,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         )
 }

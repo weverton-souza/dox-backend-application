@@ -73,6 +73,8 @@ class FormPersistenceAdapter(
         entity.respondentName = response.respondentName
         entity.status = response.status
         entity.answers = response.answers
+        entity.additionalEvaluators = response.additionalEvaluators
+        entity.pageDurationsMs = response.pageDurationsMs
         entity.generatedReportId = response.generatedReportId
         return formResponseJpaRepository.save(entity).toDomain()
     }
@@ -132,6 +134,8 @@ class FormPersistenceAdapter(
             respondentName = respondentName,
             status = status,
             answers = answers,
+            additionalEvaluators = additionalEvaluators,
+            pageDurationsMs = pageDurationsMs,
             generatedReportId = generatedReportId,
             createdAt = createdAt,
             updatedAt = updatedAt,

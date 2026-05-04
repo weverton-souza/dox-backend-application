@@ -36,6 +36,8 @@ data class FormResponse(
     val respondentName: String? = null,
     val status: FormResponseStatus = FormResponseStatus.EM_ANDAMENTO,
     val answers: List<Map<String, Any?>> = emptyList(),
+    val additionalEvaluators: List<Map<String, Any?>> = emptyList(),
+    val pageDurationsMs: Map<String, Long> = emptyMap(),
     val generatedReportId: UUID? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,

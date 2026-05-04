@@ -27,6 +27,7 @@ data class MultiSendCommand(
 data class PublicFormSubmitCommand(
     val token: String,
     val answers: List<Map<String, Any?>> = emptyList(),
+    val pageDurationsMs: Map<String, Long> = emptyMap(),
 )
 
 data class PublicFormData(

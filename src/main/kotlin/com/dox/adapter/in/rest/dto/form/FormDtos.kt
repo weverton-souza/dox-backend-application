@@ -52,6 +52,9 @@ data class FormResponseRequest(
     val status: FormResponseStatus? = null,
     @field:Size(max = 200, message = "Máximo de 200 respostas permitidas")
     val answers: List<Map<String, Any?>> = emptyList(),
+    @field:Size(max = 3, message = "Máximo de 3 avaliadores adicionais")
+    val additionalEvaluators: List<Map<String, Any?>>? = null,
+    val pageDurationsMs: Map<String, Long>? = null,
 )
 
 data class FormResponseResponseDto(
@@ -62,6 +65,8 @@ data class FormResponseResponseDto(
     val customerName: String?,
     val status: FormResponseStatus,
     val answers: List<Map<String, Any?>>,
+    val additionalEvaluators: List<Map<String, Any?>>,
+    val pageDurationsMs: Map<String, Long>,
     val generatedReportId: UUID?,
     val version: Int?,
     val createdAt: LocalDateTime?,
