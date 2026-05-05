@@ -1,5 +1,7 @@
 package com.dox.adapter.`in`.rest.resource
 
+import com.dox.adapter.`in`.rest.dto.formlink.PublicFormDraftRequest
+import com.dox.adapter.`in`.rest.dto.formlink.PublicFormDraftResponse
 import com.dox.adapter.`in`.rest.dto.formlink.PublicFormResponse
 import com.dox.adapter.`in`.rest.dto.formlink.PublicFormSubmitRequest
 import com.dox.adapter.`in`.rest.dto.formlink.PublicFormSubmitResponse
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
@@ -29,4 +32,17 @@ interface PublicFormResource : BaseResource {
         @PathVariable @Size(max = 2048, message = "Token inválido") token: String,
         @Valid @RequestBody request: PublicFormSubmitRequest,
     ): ResponseEntity<PublicFormSubmitResponse>
+
+    @Operation(summary = "Recuperar rascunho do formulário público")
+    @GetMapping("/{token}/draft")
+    fun getDraft(
+        @PathVariable @Size(max = 2048, message = "Token inválido") token: String,
+    ): ResponseEntity<PublicFormDraftResponse>
+
+    @Operation(summary = "Salvar rascunho do formulário público")
+    @PutMapping("/{token}/draft")
+    fun saveDraft(
+        @PathVariable @Size(max = 2048, message = "Token inválido") token: String,
+        @Valid @RequestBody request: PublicFormDraftRequest,
+    ): ResponseEntity<PublicFormDraftResponse>
 }
