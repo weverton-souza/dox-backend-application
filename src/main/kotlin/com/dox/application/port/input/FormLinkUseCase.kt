@@ -1,6 +1,7 @@
 package com.dox.application.port.input
 
 import com.dox.domain.enum.RespondentType
+import com.dox.domain.model.FormDraft
 import com.dox.domain.model.FormLink
 import com.dox.domain.model.FormResponse
 import java.time.LocalDateTime
@@ -53,6 +54,11 @@ data class FormLinkWithToken(
     val respondent: RespondentInfo,
 )
 
+data class SavePublicDraftCommand(
+    val token: String,
+    val partialResponse: Map<String, Any?>,
+)
+
 interface FormLinkUseCase {
     fun createFormLink(command: CreateFormLinkCommand): FormLinkWithToken
 
@@ -67,4 +73,8 @@ interface FormLinkUseCase {
     fun resolvePublicForm(token: String): PublicFormData
 
     fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse
+
+    fun getPublicDraft(token: String): FormDraft?
+
+    fun savePublicDraft(command: SavePublicDraftCommand): FormDraft
 }

@@ -79,3 +79,12 @@ data class PublicFormSubmitRequest(
 data class PublicFormSubmitResponse(
     val message: String = "Resposta enviada com sucesso",
 )
+
+data class PublicFormDraftRequest(
+    val partialResponse: Map<String, Any?> = emptyMap(),
+)
+
+data class PublicFormDraftResponse(
+    val partialResponse: Map<String, Any?>,
+    val savedAt: LocalDateTime?,
+)

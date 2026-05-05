@@ -10,14 +10,17 @@ import com.dox.application.port.input.PublicFormData
 import com.dox.application.port.input.PublicFormSubmitCommand
 import com.dox.application.port.input.RecipientSpec
 import com.dox.application.port.input.RespondentInfo
+import com.dox.application.port.input.SavePublicDraftCommand
 import com.dox.application.port.output.AuthTokenPort
 import com.dox.application.port.output.CustomerPersistencePort
+import com.dox.application.port.output.FormDraftPersistencePort
 import com.dox.application.port.output.FormLinkPersistencePort
 import com.dox.domain.enum.FormLinkStatus
 import com.dox.domain.enum.RespondentType
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.CustomerContact
+import com.dox.domain.model.FormDraft
 import com.dox.domain.model.FormLink
 import com.dox.domain.model.FormResponse
 import com.dox.shared.ContextHolder
@@ -35,6 +38,7 @@ class FormLinkServiceImpl(
     private val formUseCase: FormUseCase,
     private val customerPersistencePort: CustomerPersistencePort,
     private val authTokenPort: AuthTokenPort,
+    private val formDraftPersistencePort: FormDraftPersistencePort,
 ) : FormLinkUseCase {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -258,7 +262,30 @@ class FormLinkServiceImpl(
                 )
 
             formLinkPersistencePort.save(formLink.copy(status = FormLinkStatus.ANSWERED))
+            formDraftPersistencePort.deleteByFormLinkId(formLink.id)
             response
+        }
+    }
+
+    override fun getPublicDraft(token: String): FormDraft? {
+        val tokenData = extractAndValidateToken(token)
+        return TenantContext.withTenantContext(tokenData.tenantId) {
+            findAndValidateFormLink(tokenData.formLinkId)
+            formDraftPersistencePort.findByFormLinkId(tokenData.formLinkId)
+        }
+    }
+
+    @Transactional
+    override fun savePublicDraft(command: SavePublicDraftCommand): FormDraft {
+        val tokenData = extractAndValidateToken(command.token)
+        return TenantContext.withTenantContext(tokenData.tenantId) {
+            findAndValidateFormLink(tokenData.formLinkId)
+            formDraftPersistencePort.save(
+                FormDraft(
+                    formLinkId = tokenData.formLinkId,
+                    partialResponse = command.partialResponse,
+                ),
+            )
         }
     }
 

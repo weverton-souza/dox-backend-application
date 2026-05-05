@@ -42,3 +42,9 @@ data class FormResponse(
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 )
+
+data class FormDraft(
+    val formLinkId: UUID,
+    val partialResponse: Map<String, Any?> = emptyMap(),
+    val savedAt: LocalDateTime? = null,
+)
