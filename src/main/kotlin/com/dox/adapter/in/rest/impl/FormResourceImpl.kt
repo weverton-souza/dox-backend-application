@@ -71,13 +71,14 @@ class FormResourceImpl(
 
     override fun getVersion(
         id: UUID,
-        version: Int,
-    ): ResponseEntity<FormVersionResponseDto> = responseEntity(formUseCase.findVersion(id, version).toResponse())
+        major: Int,
+        minor: Int,
+    ): ResponseEntity<FormVersionResponseDto> = responseEntity(formUseCase.findVersion(id, major, minor).toResponse())
 
     override fun getResponses(id: UUID): ResponseEntity<List<FormResponseResponseDto>> {
         val versions = formUseCase.findVersionsByFormId(id).associateBy { it.id }
         return responseEntity(
-            formUseCase.findResponsesByFormId(id).map { it.toResponse(versions[it.formVersionId]?.version) },
+            formUseCase.findResponsesByFormId(id).map { it.toResponse(versions[it.formVersionId]) },
         )
     }
 
@@ -136,7 +137,7 @@ class FormResourceImpl(
             formUseCase.findVersionsByFormIds(formIds)
                 .associateBy { it.id }
         return responseEntity(
-            responses.map { it.toResponse(versionsByFormId[it.formVersionId]?.version) },
+            responses.map { it.toResponse(versionsByFormId[it.formVersionId]) },
         )
     }
 
@@ -149,25 +150,29 @@ class FormResourceImpl(
             linkedTemplateId = form.linkedTemplateId,
             fieldMappings = version.fieldMappings,
             scoringConfig = version.scoringConfig,
-            currentVersion = form.currentVersion,
+            currentMajor = form.currentMajor,
+            currentMinor = form.currentMinor,
+            currentVersionLabel = form.currentVersionLabel,
             createdAt = form.createdAt,
             updatedAt = form.updatedAt,
         )
 
     private fun FormVersion.toResponse() =
         FormVersionResponseDto(
-            id,
-            formId,
-            version,
-            title,
-            description,
-            fields,
-            fieldMappings,
-            scoringConfig,
-            createdAt,
+            id = id,
+            formId = formId,
+            versionMajor = versionMajor,
+            versionMinor = versionMinor,
+            versionLabel = versionLabel,
+            title = title,
+            description = description,
+            fields = fields,
+            fieldMappings = fieldMappings,
+            scoringConfig = scoringConfig,
+            createdAt = createdAt,
         )
 
-    private fun FormResponse.toResponse(versionNumber: Int?) =
+    private fun FormResponse.toResponse(version: FormVersion?) =
         FormResponseResponseDto(
             id = id,
             formId = formId,
@@ -179,7 +184,9 @@ class FormResourceImpl(
             additionalEvaluators = additionalEvaluators,
             pageDurationsMs = pageDurationsMs,
             generatedReportId = generatedReportId,
-            version = versionNumber,
+            versionMajor = version?.versionMajor,
+            versionMinor = version?.versionMinor,
+            versionLabel = version?.versionLabel,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )

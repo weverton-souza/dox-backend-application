@@ -1,7 +1,8 @@
 CREATE TABLE forms (
     id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     linked_template_id UUID REFERENCES report_templates(id) ON DELETE SET NULL,
-    current_version    INT       NOT NULL DEFAULT 1,
+    current_major      INT       NOT NULL DEFAULT 1,
+    current_minor      INT       NOT NULL DEFAULT 0,
     created_at         TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at         TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -9,14 +10,15 @@ CREATE TABLE forms (
 CREATE TABLE form_versions (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     form_id         UUID         NOT NULL REFERENCES forms(id) ON DELETE CASCADE,
-    version         INT          NOT NULL DEFAULT 1,
+    version_major   INT          NOT NULL DEFAULT 1,
+    version_minor   INT          NOT NULL DEFAULT 0,
     title           VARCHAR(255) NOT NULL,
     description     TEXT,
     fields          JSONB     NOT NULL DEFAULT '[]'::JSONB,
     field_mappings  JSONB     DEFAULT '[]'::JSONB,
     scoring_config  JSONB     NOT NULL DEFAULT '{}'::JSONB,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE(form_id, version)
+    UNIQUE(form_id, version_major, version_minor)
 );
 
 CREATE INDEX idx_form_versions_form ON form_versions(form_id);

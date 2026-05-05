@@ -13,9 +13,12 @@ data class FormSummary(
 
 data class FormVersionSummary(
     val id: UUID,
-    val version: Int,
+    val versionMajor: Int,
+    val versionMinor: Int,
     val title: String,
-)
+) {
+    val versionLabel: String get() = "$versionMajor.$versionMinor"
+}
 
 data class AggregatedRespondent(
     val linkId: UUID,

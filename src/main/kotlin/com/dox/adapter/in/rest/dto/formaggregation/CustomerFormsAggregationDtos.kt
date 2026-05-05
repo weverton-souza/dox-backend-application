@@ -13,7 +13,9 @@ data class FormSummaryResponse(
 
 data class FormVersionSummaryResponse(
     val id: UUID,
-    val version: Int,
+    val versionMajor: Int,
+    val versionMinor: Int,
+    val versionLabel: String,
     val title: String,
 )
 

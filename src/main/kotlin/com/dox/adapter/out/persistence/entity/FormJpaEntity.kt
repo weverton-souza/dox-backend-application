@@ -20,8 +20,10 @@ class FormJpaEntity(
     var id: UUID = UUID.randomUUID(),
     @Column(name = "linked_template_id")
     var linkedTemplateId: UUID? = null,
-    @Column(name = "current_version", nullable = false)
-    var currentVersion: Int = 1,
+    @Column(name = "current_major", nullable = false)
+    var currentMajor: Int = 1,
+    @Column(name = "current_minor", nullable = false)
+    var currentMinor: Int = 0,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

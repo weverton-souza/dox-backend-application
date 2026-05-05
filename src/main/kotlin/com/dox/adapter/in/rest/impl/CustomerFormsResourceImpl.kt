@@ -96,5 +96,12 @@ class CustomerFormsResourceImpl(
 
     private fun FormSummary.toResponse(): FormSummaryResponse = FormSummaryResponse(id = id, title = title)
 
-    private fun FormVersionSummary.toResponse(): FormVersionSummaryResponse = FormVersionSummaryResponse(id = id, version = version, title = title)
+    private fun FormVersionSummary.toResponse(): FormVersionSummaryResponse =
+        FormVersionSummaryResponse(
+            id = id,
+            versionMajor = versionMajor,
+            versionMinor = versionMinor,
+            versionLabel = versionLabel,
+            title = title,
+        )
 }

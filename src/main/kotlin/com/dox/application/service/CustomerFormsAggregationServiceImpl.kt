@@ -75,7 +75,8 @@ class CustomerFormsAggregationServiceImpl(
                     version =
                         FormVersionSummary(
                             id = versionId,
-                            version = version?.version ?: 1,
+                            versionMajor = version?.versionMajor ?: 1,
+                            versionMinor = version?.versionMinor ?: 0,
                             title = version?.title ?: "",
                         ),
                     sentAt = sentAt,
@@ -165,7 +166,13 @@ class CustomerFormsAggregationServiceImpl(
 
         return ComparisonResult(
             form = FormSummary(id = form.id, title = version.title),
-            version = FormVersionSummary(id = version.id, version = version.version, title = version.title),
+            version =
+                FormVersionSummary(
+                    id = version.id,
+                    versionMajor = version.versionMajor,
+                    versionMinor = version.versionMinor,
+                    title = version.title,
+                ),
             fields = version.fields,
             scoringConfig = version.scoringConfig,
             respondents = respondents,

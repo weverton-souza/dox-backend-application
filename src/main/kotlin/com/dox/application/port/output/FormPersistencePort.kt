@@ -22,9 +22,10 @@ interface FormPersistencePort {
 
     fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion>
 
-    fun findVersionByFormIdAndVersion(
+    fun findVersionByFormIdAndMajorMinor(
         formId: UUID,
-        version: Int,
+        major: Int,
+        minor: Int,
     ): FormVersion?
 
     fun saveResponse(response: FormResponse): FormResponse
@@ -36,6 +37,8 @@ interface FormPersistencePort {
     fun findResponsesByCustomerId(customerId: UUID): List<FormResponse>
 
     fun countResponsesByFormVersionId(formVersionId: UUID): Long
+
+    fun countResponsesByFormId(formId: UUID): Long
 
     fun findResponsesByIds(ids: List<UUID>): List<FormResponse>
 

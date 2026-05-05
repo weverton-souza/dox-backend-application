@@ -25,7 +25,8 @@ class FormPersistenceAdapter(
             formJpaRepository.findById(form.id).orElse(null)
                 ?: FormJpaEntity().apply { id = form.id }
         entity.linkedTemplateId = form.linkedTemplateId
-        entity.currentVersion = form.currentVersion
+        entity.currentMajor = form.currentMajor
+        entity.currentMinor = form.currentMinor
         return formJpaRepository.save(entity).toDomain()
     }
 
@@ -40,7 +41,8 @@ class FormPersistenceAdapter(
             formVersionJpaRepository.findById(version.id).orElse(null)
                 ?: FormVersionJpaEntity().apply { id = version.id }
         entity.formId = version.formId
-        entity.version = version.version
+        entity.versionMajor = version.versionMajor
+        entity.versionMinor = version.versionMinor
         entity.title = version.title
         entity.description = version.description
         entity.fields = version.fields
@@ -55,10 +57,11 @@ class FormPersistenceAdapter(
 
     override fun findVersionsByFormIds(formIds: Set<UUID>): List<FormVersion> = formVersionJpaRepository.findByFormIdIn(formIds).map { it.toDomain() }
 
-    override fun findVersionByFormIdAndVersion(
+    override fun findVersionByFormIdAndMajorMinor(
         formId: UUID,
-        version: Int,
-    ): FormVersion? = formVersionJpaRepository.findByFormIdAndVersion(formId, version)?.toDomain()
+        major: Int,
+        minor: Int,
+    ): FormVersion? = formVersionJpaRepository.findByFormIdAndVersionMajorAndVersionMinor(formId, major, minor)?.toDomain()
 
     override fun saveResponse(response: FormResponse): FormResponse {
         val entity =
@@ -87,6 +90,8 @@ class FormPersistenceAdapter(
 
     override fun countResponsesByFormVersionId(formVersionId: UUID): Long = formResponseJpaRepository.countByFormVersionId(formVersionId)
 
+    override fun countResponsesByFormId(formId: UUID): Long = formResponseJpaRepository.countByFormId(formId)
+
     override fun findResponsesByIds(ids: List<UUID>): List<FormResponse> = formResponseJpaRepository.findAllByIdIn(ids).map { it.toDomain() }
 
     override fun findResponsesByCustomerAndFormVersion(
@@ -102,24 +107,26 @@ class FormPersistenceAdapter(
 
     private fun FormJpaEntity.toDomain() =
         Form(
-            id,
-            linkedTemplateId,
-            currentVersion,
-            createdAt,
-            updatedAt,
+            id = id,
+            linkedTemplateId = linkedTemplateId,
+            currentMajor = currentMajor,
+            currentMinor = currentMinor,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         )
 
     private fun FormVersionJpaEntity.toDomain() =
         FormVersion(
-            id,
-            formId,
-            version,
-            title,
-            description,
-            fields,
-            fieldMappings,
-            scoringConfig,
-            createdAt,
+            id = id,
+            formId = formId,
+            versionMajor = versionMajor,
+            versionMinor = versionMinor,
+            title = title,
+            description = description,
+            fields = fields,
+            fieldMappings = fieldMappings,
+            scoringConfig = scoringConfig,
+            createdAt = createdAt,
         )
 
     private fun FormResponseJpaEntity.toDomain() =

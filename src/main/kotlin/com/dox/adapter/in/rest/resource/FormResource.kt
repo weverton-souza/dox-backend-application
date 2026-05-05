@@ -57,10 +57,11 @@ interface FormResource : BaseResource {
     ): ResponseEntity<List<FormVersionResponseDto>>
 
     @Operation(summary = "Buscar versão específica")
-    @GetMapping("/{id}/versions/{version}")
+    @GetMapping("/{id}/versions/{major}/{minor}")
     fun getVersion(
         @PathVariable id: UUID,
-        @PathVariable version: Int,
+        @PathVariable major: Int,
+        @PathVariable minor: Int,
     ): ResponseEntity<FormVersionResponseDto>
 
     @Operation(summary = "Listar respostas de um formulário")

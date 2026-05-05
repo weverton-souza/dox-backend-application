@@ -13,6 +13,8 @@ interface FormResponseJpaRepository : JpaRepository<FormResponseJpaEntity, UUID>
 
     fun countByFormVersionId(formVersionId: UUID): Long
 
+    fun countByFormId(formId: UUID): Long
+
     fun findByCustomerIdAndFormIdAndFormVersionId(
         customerId: UUID,
         formId: UUID,

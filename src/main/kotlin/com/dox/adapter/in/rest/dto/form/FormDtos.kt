@@ -28,7 +28,9 @@ data class FormResponseDto(
     val linkedTemplateId: UUID?,
     val fieldMappings: List<Map<String, Any?>>,
     val scoringConfig: Map<String, Any?>,
-    val currentVersion: Int,
+    val currentMajor: Int,
+    val currentMinor: Int,
+    val currentVersionLabel: String,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
 )
@@ -36,7 +38,9 @@ data class FormResponseDto(
 data class FormVersionResponseDto(
     val id: UUID,
     val formId: UUID,
-    val version: Int,
+    val versionMajor: Int,
+    val versionMinor: Int,
+    val versionLabel: String,
     val title: String,
     val description: String?,
     val fields: List<Map<String, Any?>>,
@@ -68,7 +72,9 @@ data class FormResponseResponseDto(
     val additionalEvaluators: List<Map<String, Any?>>,
     val pageDurationsMs: Map<String, Long>,
     val generatedReportId: UUID?,
-    val version: Int?,
+    val versionMajor: Int?,
+    val versionMinor: Int?,
+    val versionLabel: String?,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
 )
