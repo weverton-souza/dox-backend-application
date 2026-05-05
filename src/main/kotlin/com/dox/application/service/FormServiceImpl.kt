@@ -19,6 +19,7 @@ import java.util.UUID
 @Transactional(readOnly = true)
 class FormServiceImpl(
     private val formPersistencePort: FormPersistencePort,
+    private val diffClassifier: FormVersionDiffClassifier,
 ) : FormUseCase {
     @Transactional
     override fun createForm(command: CreateFormCommand): FormWithCurrentVersion {
@@ -30,7 +31,8 @@ class FormServiceImpl(
             formPersistencePort.saveVersion(
                 FormVersion(
                     formId = form.id,
-                    version = 1,
+                    versionMajor = form.currentMajor,
+                    versionMinor = form.currentMinor,
                     title = command.title,
                     description = command.description,
                     fields = command.fields,
@@ -45,10 +47,7 @@ class FormServiceImpl(
         val form =
             formPersistencePort.findFormById(id)
                 ?: throw ResourceNotFoundException("Formulário", id.toString())
-        val version =
-            formPersistencePort.findVersionByFormIdAndVersion(id, form.currentVersion)
-                ?: throw ResourceNotFoundException("Versão do formulário", "$id:v${form.currentVersion}")
-        return FormWithCurrentVersion(form, version)
+        return FormWithCurrentVersion(form, loadCurrentVersion(form))
     }
 
     override fun findAllForms(): List<FormWithCurrentVersion> {
@@ -62,8 +61,9 @@ class FormServiceImpl(
 
         return forms.map { form ->
             val version =
-                versionsByFormId[form.id]?.firstOrNull { it.version == form.currentVersion }
-                    ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersion}")
+                versionsByFormId[form.id]
+                    ?.firstOrNull { it.versionMajor == form.currentMajor && it.versionMinor == form.currentMinor }
+                    ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersionLabel}")
             FormWithCurrentVersion(form, version)
         }
     }
@@ -74,52 +74,52 @@ class FormServiceImpl(
             formPersistencePort.findFormById(command.id)
                 ?: throw ResourceNotFoundException("Formulário", command.id.toString())
 
-        val currentVersion =
-            formPersistencePort.findVersionByFormIdAndVersion(form.id, form.currentVersion)
-                ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersion}")
-
-        val responseCount = formPersistencePort.countResponsesByFormVersionId(currentVersion.id)
+        val currentVersion = loadCurrentVersion(form)
 
         val updatedForm =
-            formPersistencePort.saveForm(
-                form.copy(linkedTemplateId = command.linkedTemplateId),
-            )
+            if (form.linkedTemplateId != command.linkedTemplateId) {
+                formPersistencePort.saveForm(form.copy(linkedTemplateId = command.linkedTemplateId))
+            } else {
+                form
+            }
 
-        return if (responseCount == 0L) {
-            updateVersionInPlace(updatedForm, currentVersion, command)
-        } else {
-            createNewVersion(updatedForm, command)
+        val totalResponses = formPersistencePort.countResponsesByFormId(updatedForm.id)
+        if (totalResponses == 0L) {
+            return FormWithCurrentVersion(updatedForm, updateVersionInPlace(currentVersion, command))
+        }
+
+        return when (diffClassifier.classify(currentVersion, command)) {
+            FormDiffKind.NONE -> FormWithCurrentVersion(updatedForm, currentVersion)
+            FormDiffKind.COSMETIC -> bumpMinor(updatedForm, command)
+            FormDiffKind.STRUCTURAL -> bumpMajor(updatedForm, command)
         }
     }
 
     private fun updateVersionInPlace(
-        form: Form,
         currentVersion: FormVersion,
         command: UpdateFormCommand,
-    ): FormWithCurrentVersion {
-        val updatedVersion =
-            formPersistencePort.saveVersion(
-                currentVersion.copy(
-                    title = command.title,
-                    description = command.description,
-                    fields = command.fields,
-                    fieldMappings = command.fieldMappings,
-                    scoringConfig = command.scoringConfig,
-                ),
-            )
-        return FormWithCurrentVersion(form, updatedVersion)
-    }
+    ): FormVersion =
+        formPersistencePort.saveVersion(
+            currentVersion.copy(
+                title = command.title,
+                description = command.description,
+                fields = command.fields,
+                fieldMappings = command.fieldMappings,
+                scoringConfig = command.scoringConfig,
+            ),
+        )
 
-    private fun createNewVersion(
+    private fun bumpMinor(
         form: Form,
         command: UpdateFormCommand,
     ): FormWithCurrentVersion {
-        val newVersionNumber = form.currentVersion + 1
+        val newMinor = form.currentMinor + 1
         val newVersion =
             formPersistencePort.saveVersion(
                 FormVersion(
                     formId = form.id,
-                    version = newVersionNumber,
+                    versionMajor = form.currentMajor,
+                    versionMinor = newMinor,
                     title = command.title,
                     description = command.description,
                     fields = command.fields,
@@ -127,11 +127,30 @@ class FormServiceImpl(
                     scoringConfig = command.scoringConfig,
                 ),
             )
-        val formWithNewVersion =
-            formPersistencePort.saveForm(
-                form.copy(currentVersion = newVersionNumber),
+        val updatedForm = formPersistencePort.saveForm(form.copy(currentMinor = newMinor))
+        return FormWithCurrentVersion(updatedForm, newVersion)
+    }
+
+    private fun bumpMajor(
+        form: Form,
+        command: UpdateFormCommand,
+    ): FormWithCurrentVersion {
+        val newMajor = form.currentMajor + 1
+        val newVersion =
+            formPersistencePort.saveVersion(
+                FormVersion(
+                    formId = form.id,
+                    versionMajor = newMajor,
+                    versionMinor = 0,
+                    title = command.title,
+                    description = command.description,
+                    fields = command.fields,
+                    fieldMappings = command.fieldMappings,
+                    scoringConfig = command.scoringConfig,
+                ),
             )
-        return FormWithCurrentVersion(formWithNewVersion, newVersion)
+        val updatedForm = formPersistencePort.saveForm(form.copy(currentMajor = newMajor, currentMinor = 0))
+        return FormWithCurrentVersion(updatedForm, newVersion)
     }
 
     @Transactional
@@ -151,10 +170,11 @@ class FormServiceImpl(
 
     override fun findVersion(
         formId: UUID,
-        version: Int,
+        major: Int,
+        minor: Int,
     ): FormVersion =
-        formPersistencePort.findVersionByFormIdAndVersion(formId, version)
-            ?: throw ResourceNotFoundException("Versão do formulário", "$formId:v$version")
+        formPersistencePort.findVersionByFormIdAndMajorMinor(formId, major, minor)
+            ?: throw ResourceNotFoundException("Versão do formulário", "$formId:v$major.$minor")
 
     @Transactional
     override fun createResponse(command: CreateFormResponseCommand): FormResponse {
@@ -162,11 +182,7 @@ class FormServiceImpl(
             formPersistencePort.findFormById(command.formId)
                 ?: throw ResourceNotFoundException("Formulário", command.formId.toString())
         val resolvedVersionId =
-            command.formVersionId
-                ?: (
-                    formPersistencePort.findVersionByFormIdAndVersion(form.id, form.currentVersion)
-                        ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersion}")
-                ).id
+            command.formVersionId ?: loadCurrentVersion(form).id
         return formPersistencePort.saveResponse(
             FormResponse(
                 formId = command.formId,
@@ -212,4 +228,8 @@ class FormServiceImpl(
             ?: throw ResourceNotFoundException("Resposta", id.toString())
         formPersistencePort.deleteResponse(id)
     }
+
+    private fun loadCurrentVersion(form: Form): FormVersion =
+        formPersistencePort.findVersionByFormIdAndMajorMinor(form.id, form.currentMajor, form.currentMinor)
+            ?: throw ResourceNotFoundException("Versão do formulário", "${form.id}:v${form.currentVersionLabel}")
 }

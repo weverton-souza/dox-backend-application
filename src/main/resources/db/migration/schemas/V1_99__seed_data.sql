@@ -95,11 +95,11 @@ INSERT INTO reports (id, status, customer_name, customer_id, form_response_id, b
  ]'::JSONB);
 
 -- Form (1 formulário com 2 versões, vinculado ao template)
-INSERT INTO forms (id, current_version, linked_template_id) VALUES
-('097b72f6-599c-4809-9753-0f0147eafa60', 2, '62725c64-6aee-4d8e-9a1f-81bd391a8c1f');
+INSERT INTO forms (id, current_major, current_minor, linked_template_id) VALUES
+('097b72f6-599c-4809-9753-0f0147eafa60', 2, 0, '62725c64-6aee-4d8e-9a1f-81bd391a8c1f');
 
-INSERT INTO form_versions (id, form_id, version, title, description, fields) VALUES
-('1651322e-1949-40e2-9d01-926bb80d139b', '097b72f6-599c-4809-9753-0f0147eafa60', 1,
+INSERT INTO form_versions (id, form_id, version_major, version_minor, title, description, fields) VALUES
+('1651322e-1949-40e2-9d01-926bb80d139b', '097b72f6-599c-4809-9753-0f0147eafa60', 1, 0,
  'Anamnese Neuropsicológica Adulto',
  'Formulário de anamnese para avaliação neuropsicológica de adultos',
  '[
@@ -111,7 +111,7 @@ INSERT INTO form_versions (id, form_id, version, title, description, fields) VAL
    {"id":"qualidade_sono","type":"single-choice","label":"Como avalia a qualidade do seu sono?","options":[{"id":"opt-sono-1","label":"Ótimo"},{"id":"opt-sono-2","label":"Bom"},{"id":"opt-sono-3","label":"Regular"},{"id":"opt-sono-4","label":"Ruim"},{"id":"opt-sono-5","label":"Péssimo"}],"required":true}
  ]'),
 
-('a3b4c5d6-e7f8-4a9b-b0c1-d2e3f4a5b6c7', '097b72f6-599c-4809-9753-0f0147eafa60', 2,
+('a3b4c5d6-e7f8-4a9b-b0c1-d2e3f4a5b6c7', '097b72f6-599c-4809-9753-0f0147eafa60', 2, 0,
  'Anamnese Neuropsicológica Adulto',
  'Formulário de anamnese para avaliação neuropsicológica de adultos (v2)',
  '[

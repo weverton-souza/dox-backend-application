@@ -69,7 +69,8 @@ interface FormUseCase {
 
     fun findVersion(
         formId: UUID,
-        version: Int,
+        major: Int,
+        minor: Int,
     ): FormVersion
 
     fun createResponse(command: CreateFormResponseCommand): FormResponse

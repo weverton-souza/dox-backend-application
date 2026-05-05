@@ -21,8 +21,10 @@ class FormVersionJpaEntity(
     var id: UUID = UUID.randomUUID(),
     @Column(name = "form_id", nullable = false)
     var formId: UUID = UUID.randomUUID(),
-    @Column(name = "version", nullable = false)
-    var version: Int = 1,
+    @Column(name = "version_major", nullable = false)
+    var versionMajor: Int = 1,
+    @Column(name = "version_minor", nullable = false)
+    var versionMinor: Int = 0,
     @Column(name = "title", nullable = false)
     var title: String = "",
     @Column(name = "description")
