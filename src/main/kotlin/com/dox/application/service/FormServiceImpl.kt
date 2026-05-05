@@ -23,10 +23,7 @@ class FormServiceImpl(
 ) : FormUseCase {
     @Transactional
     override fun createForm(command: CreateFormCommand): FormWithCurrentVersion {
-        val form =
-            formPersistencePort.saveForm(
-                Form(linkedTemplateId = command.linkedTemplateId),
-            )
+        val form = formPersistencePort.saveForm(Form())
         val version =
             formPersistencePort.saveVersion(
                 FormVersion(
@@ -76,22 +73,15 @@ class FormServiceImpl(
 
         val currentVersion = loadCurrentVersion(form)
 
-        val updatedForm =
-            if (form.linkedTemplateId != command.linkedTemplateId) {
-                formPersistencePort.saveForm(form.copy(linkedTemplateId = command.linkedTemplateId))
-            } else {
-                form
-            }
-
-        val totalResponses = formPersistencePort.countResponsesByFormId(updatedForm.id)
+        val totalResponses = formPersistencePort.countResponsesByFormId(form.id)
         if (totalResponses == 0L) {
-            return FormWithCurrentVersion(updatedForm, updateVersionInPlace(currentVersion, command))
+            return FormWithCurrentVersion(form, updateVersionInPlace(currentVersion, command))
         }
 
         return when (diffClassifier.classify(currentVersion, command)) {
-            FormDiffKind.NONE -> FormWithCurrentVersion(updatedForm, currentVersion)
-            FormDiffKind.COSMETIC -> bumpMinor(updatedForm, command)
-            FormDiffKind.STRUCTURAL -> bumpMajor(updatedForm, command)
+            FormDiffKind.NONE -> FormWithCurrentVersion(form, currentVersion)
+            FormDiffKind.COSMETIC -> bumpMinor(form, command)
+            FormDiffKind.STRUCTURAL -> bumpMajor(form, command)
         }
     }
 

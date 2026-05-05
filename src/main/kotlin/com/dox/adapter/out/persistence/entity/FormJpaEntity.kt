@@ -18,8 +18,6 @@ class FormJpaEntity(
     @Id
     @Column(name = "id", updatable = false)
     var id: UUID = UUID.randomUUID(),
-    @Column(name = "linked_template_id")
-    var linkedTemplateId: UUID? = null,
     @Column(name = "current_major", nullable = false)
     var currentMajor: Int = 1,
     @Column(name = "current_minor", nullable = false)

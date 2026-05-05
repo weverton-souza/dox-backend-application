@@ -7,7 +7,6 @@ import java.util.UUID
 
 data class Form(
     val id: UUID = UUID.randomUUID(),
-    val linkedTemplateId: UUID? = null,
     val currentMajor: Int = 1,
     val currentMinor: Int = 0,
     val createdAt: LocalDateTime? = null,

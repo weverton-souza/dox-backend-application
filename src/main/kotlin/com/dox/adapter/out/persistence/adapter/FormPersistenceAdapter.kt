@@ -24,7 +24,6 @@ class FormPersistenceAdapter(
         val entity =
             formJpaRepository.findById(form.id).orElse(null)
                 ?: FormJpaEntity().apply { id = form.id }
-        entity.linkedTemplateId = form.linkedTemplateId
         entity.currentMajor = form.currentMajor
         entity.currentMinor = form.currentMinor
         return formJpaRepository.save(entity).toDomain()
@@ -108,7 +107,6 @@ class FormPersistenceAdapter(
     private fun FormJpaEntity.toDomain() =
         Form(
             id = id,
-            linkedTemplateId = linkedTemplateId,
             currentMajor = currentMajor,
             currentMinor = currentMinor,
             createdAt = createdAt,

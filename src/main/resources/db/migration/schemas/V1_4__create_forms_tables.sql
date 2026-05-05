@@ -1,10 +1,9 @@
 CREATE TABLE forms (
-    id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    linked_template_id UUID REFERENCES report_templates(id) ON DELETE SET NULL,
-    current_major      INT       NOT NULL DEFAULT 1,
-    current_minor      INT       NOT NULL DEFAULT 0,
-    created_at         TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at         TIMESTAMP NOT NULL DEFAULT NOW()
+    id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    current_major INT       NOT NULL DEFAULT 1,
+    current_minor INT       NOT NULL DEFAULT 0,
+    created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE form_versions (

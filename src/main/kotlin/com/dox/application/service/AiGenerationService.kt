@@ -278,7 +278,7 @@ class AiGenerationService(
 
         val customer = if (command.includeCustomerData) report.customerId?.let { customerPersistencePort.findById(it) } else null
         val professional = professionalPersistencePort.find()
-        val template = if (formResponses.isNotEmpty()) findLinkedTemplate(formResponses.first().formId) else null
+        val template = report.templateId?.let { templatePersistencePort.findReportTemplateById(it) }
 
         val systemPrompt = systemPromptPort.build(tenant.vertical)
         val contextPrompt =
@@ -403,11 +403,5 @@ class AiGenerationService(
                 errorMessage = errorMessage,
             )
         aiUsagePort.save(usage)
-    }
-
-    private fun findLinkedTemplate(formId: UUID): com.dox.domain.model.ReportTemplate? {
-        val form = formPersistencePort.findFormById(formId) ?: return null
-        val templateId = form.linkedTemplateId ?: return null
-        return templatePersistencePort.findReportTemplateById(templateId)
     }
 }

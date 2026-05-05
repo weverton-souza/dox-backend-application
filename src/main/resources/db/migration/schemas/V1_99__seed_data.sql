@@ -94,9 +94,9 @@ INSERT INTO reports (id, status, customer_name, customer_id, form_response_id, b
    {"id":"b002-s3-t1","type":"text","parentId":"b002-s3","order":0,"collapsed":false,"data":{"content":"","labeledItems":[],"useLabeledItems":false}}
  ]'::JSONB);
 
--- Form (1 formulário com 2 versões, vinculado ao template)
-INSERT INTO forms (id, current_major, current_minor, linked_template_id) VALUES
-('097b72f6-599c-4809-9753-0f0147eafa60', 2, 0, '62725c64-6aee-4d8e-9a1f-81bd391a8c1f');
+-- Form (1 formulário com 2 versões)
+INSERT INTO forms (id, current_major, current_minor) VALUES
+('097b72f6-599c-4809-9753-0f0147eafa60', 2, 0);
 
 INSERT INTO form_versions (id, form_id, version_major, version_minor, title, description, fields) VALUES
 ('1651322e-1949-40e2-9d01-926bb80d139b', '097b72f6-599c-4809-9753-0f0147eafa60', 1, 0,
