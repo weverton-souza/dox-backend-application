@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.SQLRestriction
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users", schema = "public")
@@ -21,4 +22,10 @@ class UserJpaEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personal_tenant_id")
     var personalTenant: TenantJpaEntity? = null,
+    @Column(name = "email_verified_at")
+    var emailVerifiedAt: LocalDateTime? = null,
+    @Column(name = "email_verification_token")
+    var emailVerificationToken: String? = null,
+    @Column(name = "email_verification_token_expires_at")
+    var emailVerificationTokenExpiresAt: LocalDateTime? = null,
 ) : AbstractJpaEntity()

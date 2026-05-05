@@ -39,7 +39,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    implementation("com.resend:resend-java:4.13.0")
 
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")

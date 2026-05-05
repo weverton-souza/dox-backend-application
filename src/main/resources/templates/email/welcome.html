@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title th:text="${subject}">Bem-vindo(a) ao DOX</title>
+</head>
+<body style="margin:0;padding:0;background-color:#FAFAFA;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#48484A;-webkit-font-smoothing:antialiased;">
+
+<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#FAFAFA;opacity:0;">
+    Sua conta está pronta. Falta só confirmar seu email para começar.
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FAFAFA;">
+    <tr>
+        <td align="center" style="padding:40px 16px;">
+
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid #E8E8ED;">
+
+                <tr>
+                    <td style="padding:40px 48px;background:#1B3A5C;">
+                        <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#88B0E0;margin-bottom:24px;">DOX</div>
+                        <h1 style="margin:0;font-size:26px;line-height:1.25;font-weight:700;color:#FFFFFF;">
+                            Olá, <span th:text="${firstName}">Marina</span>.
+                        </h1>
+                        <p style="margin:16px 0 0 0;font-size:15px;line-height:1.55;color:#C7D7E8;">
+                            Sua conta está pronta.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:36px 48px;font-size:15px;line-height:1.65;color:#48484A;">
+
+                        <p style="margin:0 0 16px 0;">
+                            Bom ter você aqui.
+                        </p>
+
+                        <p style="margin:0 0 28px 0;">
+                            Confirme seu email para começar.
+                        </p>
+
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;">
+                            <tr>
+                                <td style="background:#0055B3;border-radius:10px;">
+                                    <a th:href="${verifyUrl}"
+                                       style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#FFFFFF;text-decoration:none;">
+                                        Confirmar email e acessar workspace
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="margin:0;font-size:11px;line-height:1.5;color:#88888D;word-break:break-all;">
+                            Ou cole no navegador: <a th:href="${verifyUrl}" th:text="${verifyUrl}" style="color:#88888D;text-decoration:underline;">https://app.dox.com.br/verify</a>
+                        </p>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:24px 48px;background:#FAFAFA;border-top:1px solid #E8E8ED;">
+                        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:#88888D;margin-bottom:8px;">DOX</div>
+                        <p style="margin:0 0 12px 0;font-size:11px;line-height:1.55;color:#88888D;">
+                            Você recebeu este email porque se cadastrou no DOX. O link de confirmação expira em 72 horas.
+                        </p>
+                        <p style="margin:0;font-size:11px;line-height:1.55;color:#88888D;">
+                            <a href="https://dox.com.br/ajuda" style="color:#48484A;text-decoration:none;">Ajuda</a>
+                            <span style="color:#C8C8CD;">·</span>
+                            <a href="https://dox.com.br/termos" style="color:#48484A;text-decoration:none;">Termos</a>
+                            <span style="color:#C8C8CD;">·</span>
+                            <a href="https://dox.com.br/privacidade" style="color:#48484A;text-decoration:none;">Privacidade</a>
+                        </p>
+                        <p style="margin:16px 0 0 0;font-size:11px;color:#88888D;">
+                            <span>dox.com.br</span>
+                            <span style="float:right;">&copy; 2026 DOX</span>
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

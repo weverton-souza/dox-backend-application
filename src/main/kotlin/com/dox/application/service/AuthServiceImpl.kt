@@ -4,7 +4,9 @@ import com.dox.application.port.input.AuthResult
 import com.dox.application.port.input.AuthUseCase
 import com.dox.application.port.input.LoginCommand
 import com.dox.application.port.input.RegisterCommand
+import com.dox.application.port.input.SendWelcomeEmailCommand
 import com.dox.application.port.input.SwitchTenantCommand
+import com.dox.application.port.input.VerifyEmailResult
 import com.dox.application.port.output.AuthTokenPort
 import com.dox.application.port.output.OrganizationPersistencePort
 import com.dox.application.port.output.PasswordEncoderPort
@@ -21,11 +23,20 @@ import com.dox.domain.exception.TokenExpiredException
 import com.dox.domain.model.RefreshToken
 import com.dox.domain.model.User
 import com.dox.extensions.isExpired
+import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.event.TransactionalEventListener
 import java.security.MessageDigest
+import java.security.SecureRandom
 import java.time.LocalDateTime
+import java.util.Base64
 import java.util.UUID
+
+data class WelcomeEmailRequestedEvent(
+    val command: SendWelcomeEmailCommand,
+)
 
 @Service
 class AuthServiceImpl(
@@ -36,11 +47,16 @@ class AuthServiceImpl(
     private val organizationPersistencePort: OrganizationPersistencePort,
     private val authTokenPort: AuthTokenPort,
     private val passwordEncoderPort: PasswordEncoderPort,
+    private val eventPublisher: ApplicationEventPublisher,
 ) : AuthUseCase {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     companion object {
         private const val REFRESH_TOKEN_DURATION_DAYS = 7L
         private const val MIN_PASSWORD_LENGTH = 8
         private const val MAX_PASSWORD_LENGTH = 72
+        private const val EMAIL_VERIFICATION_TOKEN_BYTES = 32
+        private const val EMAIL_VERIFICATION_TOKEN_TTL_HOURS = 72L
     }
 
     @Transactional
@@ -58,6 +74,9 @@ class AuthServiceImpl(
                 vertical = command.vertical,
             )
 
+        val verificationToken = generateVerificationToken()
+        val tokenExpiresAt = LocalDateTime.now().plusHours(EMAIL_VERIFICATION_TOKEN_TTL_HOURS)
+
         val user =
             userPersistencePort.save(
                 User(
@@ -65,8 +84,22 @@ class AuthServiceImpl(
                     name = command.name,
                     passwordHash = passwordEncoderPort.encode(command.password),
                     personalTenantId = tenant.id,
+                    emailVerifiedAt = null,
+                    emailVerificationToken = verificationToken,
+                    emailVerificationTokenExpiresAt = tokenExpiresAt,
                 ),
             )
+
+        eventPublisher.publishEvent(
+            WelcomeEmailRequestedEvent(
+                SendWelcomeEmailCommand(
+                    userId = user.id,
+                    firstName = user.name.substringBefore(' '),
+                    recipient = user.email,
+                    verificationToken = verificationToken,
+                ),
+            ),
+        )
 
         return generateAuthResult(user, tenant.id)
     }
@@ -149,7 +182,30 @@ class AuthServiceImpl(
             name = user.name,
             tenantId = command.tenantId,
             vertical = tenant.vertical,
+            emailVerified = user.emailVerifiedAt != null,
         )
+    }
+
+    @Transactional
+    override fun verifyEmail(token: String): VerifyEmailResult {
+        val user =
+            userPersistencePort.findByEmailVerificationToken(token)
+                ?: throw InvalidTokenException("Token de verificação inválido")
+
+        if (user.emailVerifiedAt != null) {
+            return VerifyEmailResult(verified = true, alreadyVerified = true, email = user.email)
+        }
+
+        val expiresAt = user.emailVerificationTokenExpiresAt
+        if (expiresAt != null && expiresAt.isExpired()) {
+            throw TokenExpiredException()
+        }
+
+        userPersistencePort.save(
+            user.copy(emailVerifiedAt = LocalDateTime.now()),
+        )
+
+        return VerifyEmailResult(verified = true, alreadyVerified = false, email = user.email)
     }
 
     private fun generateAuthResult(
@@ -185,6 +241,7 @@ class AuthServiceImpl(
             name = user.name,
             tenantId = tenantId,
             vertical = tenant.vertical,
+            emailVerified = user.emailVerifiedAt != null,
         )
     }
 
@@ -206,5 +263,27 @@ class AuthServiceImpl(
     private fun hashToken(token: String): String {
         val digest = MessageDigest.getInstance("SHA-256")
         return digest.digest(token.toByteArray()).joinToString("") { "%02x".format(it) }
+    }
+
+    private fun generateVerificationToken(): String {
+        val bytes = ByteArray(EMAIL_VERIFICATION_TOKEN_BYTES)
+        SecureRandom().nextBytes(bytes)
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
+    }
+}
+
+@org.springframework.stereotype.Component
+class WelcomeEmailEventListener(
+    private val emailUseCase: com.dox.application.port.input.EmailUseCase,
+) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
+    @TransactionalEventListener
+    fun handle(event: WelcomeEmailRequestedEvent) {
+        try {
+            emailUseCase.sendWelcome(event.command)
+        } catch (e: Exception) {
+            log.error("Failed to send welcome email to {}: {}", event.command.recipient, e.message, e)
+        }
     }
 }

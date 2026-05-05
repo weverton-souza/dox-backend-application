@@ -56,6 +56,16 @@ dox:
       brl-usd-rate: ${AI_BRL_USD_RATE:5.80}
   hsts:
     enabled: ${HSTS_ENABLED:false}
+  email:
+    enabled: ${EMAIL_ENABLED:true}
+    provider: ${EMAIL_PROVIDER:resend}
+    api-key: ${RESEND_API_KEY:}
+    from-address: ${EMAIL_FROM_ADDRESS:DOX <onboarding@resend.dev>}
+    reply-to: ${EMAIL_REPLY_TO:}
+    webhook-secret: ${RESEND_WEBHOOK_SECRET:}
+    api-base-url: ${API_BASE_URL:http://localhost:8080}
+    landing-url: ${LANDING_URL:http://localhost:3000}
+    frontend-url: ${FRONTEND_URL:http://localhost:5173}
 
 asaas:
   api-key: ${ASAAS_API_KEY:}

@@ -23,6 +23,8 @@ class JwtAuthenticationFilter(
                 "/auth/login",
                 "/auth/register",
                 "/auth/refresh",
+                "/auth/verify-email",
+                "/auth/verify-email-redirect",
                 "/admin/auth/login",
                 "/public/",
                 "/webhooks/",

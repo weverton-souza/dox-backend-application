@@ -23,11 +23,18 @@ data class AuthResult(
     val name: String,
     val tenantId: UUID,
     val vertical: Vertical,
+    val emailVerified: Boolean,
 )
 
 data class SwitchTenantCommand(
     val userId: UUID,
     val tenantId: UUID,
+)
+
+data class VerifyEmailResult(
+    val verified: Boolean,
+    val alreadyVerified: Boolean,
+    val email: String?,
 )
 
 interface AuthUseCase {
@@ -40,4 +47,6 @@ interface AuthUseCase {
     fun logout(userId: UUID)
 
     fun switchTenant(command: SwitchTenantCommand): AuthResult
+
+    fun verifyEmail(token: String): VerifyEmailResult
 }
