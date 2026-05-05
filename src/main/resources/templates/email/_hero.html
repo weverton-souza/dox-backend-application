@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="hero(variant, title, subtitle)">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td th:with="
+                    bg=${variant == 'dark-warning' ? '#0F0F11' : (variant == 'brand' ? '#0055B3' : '#1B3A5C')},
+                    titleColor='#FFFFFF',
+                    subtitleColor=${variant == 'dark-warning' ? '#A8A8AD' : '#C7D7E8'}"
+                th:style="'padding:40px 48px;background:' + ${bg} + ';'">
+
+                <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#88B0E0;margin-bottom:24px;">DOX</div>
+
+                <h1 th:text="${title}"
+                    th:style="'margin:0;font-size:26px;line-height:1.25;font-weight:700;color:' + ${titleColor} + ';font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;'">
+                    Título
+                </h1>
+
+                <p th:if="${subtitle}" th:text="${subtitle}"
+                   th:style="'margin:16px 0 0 0;font-size:15px;line-height:1.55;color:' + ${subtitleColor} + ';'">
+                    Subtítulo
+                </p>
+
+            </td>
+        </tr>
+    </table>
+</th:block>
+
+</body>
+</html>

@@ -38,6 +38,17 @@ data class SwitchTenantRequest(
     val tenantId: UUID,
 )
 
+data class VerifyEmailRequest(
+    @field:NotBlank(message = "Token é obrigatório")
+    val token: String,
+)
+
+data class VerifyEmailResponse(
+    val verified: Boolean,
+    val alreadyVerified: Boolean,
+    val email: String?,
+)
+
 data class AuthResponse(
     val accessToken: String,
     val refreshToken: String,
@@ -46,4 +57,5 @@ data class AuthResponse(
     val name: String,
     val tenantId: UUID,
     val vertical: Vertical,
+    val emailVerified: Boolean,
 )

@@ -9,6 +9,9 @@ data class User(
     val name: String,
     val passwordHash: String,
     val personalTenantId: UUID? = null,
+    val emailVerifiedAt: LocalDateTime? = null,
+    val emailVerificationToken: String? = null,
+    val emailVerificationTokenExpiresAt: LocalDateTime? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 )

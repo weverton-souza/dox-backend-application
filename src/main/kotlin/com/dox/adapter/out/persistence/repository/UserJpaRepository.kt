@@ -14,5 +14,7 @@ interface UserJpaRepository : JpaRepository<UserJpaEntity, UUID> {
         @Param("tenantId") tenantId: UUID,
     ): UserJpaEntity?
 
+    fun findByEmailVerificationToken(token: String): UserJpaEntity?
+
     fun existsByEmail(email: String): Boolean
 }

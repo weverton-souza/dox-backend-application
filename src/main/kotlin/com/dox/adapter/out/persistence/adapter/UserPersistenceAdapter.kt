@@ -20,6 +20,9 @@ class UserPersistenceAdapter(
         if (user.personalTenantId != null) {
             entity.personalTenant = TenantJpaEntity().apply { id = user.personalTenantId }
         }
+        entity.emailVerifiedAt = user.emailVerifiedAt
+        entity.emailVerificationToken = user.emailVerificationToken
+        entity.emailVerificationTokenExpiresAt = user.emailVerificationTokenExpiresAt
         if (user.id != entity.id) entity.id = user.id
         return userJpaRepository.save(entity).toDomain()
     }
@@ -30,6 +33,8 @@ class UserPersistenceAdapter(
 
     override fun findByPersonalTenantId(tenantId: UUID): User? = userJpaRepository.findByPersonalTenantId(tenantId)?.toDomain()
 
+    override fun findByEmailVerificationToken(token: String): User? = userJpaRepository.findByEmailVerificationToken(token)?.toDomain()
+
     override fun existsByEmail(email: String): Boolean = userJpaRepository.existsByEmail(email)
 
     private fun UserJpaEntity.toDomain() =
@@ -39,6 +44,9 @@ class UserPersistenceAdapter(
             name = name,
             passwordHash = passwordHash,
             personalTenantId = personalTenant?.id,
+            emailVerifiedAt = emailVerifiedAt,
+            emailVerificationToken = emailVerificationToken,
+            emailVerificationTokenExpiresAt = emailVerificationTokenExpiresAt,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )

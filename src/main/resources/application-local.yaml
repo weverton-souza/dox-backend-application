@@ -9,6 +9,14 @@ dox:
     jwt-signing-key: intSz26ioFppLXCsH7tta3HicyHtkJRTIuiC4M8jVRaP6wQNs3CNvG3mNjICqQ1M
   hsts:
     enabled: false
+  email:
+    enabled: true
+    api-key: re_h1KEfSq8_C9JYoqu3fwYMfa7cxV4ZHKHN
+    from-address: DOX <onboarding@resend.dev>
+    reply-to: wevertonad@gmail.com
+    api-base-url: http://localhost:8080
+    landing-url: http://localhost:3000
+    frontend-url: http://localhost:5173
 
 springdoc:
   api-docs:

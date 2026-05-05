@@ -106,6 +106,8 @@ class SecurityConfig(
             "/auth/register",
             "/auth/login",
             "/auth/refresh",
+            "/auth/verify-email",
+            "/auth/verify-email-redirect",
             "/admin/auth/login",
             "/public/**",
             "/modules/catalog",
