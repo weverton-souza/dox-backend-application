@@ -13,6 +13,11 @@ class FormDraftPersistenceAdapter(
 ) : FormDraftPersistencePort {
     override fun findByFormLinkId(formLinkId: UUID): FormDraft? = repository.findById(formLinkId).orElse(null)?.toDomain()
 
+    override fun findByFormLinkIds(formLinkIds: Collection<UUID>): List<FormDraft> {
+        if (formLinkIds.isEmpty()) return emptyList()
+        return repository.findAllById(formLinkIds).map { it.toDomain() }
+    }
+
     override fun save(draft: FormDraft): FormDraft {
         val entity =
             repository.findById(draft.formLinkId).orElse(null)
