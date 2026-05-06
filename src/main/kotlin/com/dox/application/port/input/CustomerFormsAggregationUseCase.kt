@@ -29,6 +29,7 @@ data class AggregatedRespondent(
     val relationType: String?,
     val status: FormLinkStatus,
     val submittedAt: LocalDateTime?,
+    val firstViewedAt: LocalDateTime?,
     val expiresAt: LocalDateTime,
 )
 

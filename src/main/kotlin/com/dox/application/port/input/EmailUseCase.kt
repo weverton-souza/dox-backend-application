@@ -24,6 +24,20 @@ data class SendWelcomeEmailCommand(
     val verificationToken: String,
 )
 
+data class SendFormInviteEmailCommand(
+    val tenantId: UUID,
+    val formLinkId: UUID,
+    val recipient: String,
+    val respondentName: String,
+    val isAboutCustomer: Boolean,
+    val customerName: String?,
+    val professionalName: String,
+    val professionalCouncil: String?,
+    val formTitle: String,
+    val formToken: String,
+    val expiresAt: java.time.LocalDateTime,
+)
+
 data class TestEmailCommand(
     val templateId: EmailTemplateId,
     val recipient: String,
@@ -34,6 +48,8 @@ interface EmailUseCase {
     fun sendTemplated(command: SendTemplatedEmailCommand): EmailLog
 
     fun sendWelcome(command: SendWelcomeEmailCommand): EmailLog
+
+    fun sendFormInvite(command: SendFormInviteEmailCommand): EmailLog
 
     fun sendTest(command: TestEmailCommand): EmailLog
 

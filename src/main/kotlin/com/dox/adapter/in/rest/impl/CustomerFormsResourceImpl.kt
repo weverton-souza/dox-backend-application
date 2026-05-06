@@ -58,6 +58,7 @@ class CustomerFormsResourceImpl(
             relationType = relationType,
             status = status,
             submittedAt = submittedAt,
+            firstViewedAt = firstViewedAt,
             expiresAt = expiresAt,
         )
 

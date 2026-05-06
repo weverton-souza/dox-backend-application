@@ -15,10 +15,12 @@ import com.dox.application.port.output.AuthTokenPort
 import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.application.port.output.FormDraftPersistencePort
 import com.dox.application.port.output.FormLinkPersistencePort
+import com.dox.application.port.output.ProfessionalSettingsPersistencePort
 import com.dox.domain.enum.FormLinkStatus
 import com.dox.domain.enum.RespondentType
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
+import com.dox.domain.model.Customer
 import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.FormDraft
 import com.dox.domain.model.FormLink
@@ -27,6 +29,7 @@ import com.dox.shared.ContextHolder
 import com.dox.shared.TenantContext
 import io.jsonwebtoken.JwtException
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -39,6 +42,8 @@ class FormLinkServiceImpl(
     private val customerPersistencePort: CustomerPersistencePort,
     private val authTokenPort: AuthTokenPort,
     private val formDraftPersistencePort: FormDraftPersistencePort,
+    private val professionalSettingsPersistencePort: ProfessionalSettingsPersistencePort,
+    private val eventPublisher: ApplicationEventPublisher,
 ) : FormLinkUseCase {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -113,29 +118,100 @@ class FormLinkServiceImpl(
 
         val expiresAt = LocalDateTime.now().plusHours(command.expiresInHours)
 
-        return command.recipients.map { recipient ->
-            validateRecipient(recipient)
-            val contact = recipient.customerContactId?.let { contactsById[it] }
-            val link =
-                formLinkPersistencePort.save(
-                    FormLink(
-                        formId = command.formId,
-                        formVersionId = formWithVersion.version.id,
-                        customerId = command.customerId,
-                        customerContactId = recipient.customerContactId,
-                        respondentType = recipient.respondentType,
-                        createdBy = userId,
-                        expiresAt = expiresAt,
-                    ),
+        val professional =
+            if (command.sendEmail) {
+                professionalSettingsPersistencePort.find()
+            } else {
+                null
+            }
+
+        val results =
+            command.recipients.map { recipient ->
+                validateRecipient(recipient)
+                val contact = recipient.customerContactId?.let { contactsById[it] }
+                val link =
+                    formLinkPersistencePort.save(
+                        FormLink(
+                            formId = command.formId,
+                            formVersionId = formWithVersion.version.id,
+                            customerId = command.customerId,
+                            customerContactId = recipient.customerContactId,
+                            respondentType = recipient.respondentType,
+                            createdBy = userId,
+                            expiresAt = expiresAt,
+                        ),
+                    )
+                val token = authTokenPort.generateFormLinkToken(tenantId, link.id, expiresAt)
+
+                if (command.sendEmail && professional != null) {
+                    publishFormInviteEvent(
+                        tenantId = tenantId,
+                        link = link,
+                        token = token,
+                        formTitle = formWithVersion.version.title,
+                        customer = customer,
+                        contact = contact,
+                        professionalName = professional.name.ifBlank { "Profissional" },
+                        professionalCouncil = professional.formattedCouncil().ifBlank { null },
+                    )
+                }
+
+                FormLinkWithToken(
+                    formLink = link,
+                    token = token,
+                    respondent = buildRespondentInfo(recipient.respondentType, customer.displayName(), contact),
                 )
-            val token = authTokenPort.generateFormLinkToken(tenantId, link.id, expiresAt)
-            FormLinkWithToken(
-                formLink = link,
-                token = token,
-                respondent = buildRespondentInfo(recipient.respondentType, customer.displayName(), contact),
-            )
-        }
+            }
+
+        return results
     }
+
+    private fun publishFormInviteEvent(
+        tenantId: UUID,
+        link: FormLink,
+        token: String,
+        formTitle: String,
+        customer: Customer,
+        contact: CustomerContact?,
+        professionalName: String,
+        professionalCouncil: String?,
+    ) {
+        val recipient = resolveRecipientEmail(link, customer, contact) ?: return
+        val isAboutCustomer = link.respondentType == RespondentType.CONTACT
+        val respondentName =
+            when (link.respondentType) {
+                RespondentType.CUSTOMER -> customer.displayName() ?: "cliente"
+                RespondentType.CONTACT -> contact?.name ?: "responsável"
+                RespondentType.PROFESSIONAL -> return
+            }
+
+        eventPublisher.publishEvent(
+            FormInviteEmailRequestedEvent(
+                tenantId = tenantId,
+                formLinkId = link.id,
+                recipient = recipient,
+                respondentName = respondentName,
+                isAboutCustomer = isAboutCustomer,
+                customerName = customer.displayName(),
+                professionalName = professionalName,
+                professionalCouncil = professionalCouncil,
+                formTitle = formTitle,
+                formToken = token,
+                expiresAt = link.expiresAt,
+            ),
+        )
+    }
+
+    private fun resolveRecipientEmail(
+        link: FormLink,
+        customer: Customer,
+        contact: CustomerContact?,
+    ): String? =
+        when (link.respondentType) {
+            RespondentType.CUSTOMER -> (customer.data["email"] as? String)?.trim()?.ifBlank { null }
+            RespondentType.CONTACT -> contact?.email?.trim()?.ifBlank { null }
+            RespondentType.PROFESSIONAL -> null
+        }
 
     private fun validateRecipient(recipient: RecipientSpec) {
         when (recipient.respondentType) {
@@ -222,6 +298,10 @@ class FormLinkServiceImpl(
             val customer = customerPersistencePort.findById(formLink.customerId)
             val contact = formLink.customerContactId?.let { customerPersistencePort.findContactById(it) }
             val respondentName = resolveRespondentName(formLink.respondentType, customer?.displayName(), contact)
+
+            if (formLink.firstViewedAt == null) {
+                formLinkPersistencePort.save(formLink.copy(firstViewedAt = LocalDateTime.now()))
+            }
 
             PublicFormData(
                 formTitle = formWithVersion.version.title,

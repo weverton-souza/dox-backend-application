@@ -47,6 +47,7 @@ class FormLinkResourceImpl(
                                 customerContactId = it.customerContactId,
                             )
                         },
+                    sendEmail = request.sendEmail,
                 ),
             ).map { it.toResponse() },
             HttpStatus.CREATED,
@@ -85,6 +86,7 @@ class FormLinkResourceImpl(
                 ),
             status = formLink.status,
             expiresAt = formLink.expiresAt,
+            firstViewedAt = formLink.firstViewedAt,
             createdAt = formLink.createdAt,
             updatedAt = formLink.updatedAt,
         )

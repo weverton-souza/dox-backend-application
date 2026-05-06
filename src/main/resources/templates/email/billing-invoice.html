@@ -1,0 +1,58 @@
+<!--suppress HtmlDeprecatedAttribute, CssInvalidPropertyValue -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title th:text="${subject}">Sua fatura DOX</title>
+</head>
+<body style="margin:0;padding:0;background-color:#FAFAFA;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#48484A;-webkit-font-smoothing:antialiased;">
+
+<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#FAFAFA;opacity:0;"
+     th:text="${planName} + ' · ' + ${amountFormatted} + ' · ' + ${paymentMethod}">preheader</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FAFAFA;">
+    <tr>
+        <td align="center" style="padding:40px 16px;">
+
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid #E8E8ED;">
+
+                <th:block th:replace="~{email/fragments/hero :: hero(eyebrow='Pagamento · DOX', title='Sua fatura está pronta.', subtitle=${amountFormatted} + ' · vence em ' + ${dueAtFormatted})}"></th:block>
+
+                <tr>
+                    <td style="padding:36px 48px;font-size:15px;line-height:1.65;color:#48484A;">
+
+                        <p style="margin:0 0 16px 0;">Olá, <span th:text="${professionalFirstName}">profissional</span>.</p>
+                        <p style="margin:0 0 24px 0;">
+                            A cobrança do mês foi gerada. <span th:if="${autoCharge}">O pagamento será processado automaticamente em <strong th:text="${paymentMethod}">cartão final 0000</strong>.</span>
+                            <span th:if="${pixUrl}">Se preferir pagar via Pix, o link está aí embaixo.</span>
+                        </p>
+
+                        <th:block th:if="${pixUrl}" th:replace="~{email/fragments/cta :: cta(label='Pagar com Pix', url=${pixUrl})}"></th:block>
+
+                        <p style="font-size:12px;color:#88888D;background:#FAFAFA;border:1px solid #E8E8ED;border-radius:10px;padding:12px 14px;margin:0 0 24px 0;">
+                            <strong>Plano:</strong> <span th:text="${planName}">Plano</span><br>
+                            <strong>Valor:</strong> <span th:text="${amountFormatted}">R$ 0,00</span><br>
+                            <strong>Vencimento:</strong> <span th:text="${dueAtFormatted}">DD/MM/AAAA</span><br>
+                            <strong>Forma:</strong> <span th:text="${paymentMethod}">Cartão</span>
+                        </p>
+
+                        <p style="font-size:13px;color:#88888D;margin:0;">
+                            Algo errado? Responda este email — a gente lê.
+                        </p>
+
+                    </td>
+                </tr>
+
+                <th:block th:replace="~{email/fragments/footer :: footer(footnote='Você recebeu este email porque tem uma assinatura ativa no DOX.')}"></th:block>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

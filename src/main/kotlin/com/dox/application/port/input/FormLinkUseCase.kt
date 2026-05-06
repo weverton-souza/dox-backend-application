@@ -23,6 +23,7 @@ data class MultiSendCommand(
     val customerId: UUID,
     val expiresInHours: Long = 168,
     val recipients: List<RecipientSpec>,
+    val sendEmail: Boolean = false,
 )
 
 data class PublicFormSubmitCommand(
