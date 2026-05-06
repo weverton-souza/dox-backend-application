@@ -42,6 +42,8 @@ class FormLinkJpaEntity(
     var expiresAt: LocalDateTime = LocalDateTime.now(),
     @Column(name = "first_viewed_at")
     var firstViewedAt: LocalDateTime? = null,
+    @Column(name = "manual_resend_count", nullable = false)
+    var manualResendCount: Int = 0,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

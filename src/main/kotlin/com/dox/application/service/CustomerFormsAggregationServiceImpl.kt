@@ -61,8 +61,6 @@ class CustomerFormsAggregationServiceImpl(
                 mapResponsesToLinks(groupLinks, responses).entries
             }.associate { it.key to it.value }
 
-        val customerName = customer.displayName()
-
         return links
             .groupBy { it.formId to it.formVersionId }
             .map { (key, groupLinks) ->
@@ -86,7 +84,7 @@ class CustomerFormsAggregationServiceImpl(
                             .map { link ->
                                 buildAggregatedRespondent(
                                     link = link,
-                                    customerName = customerName,
+                                    customer = customer,
                                     contact = link.customerContactId?.let { contactsById[it] },
                                     response = responsesByLinkId[link.id],
                                 )
@@ -198,7 +196,7 @@ class CustomerFormsAggregationServiceImpl(
 
     private fun buildAggregatedRespondent(
         link: FormLink,
-        customerName: String?,
+        customer: com.dox.domain.model.Customer,
         contact: CustomerContact?,
         response: FormResponse?,
     ): AggregatedRespondent =
@@ -206,14 +204,27 @@ class CustomerFormsAggregationServiceImpl(
             linkId = link.id,
             responseId = response?.id,
             respondentType = link.respondentType,
-            respondentName = resolveRespondentName(link.respondentType, customerName, contact),
+            respondentName = resolveRespondentName(link.respondentType, customer.displayName(), contact),
+            recipientEmail = resolveRecipientEmail(link.respondentType, customer, contact),
             customerContactId = link.customerContactId,
             relationType = contact?.relationType?.name?.lowercase(),
             status = link.status,
             submittedAt = if (link.status == FormLinkStatus.ANSWERED) response?.updatedAt else null,
             firstViewedAt = link.firstViewedAt,
+            manualResendCount = link.manualResendCount,
             expiresAt = link.expiresAt,
         )
+
+    private fun resolveRecipientEmail(
+        type: RespondentType,
+        customer: com.dox.domain.model.Customer,
+        contact: CustomerContact?,
+    ): String? =
+        when (type) {
+            RespondentType.CUSTOMER -> (customer.data["email"] as? String)?.trim()?.ifBlank { null }
+            RespondentType.CONTACT -> contact?.email?.trim()?.ifBlank { null }
+            RespondentType.PROFESSIONAL -> null
+        }
 
     private fun resolveRespondentName(
         type: RespondentType,

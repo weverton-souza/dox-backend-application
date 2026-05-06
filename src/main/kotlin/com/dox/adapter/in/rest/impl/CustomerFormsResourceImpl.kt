@@ -54,11 +54,13 @@ class CustomerFormsResourceImpl(
             responseId = responseId,
             respondentType = respondentType,
             respondentName = respondentName,
+            recipientEmail = recipientEmail,
             customerContactId = customerContactId,
             relationType = relationType,
             status = status,
             submittedAt = submittedAt,
             firstViewedAt = firstViewedAt,
+            manualResendCount = manualResendCount,
             expiresAt = expiresAt,
         )
 

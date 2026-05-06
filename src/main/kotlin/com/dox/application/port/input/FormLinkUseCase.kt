@@ -71,6 +71,8 @@ interface FormLinkUseCase {
 
     fun revokeFormLink(id: UUID)
 
+    fun resendInvite(id: UUID): FormLinkWithToken
+
     fun resolvePublicForm(token: String): PublicFormData
 
     fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse

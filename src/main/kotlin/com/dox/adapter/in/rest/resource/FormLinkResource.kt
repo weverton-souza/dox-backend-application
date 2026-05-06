@@ -42,4 +42,10 @@ interface FormLinkResource : BaseResource {
     fun revoke(
         @PathVariable id: UUID,
     ): ResponseEntity<Void>
+
+    @Operation(summary = "Reenviar email do convite (manual, max 3 reenvios por link)")
+    @PostMapping("/{id}/resend-invite")
+    fun resendInvite(
+        @PathVariable id: UUID,
+    ): ResponseEntity<FormLinkResponse>
 }
