@@ -38,6 +38,22 @@ data class SendFormInviteEmailCommand(
     val expiresAt: java.time.LocalDateTime,
 )
 
+data class SendFormFollowupEmailCommand(
+    val tenantId: UUID,
+    val formLinkId: UUID,
+    val followupId: UUID,
+    val level: com.dox.domain.email.FollowupLevel,
+    val dayOffset: Int,
+    val recipient: String,
+    val respondentFirstName: String,
+    val isAboutCustomer: Boolean,
+    val customerName: String?,
+    val professionalName: String,
+    val formTitle: String,
+    val formToken: String,
+    val expiresAt: java.time.LocalDateTime,
+)
+
 data class TestEmailCommand(
     val templateId: EmailTemplateId,
     val recipient: String,
@@ -50,6 +66,8 @@ interface EmailUseCase {
     fun sendWelcome(command: SendWelcomeEmailCommand): EmailLog
 
     fun sendFormInvite(command: SendFormInviteEmailCommand): EmailLog
+
+    fun sendFormFollowup(command: SendFormFollowupEmailCommand): EmailLog
 
     fun sendTest(command: TestEmailCommand): EmailLog
 

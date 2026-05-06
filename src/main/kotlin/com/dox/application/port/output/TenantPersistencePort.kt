@@ -16,4 +16,6 @@ interface TenantPersistencePort {
         search: String?,
         pageable: Pageable,
     ): Page<Tenant>
+
+    fun findAll(): List<Tenant>
 }
