@@ -314,6 +314,74 @@ class FormLinkServiceImpl(
         formLinkPersistencePort.save(formLink.copy(status = FormLinkStatus.EXPIRED))
     }
 
+    @Transactional
+    override fun resendInvite(id: UUID): FormLinkWithToken {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+
+        val link =
+            formLinkPersistencePort.findById(id)
+                ?: throw ResourceNotFoundException("FormLink", id.toString())
+
+        if (link.status != FormLinkStatus.PENDING) {
+            throw BusinessException("Apenas links pendentes podem ser reenviados")
+        }
+        if (link.isExpired()) {
+            throw BusinessException("Este link expirou — gere um novo")
+        }
+        if (link.manualResendCount >= FormLink.MAX_MANUAL_RESENDS) {
+            throw BusinessException("Limite de ${FormLink.MAX_MANUAL_RESENDS} reenvios manuais atingido")
+        }
+
+        val customer =
+            customerPersistencePort.findById(link.customerId)
+                ?: throw ResourceNotFoundException("Cliente", link.customerId.toString())
+        val contact = link.customerContactId?.let { customerPersistencePort.findContactById(it) }
+
+        val recipient =
+            resolveRecipientEmail(link, customer, contact)
+                ?: throw BusinessException("Respondente sem email cadastrado")
+
+        val professional =
+            professionalSettingsPersistencePort.find()
+                ?: throw BusinessException("Profissional sem dados cadastrados")
+        val formWithVersion = formUseCase.findFormById(link.formId)
+        val token = authTokenPort.generateFormLinkToken(tenantId, link.id, link.expiresAt)
+
+        val respondentName =
+            when (link.respondentType) {
+                RespondentType.CUSTOMER -> customer.displayName() ?: "cliente"
+                RespondentType.CONTACT -> contact?.name ?: "responsável"
+                RespondentType.PROFESSIONAL -> throw BusinessException("Reenvio não suportado para profissional")
+            }
+
+        eventPublisher.publishEvent(
+            FormInviteEmailRequestedEvent(
+                tenantId = tenantId,
+                formLinkId = link.id,
+                recipient = recipient,
+                respondentName = respondentName,
+                isAboutCustomer = link.respondentType == RespondentType.CONTACT,
+                customerName = customer.displayName(),
+                professionalName = professional.name.ifBlank { "Profissional" },
+                professionalCouncil = professional.formattedCouncil().ifBlank { null },
+                formTitle = formWithVersion.version.title,
+                formToken = token,
+                expiresAt = link.expiresAt,
+            ),
+        )
+
+        val updated =
+            formLinkPersistencePort.save(
+                link.copy(manualResendCount = link.manualResendCount + 1),
+            )
+
+        return FormLinkWithToken(
+            formLink = updated,
+            token = token,
+            respondent = buildRespondentInfo(link.respondentType, customer.displayName(), contact),
+        )
+    }
+
     override fun resolvePublicForm(token: String): PublicFormData {
         val tokenData = extractAndValidateToken(token)
 

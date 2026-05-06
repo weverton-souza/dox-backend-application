@@ -17,8 +17,13 @@ data class FormLink(
     val status: FormLinkStatus = FormLinkStatus.PENDING,
     val expiresAt: LocalDateTime,
     val firstViewedAt: LocalDateTime? = null,
+    val manualResendCount: Int = 0,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 ) {
     fun isExpired(): Boolean = expiresAt.isExpired()
+
+    companion object {
+        const val MAX_MANUAL_RESENDS = 3
+    }
 }

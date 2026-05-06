@@ -24,11 +24,13 @@ data class AggregatedRespondentResponse(
     val responseId: UUID?,
     val respondentType: RespondentType,
     val respondentName: String?,
+    val recipientEmail: String?,
     val customerContactId: UUID?,
     val relationType: String?,
     val status: FormLinkStatus,
     val submittedAt: LocalDateTime?,
     val firstViewedAt: LocalDateTime?,
+    val manualResendCount: Int,
     val expiresAt: LocalDateTime,
 )
 

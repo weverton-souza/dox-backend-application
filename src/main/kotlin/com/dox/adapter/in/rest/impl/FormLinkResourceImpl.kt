@@ -68,6 +68,8 @@ class FormLinkResourceImpl(
         return noContent()
     }
 
+    override fun resendInvite(id: UUID): ResponseEntity<FormLinkResponse> = responseEntity(formLinkUseCase.resendInvite(id).toResponse())
+
     private fun FormLinkWithToken.toResponse() =
         FormLinkResponse(
             id = formLink.id,
@@ -87,6 +89,7 @@ class FormLinkResourceImpl(
             status = formLink.status,
             expiresAt = formLink.expiresAt,
             firstViewedAt = formLink.firstViewedAt,
+            manualResendCount = formLink.manualResendCount,
             createdAt = formLink.createdAt,
             updatedAt = formLink.updatedAt,
         )

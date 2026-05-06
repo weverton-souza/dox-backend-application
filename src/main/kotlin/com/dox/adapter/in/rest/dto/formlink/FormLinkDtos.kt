@@ -58,6 +58,7 @@ data class FormLinkResponse(
     val status: FormLinkStatus,
     val expiresAt: LocalDateTime,
     val firstViewedAt: LocalDateTime? = null,
+    val manualResendCount: Int = 0,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
 )
