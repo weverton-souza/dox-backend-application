@@ -254,8 +254,10 @@ class EmailServiceImpl(
         status: EmailLogStatus,
         providerId: String?,
         errorMessage: String?,
-    ): EmailLog =
-        logPersistencePort.save(
+    ): EmailLog {
+        val formLinkId =
+            runCatching { command.tags["form_link_id"]?.let { UUID.fromString(it) } }.getOrNull()
+        return logPersistencePort.save(
             EmailLog(
                 tenantId = command.tenantId,
                 templateId = command.templateId.templateName,
@@ -266,8 +268,10 @@ class EmailServiceImpl(
                 errorMessage = errorMessage,
                 idempotencyKey = command.idempotencyKey,
                 tags = command.tags,
+                formLinkId = formLinkId,
             ),
         )
+    }
 
     companion object {
         private val EXPIRES_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm", Locale.forLanguageTag("pt-BR"))

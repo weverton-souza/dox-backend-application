@@ -16,6 +16,8 @@ interface EmailLogJpaRepository : JpaRepository<EmailLogJpaEntity, UUID> {
 
     fun findByIdempotencyKey(key: String): EmailLogJpaEntity?
 
+    fun findByFormLinkIdOrderBySentAtDesc(formLinkId: UUID): List<EmailLogJpaEntity>
+
     @Query(
         """
         SELECT l FROM EmailLogJpaEntity l

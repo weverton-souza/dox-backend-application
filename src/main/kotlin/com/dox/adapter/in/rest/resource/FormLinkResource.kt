@@ -1,6 +1,7 @@
 package com.dox.adapter.`in`.rest.resource
 
 import com.dox.adapter.`in`.rest.dto.formlink.CreateFormLinkRequest
+import com.dox.adapter.`in`.rest.dto.formlink.FormLinkEmailHistoryItem
 import com.dox.adapter.`in`.rest.dto.formlink.FormLinkResponse
 import com.dox.adapter.`in`.rest.dto.formlink.MultiSendRequest
 import io.swagger.v3.oas.annotations.Operation
@@ -48,4 +49,10 @@ interface FormLinkResource : BaseResource {
     fun resendInvite(
         @PathVariable id: UUID,
     ): ResponseEntity<FormLinkResponse>
+
+    @Operation(summary = "Lista o histórico de emails enviados para o link (convite + followups + reenvios)")
+    @GetMapping("/{id}/email-history")
+    fun emailHistory(
+        @PathVariable id: UUID,
+    ): ResponseEntity<List<FormLinkEmailHistoryItem>>
 }

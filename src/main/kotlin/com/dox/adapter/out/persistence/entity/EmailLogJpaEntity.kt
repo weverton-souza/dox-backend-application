@@ -43,6 +43,8 @@ class EmailLogJpaEntity(
     @Type(JsonType::class)
     @Column(name = "tags", columnDefinition = "jsonb")
     var tags: Map<String, String> = emptyMap(),
+    @Column(name = "form_link_id")
+    var formLinkId: UUID? = null,
     @CreatedDate
     @Column(name = "sent_at", nullable = false, updatable = false)
     var sentAt: LocalDateTime? = null,

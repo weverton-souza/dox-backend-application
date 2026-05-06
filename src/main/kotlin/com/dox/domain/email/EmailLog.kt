@@ -26,6 +26,7 @@ data class EmailLog(
     val errorMessage: String? = null,
     val idempotencyKey: String? = null,
     val tags: Map<String, String> = emptyMap(),
+    val formLinkId: UUID? = null,
     val sentAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 )

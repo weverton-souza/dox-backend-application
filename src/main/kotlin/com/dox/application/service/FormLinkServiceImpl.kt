@@ -13,6 +13,7 @@ import com.dox.application.port.input.RespondentInfo
 import com.dox.application.port.input.SavePublicDraftCommand
 import com.dox.application.port.output.AuthTokenPort
 import com.dox.application.port.output.CustomerPersistencePort
+import com.dox.application.port.output.EmailLogPersistencePort
 import com.dox.application.port.output.FormDraftPersistencePort
 import com.dox.application.port.output.FormLinkFollowupPersistencePort
 import com.dox.application.port.output.FormLinkPersistencePort
@@ -47,6 +48,7 @@ class FormLinkServiceImpl(
     private val formDraftPersistencePort: FormDraftPersistencePort,
     private val professionalSettingsPersistencePort: ProfessionalSettingsPersistencePort,
     private val formLinkFollowupPersistencePort: FormLinkFollowupPersistencePort,
+    private val emailLogPersistencePort: EmailLogPersistencePort,
     private val eventPublisher: ApplicationEventPublisher,
 ) : FormLinkUseCase {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -380,6 +382,12 @@ class FormLinkServiceImpl(
             token = token,
             respondent = buildRespondentInfo(link.respondentType, customer.displayName(), contact),
         )
+    }
+
+    override fun findEmailHistory(formLinkId: UUID): List<com.dox.domain.email.EmailLog> {
+        formLinkPersistencePort.findById(formLinkId)
+            ?: throw ResourceNotFoundException("FormLink", formLinkId.toString())
+        return emailLogPersistencePort.findByFormLinkId(formLinkId)
     }
 
     override fun resolvePublicForm(token: String): PublicFormData {

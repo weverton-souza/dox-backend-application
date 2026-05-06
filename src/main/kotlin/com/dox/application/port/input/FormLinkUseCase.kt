@@ -73,6 +73,8 @@ interface FormLinkUseCase {
 
     fun resendInvite(id: UUID): FormLinkWithToken
 
+    fun findEmailHistory(formLinkId: UUID): List<com.dox.domain.email.EmailLog>
+
     fun resolvePublicForm(token: String): PublicFormData
 
     fun submitPublicForm(command: PublicFormSubmitCommand): FormResponse

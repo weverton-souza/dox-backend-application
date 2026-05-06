@@ -28,6 +28,7 @@ class EmailLogPersistenceAdapter(
                 errorMessage = log.errorMessage
                 idempotencyKey = log.idempotencyKey
                 tags = log.tags
+                formLinkId = log.formLinkId
             }
         return repository.save(entity).toDomain()
     }
@@ -37,6 +38,8 @@ class EmailLogPersistenceAdapter(
     override fun findByProviderId(providerId: String): EmailLog? = repository.findByProviderId(providerId)?.toDomain()
 
     override fun findByIdempotencyKey(key: String): EmailLog? = repository.findByIdempotencyKey(key)?.toDomain()
+
+    override fun findByFormLinkId(formLinkId: UUID): List<EmailLog> = repository.findByFormLinkIdOrderBySentAtDesc(formLinkId).map { it.toDomain() }
 
     override fun findPaginated(
         templateId: String?,
@@ -65,6 +68,7 @@ class EmailLogPersistenceAdapter(
             errorMessage = errorMessage,
             idempotencyKey = idempotencyKey,
             tags = tags,
+            formLinkId = formLinkId,
             sentAt = sentAt ?: LocalDateTime.now(),
             updatedAt = updatedAt ?: LocalDateTime.now(),
         )
