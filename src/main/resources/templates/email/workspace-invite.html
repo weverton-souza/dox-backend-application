@@ -1,0 +1,52 @@
+<!--suppress HtmlDeprecatedAttribute, CssInvalidPropertyValue -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title th:text="${subject}">Convite para workspace</title>
+</head>
+<body style="margin:0;padding:0;background-color:#FAFAFA;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#48484A;-webkit-font-smoothing:antialiased;">
+
+<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#FAFAFA;opacity:0;"
+     th:text="${inviterName} + ' convidou você para ' + ${workspaceName}">preheader</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FAFAFA;">
+    <tr>
+        <td align="center" style="padding:40px 16px;">
+
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid #E8E8ED;">
+
+                <th:block th:replace="~{email/fragments/hero :: hero(eyebrow='Workspace · DOX', title='Você foi convidado.', subtitle=${inviterName} + ' convidou você para ' + ${workspaceName} + '.')}"></th:block>
+
+                <tr>
+                    <td style="padding:36px 48px;font-size:15px;line-height:1.65;color:#48484A;">
+
+                        <p style="margin:0 0 16px 0;">Olá<span th:if="${inviteeFirstName}" th:text="', ' + ${inviteeFirstName}">, fulano</span>.</p>
+                        <p style="margin:0 0 24px 0;">
+                            <span th:text="${inviterName}">Inviter</span> quer que você colabore no workspace <strong th:text="${workspaceName}">Clínica</strong> como <strong th:text="${role}">membro</strong>. Ao aceitar, você terá acesso aos relatórios, clientes e formulários compartilhados.
+                        </p>
+
+                        <th:block th:replace="~{email/fragments/cta :: cta(label='Aceitar convite', url=${acceptUrl})}"></th:block>
+
+                        <th:block th:replace="~{email/fragments/fallback :: fallback(url=${acceptUrl})}"></th:block>
+
+                        <p style="font-size:13px;color:#88888D;margin:24px 0 0 0;">
+                            Não conhece <span th:text="${inviterName}">a pessoa que convidou</span>? Pode ignorar este email — nada será criado.
+                        </p>
+
+                    </td>
+                </tr>
+
+                <th:block th:replace="~{email/fragments/footer :: footer(footnote='Este convite expira em ' + ${expiresAtFormatted} + '.')}"></th:block>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.dox.adapter.out.email.template
 
+import com.dox.domain.email.EmailPalettes
 import com.dox.domain.email.EmailTemplateId
 import com.dox.domain.email.RenderedEmail
 import org.springframework.stereotype.Component
@@ -19,6 +20,9 @@ class EmailTemplateRenderer(
         val context =
             Context(Locale.forLanguageTag("pt-BR")).apply {
                 setVariable("subject", subject)
+                setVariable("palette", EmailPalettes.resolve(template))
+                setVariable("category", template.category.name)
+                setVariable("followupLevel", template.followupLevel?.name)
                 variables.forEach { (key, value) -> setVariable(key, value) }
             }
 

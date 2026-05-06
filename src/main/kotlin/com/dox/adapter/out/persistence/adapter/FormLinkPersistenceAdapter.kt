@@ -23,6 +23,7 @@ class FormLinkPersistenceAdapter(
         entity.createdBy = formLink.createdBy
         entity.status = formLink.status
         entity.expiresAt = formLink.expiresAt
+        entity.firstViewedAt = formLink.firstViewedAt
         return formLinkJpaRepository.save(entity).toDomain()
     }
 
@@ -52,6 +53,7 @@ class FormLinkPersistenceAdapter(
             createdBy = createdBy,
             status = status,
             expiresAt = expiresAt,
+            firstViewedAt = firstViewedAt,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )

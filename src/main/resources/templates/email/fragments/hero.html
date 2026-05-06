@@ -1,0 +1,25 @@
+<!--suppress HtmlDeprecatedAttribute, CssInvalidPropertyValue -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="hero(eyebrow, title, subtitle)">
+    <tr>
+        <td th:style="'padding:40px 48px;background:' + ${palette.hero}">
+            <div th:style="'font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:24px;color:' + ${palette.heroEyebrow}"
+                 th:text="${eyebrow}">DOX</div>
+            <h1 th:style="'margin:0;font-size:26px;line-height:1.25;font-weight:700;color:' + ${palette.heroTextColor} + ';font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif'"
+                th:utext="${title}">
+                Título
+            </h1>
+            <p th:if="${subtitle}"
+               th:style="'margin:16px 0 0 0;font-size:15px;line-height:1.55;color:' + ${palette.heroSubtle}"
+               th:utext="${subtitle}">
+                Subtítulo
+            </p>
+        </td>
+    </tr>
+</th:block>
+
+</body>
+</html>

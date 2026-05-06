@@ -40,6 +40,8 @@ class FormLinkJpaEntity(
     var status: FormLinkStatus = FormLinkStatus.PENDING,
     @Column(name = "expires_at", nullable = false)
     var expiresAt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "first_viewed_at")
+    var firstViewedAt: LocalDateTime? = null,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

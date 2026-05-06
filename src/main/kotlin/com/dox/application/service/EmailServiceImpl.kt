@@ -3,6 +3,7 @@ package com.dox.application.service
 import com.dox.adapter.out.email.config.EmailProperties
 import com.dox.adapter.out.email.template.EmailTemplateRenderer
 import com.dox.application.port.input.EmailUseCase
+import com.dox.application.port.input.SendFormInviteEmailCommand
 import com.dox.application.port.input.SendTemplatedEmailCommand
 import com.dox.application.port.input.SendWelcomeEmailCommand
 import com.dox.application.port.input.TestEmailCommand
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.UUID
 
 @Service
@@ -84,6 +87,45 @@ class EmailServiceImpl(
                     ),
                 idempotencyKey = "${command.userId}-WELCOME",
                 tags = mapOf("user_id" to command.userId.toString()),
+            ),
+        )
+    }
+
+    @Transactional
+    override fun sendFormInvite(command: SendFormInviteEmailCommand): EmailLog {
+        val formUrl = "${properties.frontendUrl.trimEnd('/')}/public/forms/${command.formToken}"
+        val expiresAtFormatted = command.expiresAt.format(EXPIRES_FORMATTER)
+
+        val subject =
+            if (command.isAboutCustomer) {
+                "Questionário sobre ${command.customerName ?: "cliente"} — ${command.professionalName}"
+            } else {
+                "Você recebeu um questionário de ${command.professionalName}"
+            }
+
+        return sendTemplated(
+            SendTemplatedEmailCommand(
+                templateId = EmailTemplateId.FORM_INVITE,
+                recipient = command.recipient,
+                subject = subject,
+                variables =
+                    mapOf(
+                        "respondentName" to command.respondentName,
+                        "isAboutCustomer" to command.isAboutCustomer,
+                        "customerName" to command.customerName,
+                        "professionalName" to command.professionalName,
+                        "professionalCouncil" to command.professionalCouncil,
+                        "formTitle" to command.formTitle,
+                        "formUrl" to formUrl,
+                        "expiresAtFormatted" to expiresAtFormatted,
+                    ),
+                tenantId = command.tenantId,
+                idempotencyKey = "${command.formLinkId}-FORM_INVITE",
+                tags =
+                    mapOf(
+                        "form_link_id" to command.formLinkId.toString(),
+                        "tenant_id" to command.tenantId.toString(),
+                    ),
             ),
         )
     }
@@ -176,4 +218,8 @@ class EmailServiceImpl(
                 tags = command.tags,
             ),
         )
+
+    companion object {
+        private val EXPIRES_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm", Locale.forLanguageTag("pt-BR"))
+    }
 }

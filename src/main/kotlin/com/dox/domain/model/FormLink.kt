@@ -16,6 +16,7 @@ data class FormLink(
     val createdBy: UUID,
     val status: FormLinkStatus = FormLinkStatus.PENDING,
     val expiresAt: LocalDateTime,
+    val firstViewedAt: LocalDateTime? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 ) {

@@ -1,0 +1,13 @@
+<!--suppress HtmlDeprecatedAttribute, CssInvalidPropertyValue -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="fallback(url)">
+    <p style="margin:0;font-size:11px;line-height:1.5;color:#88888D;word-break:break-all;">
+        Ou cole no navegador: <a th:href="${url}" th:text="${url}" style="color:#88888D;text-decoration:underline;">https://...</a>
+    </p>
+</th:block>
+
+</body>
+</html>

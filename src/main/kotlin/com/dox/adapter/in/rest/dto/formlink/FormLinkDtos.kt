@@ -36,6 +36,7 @@ data class MultiSendRequest(
     @field:Size(max = 20, message = "Máximo de 20 respondentes por envio")
     @field:Valid
     val recipients: List<RecipientRequest>,
+    val sendEmail: Boolean = false,
 )
 
 data class RespondentInfoResponse(
@@ -56,6 +57,7 @@ data class FormLinkResponse(
     val respondent: RespondentInfoResponse,
     val status: FormLinkStatus,
     val expiresAt: LocalDateTime,
+    val firstViewedAt: LocalDateTime? = null,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
 )

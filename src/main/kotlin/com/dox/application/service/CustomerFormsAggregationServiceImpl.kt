@@ -211,6 +211,7 @@ class CustomerFormsAggregationServiceImpl(
             relationType = contact?.relationType?.name?.lowercase(),
             status = link.status,
             submittedAt = if (link.status == FormLinkStatus.ANSWERED) response?.updatedAt else null,
+            firstViewedAt = link.firstViewedAt,
             expiresAt = link.expiresAt,
         )
 
