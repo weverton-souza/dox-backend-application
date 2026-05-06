@@ -1,6 +1,7 @@
 package com.dox.adapter.`in`.rest.impl
 
 import com.dox.adapter.`in`.rest.dto.formlink.CreateFormLinkRequest
+import com.dox.adapter.`in`.rest.dto.formlink.FormLinkEmailHistoryItem
 import com.dox.adapter.`in`.rest.dto.formlink.FormLinkResponse
 import com.dox.adapter.`in`.rest.dto.formlink.MultiSendRequest
 import com.dox.adapter.`in`.rest.dto.formlink.RespondentInfoResponse
@@ -69,6 +70,22 @@ class FormLinkResourceImpl(
     }
 
     override fun resendInvite(id: UUID): ResponseEntity<FormLinkResponse> = responseEntity(formLinkUseCase.resendInvite(id).toResponse())
+
+    override fun emailHistory(id: UUID): ResponseEntity<List<FormLinkEmailHistoryItem>> =
+        responseEntity(
+            formLinkUseCase.findEmailHistory(id).map { log ->
+                FormLinkEmailHistoryItem(
+                    id = log.id,
+                    templateId = log.templateId,
+                    recipientEmail = log.recipientEmail,
+                    subject = log.subject,
+                    status = log.status,
+                    errorMessage = log.errorMessage,
+                    sentAt = log.sentAt,
+                    updatedAt = log.updatedAt,
+                )
+            },
+        )
 
     private fun FormLinkWithToken.toResponse() =
         FormLinkResponse(

@@ -63,6 +63,17 @@ data class FormLinkResponse(
     val updatedAt: LocalDateTime?,
 )
 
+data class FormLinkEmailHistoryItem(
+    val id: UUID,
+    val templateId: String,
+    val recipientEmail: String,
+    val subject: String,
+    val status: com.dox.domain.email.EmailLogStatus,
+    val errorMessage: String?,
+    val sentAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
+)
+
 data class PublicFormResponse(
     val formTitle: String,
     val formDescription: String?,

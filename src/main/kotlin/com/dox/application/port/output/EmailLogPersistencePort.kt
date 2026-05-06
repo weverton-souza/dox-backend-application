@@ -15,6 +15,8 @@ interface EmailLogPersistencePort {
 
     fun findByIdempotencyKey(key: String): EmailLog?
 
+    fun findByFormLinkId(formLinkId: UUID): List<EmailLog>
+
     fun findPaginated(
         templateId: String?,
         status: EmailLogStatus?,
