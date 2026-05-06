@@ -8,6 +8,7 @@ import com.dox.application.port.input.CustomerFormsAggregationUseCase
 import com.dox.application.port.input.FormSummary
 import com.dox.application.port.input.FormVersionSummary
 import com.dox.application.port.output.CustomerPersistencePort
+import com.dox.application.port.output.FormDraftPersistencePort
 import com.dox.application.port.output.FormLinkPersistencePort
 import com.dox.application.port.output.FormPersistencePort
 import com.dox.application.scoring.ScoringEngine
@@ -30,6 +31,7 @@ class CustomerFormsAggregationServiceImpl(
     private val formLinkPersistencePort: FormLinkPersistencePort,
     private val formPersistencePort: FormPersistencePort,
     private val customerPersistencePort: CustomerPersistencePort,
+    private val formDraftPersistencePort: FormDraftPersistencePort,
     private val scoringEngine: ScoringEngine,
     private val scoringMapper: ScoringMapper,
 ) : CustomerFormsAggregationUseCase {
@@ -61,6 +63,10 @@ class CustomerFormsAggregationServiceImpl(
                 mapResponsesToLinks(groupLinks, responses).entries
             }.associate { it.key to it.value }
 
+        val pendingLinkIds = links.filter { it.status == FormLinkStatus.PENDING }.map { it.id }
+        val draftsByLinkId =
+            formDraftPersistencePort.findByFormLinkIds(pendingLinkIds).associateBy { it.formLinkId }
+
         return links
             .groupBy { it.formId to it.formVersionId }
             .map { (key, groupLinks) ->
@@ -87,6 +93,8 @@ class CustomerFormsAggregationServiceImpl(
                                     customer = customer,
                                     contact = link.customerContactId?.let { contactsById[it] },
                                     response = responsesByLinkId[link.id],
+                                    draft = draftsByLinkId[link.id],
+                                    versionFields = version?.fields ?: emptyList(),
                                 )
                             },
                 )
@@ -199,8 +207,17 @@ class CustomerFormsAggregationServiceImpl(
         customer: com.dox.domain.model.Customer,
         contact: CustomerContact?,
         response: FormResponse?,
-    ): AggregatedRespondent =
-        AggregatedRespondent(
+        draft: com.dox.domain.model.FormDraft? = null,
+        versionFields: List<Map<String, Any?>> = emptyList(),
+    ): AggregatedRespondent {
+        val progress =
+            if (draft != null && link.status == FormLinkStatus.PENDING) {
+                calculateProgress(draft.partialResponse, versionFields)
+            } else {
+                null
+            }
+
+        return AggregatedRespondent(
             linkId = link.id,
             responseId = response?.id,
             respondentType = link.respondentType,
@@ -212,8 +229,44 @@ class CustomerFormsAggregationServiceImpl(
             submittedAt = if (link.status == FormLinkStatus.ANSWERED) response?.updatedAt else null,
             firstViewedAt = link.firstViewedAt,
             manualResendCount = link.manualResendCount,
+            progressPercent = progress?.percent,
+            currentPageIndex = progress?.currentPage,
+            totalPages = progress?.totalPages,
+            lastDraftSavedAt = draft?.savedAt,
             expiresAt = link.expiresAt,
         )
+    }
+
+    private data class DraftProgress(
+        val percent: Int,
+        val currentPage: Int?,
+        val totalPages: Int?,
+    )
+
+    @Suppress("UNCHECKED_CAST")
+    private fun calculateProgress(
+        partial: Map<String, Any?>,
+        fields: List<Map<String, Any?>>,
+    ): DraftProgress? {
+        if (fields.isEmpty()) return null
+        val answeredCount = (partial["answers"] as? List<Map<String, Any?>>)?.size ?: 0
+        val totalAnswerable = fields.count { (it["type"] as? String) != "section-header" }
+        val percent =
+            if (totalAnswerable > 0) {
+                ((answeredCount.toDouble() / totalAnswerable) * 100).toInt().coerceIn(0, 100)
+            } else {
+                0
+            }
+        val currentPage = (partial["currentPage"] as? Number)?.toInt()
+        val totalPages = computeTotalPages(fields)
+        return DraftProgress(percent = percent, currentPage = currentPage, totalPages = totalPages)
+    }
+
+    private fun computeTotalPages(fields: List<Map<String, Any?>>): Int {
+        if (fields.isEmpty()) return 0
+        val sectionHeaders = fields.count { (it["type"] as? String) == "section-header" }
+        return if (sectionHeaders == 0) 1 else sectionHeaders
+    }
 
     private fun resolveRecipientEmail(
         type: RespondentType,

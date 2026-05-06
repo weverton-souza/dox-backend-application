@@ -61,6 +61,10 @@ class CustomerFormsResourceImpl(
             submittedAt = submittedAt,
             firstViewedAt = firstViewedAt,
             manualResendCount = manualResendCount,
+            progressPercent = progressPercent,
+            currentPageIndex = currentPageIndex,
+            totalPages = totalPages,
+            lastDraftSavedAt = lastDraftSavedAt,
             expiresAt = expiresAt,
         )
 

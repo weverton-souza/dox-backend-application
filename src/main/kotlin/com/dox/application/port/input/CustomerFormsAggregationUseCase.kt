@@ -32,6 +32,10 @@ data class AggregatedRespondent(
     val submittedAt: LocalDateTime?,
     val firstViewedAt: LocalDateTime?,
     val manualResendCount: Int,
+    val progressPercent: Int?,
+    val currentPageIndex: Int?,
+    val totalPages: Int?,
+    val lastDraftSavedAt: LocalDateTime?,
     val expiresAt: LocalDateTime,
 )
 
