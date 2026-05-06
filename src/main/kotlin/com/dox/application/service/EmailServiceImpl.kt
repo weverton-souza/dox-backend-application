@@ -3,6 +3,7 @@ package com.dox.application.service
 import com.dox.adapter.out.email.config.EmailProperties
 import com.dox.adapter.out.email.template.EmailTemplateRenderer
 import com.dox.application.port.input.EmailUseCase
+import com.dox.application.port.input.SendFormFollowupEmailCommand
 import com.dox.application.port.input.SendFormInviteEmailCommand
 import com.dox.application.port.input.SendTemplatedEmailCommand
 import com.dox.application.port.input.SendWelcomeEmailCommand
@@ -124,6 +125,55 @@ class EmailServiceImpl(
                 tags =
                     mapOf(
                         "form_link_id" to command.formLinkId.toString(),
+                        "tenant_id" to command.tenantId.toString(),
+                    ),
+            ),
+        )
+    }
+
+    @Transactional
+    override fun sendFormFollowup(command: SendFormFollowupEmailCommand): EmailLog {
+        val formUrl = "${properties.frontendUrl.trimEnd('/')}/public/forms/${command.formToken}"
+        val expiresAtFormatted = command.expiresAt.format(EXPIRES_FORMATTER)
+        val daysRemaining = java.time.Duration.between(java.time.LocalDateTime.now(), command.expiresAt).toDays().coerceAtLeast(0).toInt()
+
+        val templateId =
+            when (command.level) {
+                com.dox.domain.email.FollowupLevel.SOFT -> EmailTemplateId.FORM_FOLLOWUP_SOFT
+                com.dox.domain.email.FollowupLevel.MEDIUM -> EmailTemplateId.FORM_FOLLOWUP_MEDIUM
+                com.dox.domain.email.FollowupLevel.URGENT -> EmailTemplateId.FORM_FOLLOWUP_URGENT
+            }
+
+        val subject =
+            when (command.level) {
+                com.dox.domain.email.FollowupLevel.SOFT -> "Lembrete: questionário de ${command.professionalName}"
+                com.dox.domain.email.FollowupLevel.MEDIUM -> "Seu questionário expira em $daysRemaining dias"
+                com.dox.domain.email.FollowupLevel.URGENT -> "Último dia — questionário expira hoje"
+            }
+
+        return sendTemplated(
+            SendTemplatedEmailCommand(
+                templateId = templateId,
+                recipient = command.recipient,
+                subject = subject,
+                variables =
+                    mapOf(
+                        "respondentFirstName" to command.respondentFirstName,
+                        "isAboutCustomer" to command.isAboutCustomer,
+                        "customerName" to command.customerName,
+                        "professionalName" to command.professionalName,
+                        "formTitle" to command.formTitle,
+                        "formUrl" to formUrl,
+                        "expiresAtFormatted" to expiresAtFormatted,
+                        "daysRemaining" to daysRemaining,
+                    ),
+                tenantId = command.tenantId,
+                idempotencyKey = "${command.formLinkId}-FOLLOWUP-${command.level.name}-D${command.dayOffset}",
+                tags =
+                    mapOf(
+                        "form_link_id" to command.formLinkId.toString(),
+                        "followup_id" to command.followupId.toString(),
+                        "followup_level" to command.level.name,
                         "tenant_id" to command.tenantId.toString(),
                     ),
             ),

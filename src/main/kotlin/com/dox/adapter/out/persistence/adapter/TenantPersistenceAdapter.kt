@@ -42,6 +42,8 @@ class TenantPersistenceAdapter(
         return page.map { it.toDomain() }
     }
 
+    override fun findAll(): List<Tenant> = tenantJpaRepository.findAll().map { it.toDomain() }
+
     private fun TenantJpaEntity.toDomain() =
         Tenant(
             id = id,

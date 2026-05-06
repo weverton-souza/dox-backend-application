@@ -14,8 +14,10 @@ import com.dox.application.port.input.SavePublicDraftCommand
 import com.dox.application.port.output.AuthTokenPort
 import com.dox.application.port.output.CustomerPersistencePort
 import com.dox.application.port.output.FormDraftPersistencePort
+import com.dox.application.port.output.FormLinkFollowupPersistencePort
 import com.dox.application.port.output.FormLinkPersistencePort
 import com.dox.application.port.output.ProfessionalSettingsPersistencePort
+import com.dox.domain.email.FollowupSchedule
 import com.dox.domain.enum.FormLinkStatus
 import com.dox.domain.enum.RespondentType
 import com.dox.domain.exception.BusinessException
@@ -24,6 +26,7 @@ import com.dox.domain.model.Customer
 import com.dox.domain.model.CustomerContact
 import com.dox.domain.model.FormDraft
 import com.dox.domain.model.FormLink
+import com.dox.domain.model.FormLinkFollowup
 import com.dox.domain.model.FormResponse
 import com.dox.shared.ContextHolder
 import com.dox.shared.TenantContext
@@ -43,6 +46,7 @@ class FormLinkServiceImpl(
     private val authTokenPort: AuthTokenPort,
     private val formDraftPersistencePort: FormDraftPersistencePort,
     private val professionalSettingsPersistencePort: ProfessionalSettingsPersistencePort,
+    private val formLinkFollowupPersistencePort: FormLinkFollowupPersistencePort,
     private val eventPublisher: ApplicationEventPublisher,
 ) : FormLinkUseCase {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -154,6 +158,7 @@ class FormLinkServiceImpl(
                         professionalName = professional.name.ifBlank { "Profissional" },
                         professionalCouncil = professional.formattedCouncil().ifBlank { null },
                     )
+                    scheduleFollowups(link, command.expiresInHours)
                 }
 
                 FormLinkWithToken(
@@ -212,6 +217,26 @@ class FormLinkServiceImpl(
             RespondentType.CONTACT -> contact?.email?.trim()?.ifBlank { null }
             RespondentType.PROFESSIONAL -> null
         }
+
+    private fun scheduleFollowups(
+        link: FormLink,
+        ttlHours: Long,
+    ) {
+        val baseTime = link.createdAt ?: LocalDateTime.now()
+        val steps = FollowupSchedule.forTtlHours(ttlHours)
+        if (steps.isEmpty()) return
+
+        val followups =
+            steps.map { step ->
+                FormLinkFollowup(
+                    formLinkId = link.id,
+                    level = step.level,
+                    dayOffset = step.dayOffset,
+                    scheduledFor = baseTime.plusDays(step.dayOffset.toLong()),
+                )
+            }
+        formLinkFollowupPersistencePort.saveAll(followups)
+    }
 
     private fun validateRecipient(recipient: RecipientSpec) {
         when (recipient.respondentType) {
