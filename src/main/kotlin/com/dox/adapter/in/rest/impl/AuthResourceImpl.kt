@@ -108,5 +108,6 @@ class AuthResourceImpl(
             tenantId = tenantId,
             vertical = vertical,
             emailVerified = emailVerified,
+            customerLabel = customerLabel,
         )
 }

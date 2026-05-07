@@ -47,6 +47,7 @@ class AuthServiceImpl(
     private val organizationPersistencePort: OrganizationPersistencePort,
     private val authTokenPort: AuthTokenPort,
     private val passwordEncoderPort: PasswordEncoderPort,
+    private val customerLabelService: CustomerLabelService,
     private val eventPublisher: ApplicationEventPublisher,
 ) : AuthUseCase {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -183,6 +184,7 @@ class AuthServiceImpl(
             tenantId = command.tenantId,
             vertical = tenant.vertical,
             emailVerified = user.emailVerifiedAt != null,
+            customerLabel = customerLabelService.resolveForTenant(command.tenantId, tenant.vertical),
         )
     }
 
@@ -242,6 +244,7 @@ class AuthServiceImpl(
             tenantId = tenantId,
             vertical = tenant.vertical,
             emailVerified = user.emailVerifiedAt != null,
+            customerLabel = customerLabelService.resolveForTenant(tenantId, tenant.vertical),
         )
     }
 

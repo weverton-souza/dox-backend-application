@@ -53,6 +53,8 @@ class ProfessionalSettingsJpaEntity(
     @Type(JsonType::class)
     @Column(name = "contact_items", columnDefinition = "jsonb")
     var contactItems: List<Map<String, Any?>> = emptyList(),
+    @Column(name = "customer_label_override", length = 40)
+    var customerLabelOverride: String? = null,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

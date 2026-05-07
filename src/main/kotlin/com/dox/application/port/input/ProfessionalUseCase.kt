@@ -19,6 +19,7 @@ data class UpdateProfessionalCommand(
     val email: String? = null,
     val logo: String? = null,
     val contactItems: List<Map<String, Any?>> = emptyList(),
+    val customerLabelOverride: String? = null,
 )
 
 interface ProfessionalUseCase {
