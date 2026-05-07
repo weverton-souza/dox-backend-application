@@ -21,6 +21,7 @@ data class ProfessionalSettings(
     val email: String? = null,
     val logo: String? = null,
     val contactItems: List<Map<String, Any?>> = emptyList(),
+    val customerLabelOverride: String? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 ) {

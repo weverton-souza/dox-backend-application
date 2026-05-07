@@ -36,6 +36,8 @@ data class ProfessionalRequest(
     val email: String? = null,
     val logo: String? = null,
     val contactItems: List<Map<String, Any?>> = emptyList(),
+    @field:Size(max = 40, message = "Label do cliente deve ter no máximo 40 caracteres")
+    val customerLabelOverride: String? = null,
 )
 
 data class ProfessionalResponse(
@@ -56,4 +58,6 @@ data class ProfessionalResponse(
     val email: String?,
     val logo: String?,
     val contactItems: List<Map<String, Any?>>,
+    val customerLabel: String,
+    val customerLabelOverride: String?,
 )

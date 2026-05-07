@@ -58,4 +58,5 @@ data class AuthResponse(
     val tenantId: UUID,
     val vertical: Vertical,
     val emailVerified: Boolean,
+    val customerLabel: String,
 )

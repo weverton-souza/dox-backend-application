@@ -5,13 +5,19 @@ import com.dox.adapter.`in`.rest.dto.professional.ProfessionalResponse
 import com.dox.adapter.`in`.rest.resource.ProfessionalResource
 import com.dox.application.port.input.ProfessionalUseCase
 import com.dox.application.port.input.UpdateProfessionalCommand
+import com.dox.application.port.output.TenantPersistencePort
+import com.dox.domain.enum.CustomerLabels
+import com.dox.domain.enum.Vertical
+import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.domain.model.ProfessionalSettings
+import com.dox.shared.ContextHolder
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProfessionalResourceImpl(
     private val professionalUseCase: ProfessionalUseCase,
+    private val tenantPersistencePort: TenantPersistencePort,
 ) : ProfessionalResource {
     override fun get(): ResponseEntity<ProfessionalResponse> = responseEntity(professionalUseCase.get().toResponse())
 
@@ -35,12 +41,14 @@ class ProfessionalResourceImpl(
                     email = request.email,
                     logo = request.logo,
                     contactItems = request.contactItems,
+                    customerLabelOverride = request.customerLabelOverride,
                 ),
             ).toResponse(),
         )
 
-    private fun ProfessionalSettings.toResponse() =
-        ProfessionalResponse(
+    private fun ProfessionalSettings.toResponse(): ProfessionalResponse {
+        val vertical = currentTenantVertical()
+        return ProfessionalResponse(
             id = id,
             name = name,
             socialName = socialName,
@@ -58,5 +66,16 @@ class ProfessionalResourceImpl(
             email = email,
             logo = logo,
             contactItems = contactItems,
+            customerLabel = CustomerLabels.resolve(vertical, customerLabelOverride),
+            customerLabelOverride = customerLabelOverride,
         )
+    }
+
+    private fun currentTenantVertical(): Vertical {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        val tenant =
+            tenantPersistencePort.findById(tenantId)
+                ?: throw ResourceNotFoundException("Tenant", tenantId.toString())
+        return tenant.vertical
+    }
 }

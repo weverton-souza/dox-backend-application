@@ -24,6 +24,7 @@ data class AuthResult(
     val tenantId: UUID,
     val vertical: Vertical,
     val emailVerified: Boolean,
+    val customerLabel: String,
 )
 
 data class SwitchTenantCommand(

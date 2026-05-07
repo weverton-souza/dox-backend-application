@@ -32,6 +32,7 @@ class ProfessionalSettingsPersistenceAdapter(
         entity.email = settings.email
         entity.logo = settings.logo
         entity.contactItems = settings.contactItems
+        entity.customerLabelOverride = settings.customerLabelOverride
         return repository.save(entity).toDomain()
     }
 
@@ -54,6 +55,7 @@ class ProfessionalSettingsPersistenceAdapter(
             email = email,
             logo = logo,
             contactItems = contactItems,
+            customerLabelOverride = customerLabelOverride,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )

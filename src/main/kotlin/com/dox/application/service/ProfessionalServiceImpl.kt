@@ -34,6 +34,7 @@ class ProfessionalServiceImpl(
                 email = command.email,
                 logo = command.logo,
                 contactItems = command.contactItems,
+                customerLabelOverride = command.customerLabelOverride?.takeIf { it.isNotBlank() },
             )
         return persistencePort.save(updated)
     }
