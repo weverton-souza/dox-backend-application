@@ -113,6 +113,8 @@ class SecurityConfig(
             "/modules/catalog",
             "/bundles",
             "/bundles/*",
+            "/addons",
+            "/addons/*",
             "/webhooks/**",
             "/actuator/health",
             "/error",
