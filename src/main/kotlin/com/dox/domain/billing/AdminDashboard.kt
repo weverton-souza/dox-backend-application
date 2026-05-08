@@ -56,6 +56,41 @@ data class RecentSignup(
     val subscriptionStatus: SubscriptionStatus?,
 )
 
+data class RevenueSnapshot(
+    val year: Int,
+    val month: Int,
+    val mrrCents: Long,
+    val arrCents: Long,
+    val activeSubscriptions: Int,
+    val trialSubscriptions: Int,
+    val overdueAmountCents: Long,
+    val newSignups: Int,
+    val canceledSubscriptions: Int,
+    val trialStarted: Int,
+    val trialConverted: Int,
+    val capturedAt: LocalDateTime,
+)
+
+data class ChurnPoint(
+    val year: Int,
+    val month: Int,
+    val churnRatePct: Double,
+    val canceled: Int,
+    val activeAtStart: Int,
+)
+
+data class TrialConversion(
+    val started: Int,
+    val converted: Int,
+    val pct: Double,
+)
+
+data class LtvEstimate(
+    val cents: Long,
+    val churnRatePct: Double,
+    val arpuCents: Long,
+)
+
 data class AdminDashboardSnapshot(
     val period: DashboardPeriod,
     val periodStart: LocalDateTime,
@@ -65,8 +100,12 @@ data class AdminDashboardSnapshot(
     val activeSubscriptions: KpiValue,
     val trials: KpiValue,
     val signupsInPeriod: KpiValue,
+    val churnRatePct: Double?,
+    val ltvCents: Long?,
+    val trialConversion: TrialConversion?,
     val overdue: OverdueSummary,
     val revenueLast12Months: List<RevenuePoint>,
+    val churnLast12Months: List<ChurnPoint>,
     val revenueByMethod: List<MethodRevenue>,
     val topModulesByRevenue: List<ModuleRevenue>,
     val recentSignups: List<RecentSignup>,
