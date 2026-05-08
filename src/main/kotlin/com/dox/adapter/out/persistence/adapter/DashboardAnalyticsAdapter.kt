@@ -2,12 +2,15 @@ package com.dox.adapter.out.persistence.adapter
 
 import com.dox.application.port.output.DashboardAnalyticsPort
 import com.dox.domain.billing.BillingType
+import com.dox.domain.billing.ChurnPoint
 import com.dox.domain.billing.MethodRevenue
 import com.dox.domain.billing.ModuleRevenue
 import com.dox.domain.billing.OverdueSummary
 import com.dox.domain.billing.RecentSignup
 import com.dox.domain.billing.RevenuePoint
+import com.dox.domain.billing.RevenueSnapshot
 import com.dox.domain.billing.SubscriptionStatus
+import com.dox.domain.billing.TrialConversion
 import com.dox.domain.enum.Vertical
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -205,6 +208,151 @@ class DashboardAnalyticsAdapter(
                 activeCount = rs.getLong("qty"),
             )
         }
+
+    override fun findSnapshot(
+        year: Int,
+        month: Int,
+    ): RevenueSnapshot? =
+        jdbc.query(
+            """
+            SELECT year, month, mrr_cents, arr_cents, active_subscriptions, trial_subscriptions,
+                   overdue_amount_cents, new_signups, canceled_subscriptions,
+                   trial_started, trial_converted, captured_at
+            FROM revenue_snapshots
+            WHERE year = :y AND month = :m
+            """.trimIndent(),
+            MapSqlParameterSource()
+                .addValue("y", year)
+                .addValue("m", month),
+        ) { rs, _ ->
+            RevenueSnapshot(
+                year = rs.getInt("year"),
+                month = rs.getInt("month"),
+                mrrCents = rs.getLong("mrr_cents"),
+                arrCents = rs.getLong("arr_cents"),
+                activeSubscriptions = rs.getInt("active_subscriptions"),
+                trialSubscriptions = rs.getInt("trial_subscriptions"),
+                overdueAmountCents = rs.getLong("overdue_amount_cents"),
+                newSignups = rs.getInt("new_signups"),
+                canceledSubscriptions = rs.getInt("canceled_subscriptions"),
+                trialStarted = rs.getInt("trial_started"),
+                trialConverted = rs.getInt("trial_converted"),
+                capturedAt = rs.getTimestamp("captured_at").toLocalDateTime(),
+            )
+        }.firstOrNull()
+
+    override fun saveSnapshot(snapshot: RevenueSnapshot) {
+        jdbc.update(
+            """
+            INSERT INTO revenue_snapshots (
+                year, month, mrr_cents, arr_cents, active_subscriptions, trial_subscriptions,
+                overdue_amount_cents, new_signups, canceled_subscriptions,
+                trial_started, trial_converted
+            ) VALUES (
+                :year, :month, :mrr, :arr, :active, :trial,
+                :overdue, :signups, :canceled, :tStarted, :tConverted
+            )
+            ON CONFLICT (year, month) DO UPDATE SET
+                mrr_cents              = EXCLUDED.mrr_cents,
+                arr_cents              = EXCLUDED.arr_cents,
+                active_subscriptions   = EXCLUDED.active_subscriptions,
+                trial_subscriptions    = EXCLUDED.trial_subscriptions,
+                overdue_amount_cents   = EXCLUDED.overdue_amount_cents,
+                new_signups            = EXCLUDED.new_signups,
+                canceled_subscriptions = EXCLUDED.canceled_subscriptions,
+                trial_started          = EXCLUDED.trial_started,
+                trial_converted        = EXCLUDED.trial_converted,
+                captured_at            = NOW()
+            """.trimIndent(),
+            MapSqlParameterSource()
+                .addValue("year", snapshot.year)
+                .addValue("month", snapshot.month)
+                .addValue("mrr", snapshot.mrrCents)
+                .addValue("arr", snapshot.arrCents)
+                .addValue("active", snapshot.activeSubscriptions)
+                .addValue("trial", snapshot.trialSubscriptions)
+                .addValue("overdue", snapshot.overdueAmountCents)
+                .addValue("signups", snapshot.newSignups)
+                .addValue("canceled", snapshot.canceledSubscriptions)
+                .addValue("tStarted", snapshot.trialStarted)
+                .addValue("tConverted", snapshot.trialConverted),
+        )
+    }
+
+    override fun churnLast12Months(): List<ChurnPoint> =
+        jdbc.query(
+            """
+            WITH months AS (
+                SELECT generate_series(
+                    date_trunc('month', NOW()) - interval '11 months',
+                    date_trunc('month', NOW()),
+                    interval '1 month'
+                )::date AS m
+            )
+            SELECT
+                EXTRACT(YEAR  FROM months.m)::int AS y,
+                EXTRACT(MONTH FROM months.m)::int AS mo,
+                (SELECT COUNT(*) FROM subscriptions s
+                  WHERE s.canceled_at >= months.m
+                    AND s.canceled_at <  months.m + interval '1 month') AS canceled,
+                (SELECT COUNT(*) FROM subscriptions s
+                  WHERE s.created_at < months.m
+                    AND (s.canceled_at IS NULL OR s.canceled_at >= months.m)
+                    AND s.status IN ('ACTIVE','GRACE','CANCEL_PENDING','CANCELED')) AS active_at_start
+            FROM months
+            ORDER BY y, mo
+            """.trimIndent(),
+            MapSqlParameterSource(),
+        ) { rs, _ ->
+            val canceled = rs.getInt("canceled")
+            val activeAtStart = rs.getInt("active_at_start")
+            ChurnPoint(
+                year = rs.getInt("y"),
+                month = rs.getInt("mo"),
+                churnRatePct = if (activeAtStart > 0) canceled.toDouble() * 100.0 / activeAtStart.toDouble() else 0.0,
+                canceled = canceled,
+                activeAtStart = activeAtStart,
+            )
+        }
+
+    override fun trialConversionBetween(
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): TrialConversion {
+        val row =
+            jdbc.queryForMap(
+                """
+                SELECT
+                    COUNT(*)                                                          AS started,
+                    COUNT(*) FILTER (WHERE status NOT IN ('TRIAL','TRIAL_GRACE'))    AS converted
+                FROM subscriptions
+                WHERE created_at >= :from AND created_at < :to
+                """.trimIndent(),
+                MapSqlParameterSource()
+                    .addValue("from", Timestamp.valueOf(from))
+                    .addValue("to", Timestamp.valueOf(to)),
+            )
+        val started = (row["started"] as Number).toInt()
+        val converted = (row["converted"] as Number).toInt()
+        val pct = if (started > 0) converted.toDouble() * 100.0 / started.toDouble() else 0.0
+        return TrialConversion(started = started, converted = converted, pct = pct)
+    }
+
+    override fun countCanceledBetween(
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): Long =
+        jdbc.queryForObject(
+            """
+            SELECT COUNT(*)
+            FROM subscriptions
+            WHERE canceled_at >= :from AND canceled_at < :to
+            """.trimIndent(),
+            MapSqlParameterSource()
+                .addValue("from", Timestamp.valueOf(from))
+                .addValue("to", Timestamp.valueOf(to)),
+            Long::class.java,
+        ) ?: 0L
 
     override fun recentSignups(limit: Int): List<RecentSignup> =
         jdbc.query(
