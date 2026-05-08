@@ -16,11 +16,48 @@ data class AdminDashboardResponse(
     val activeSubscriptions: KpiCardResponse,
     val trials: KpiCardResponse,
     val signupsInPeriod: KpiCardResponse,
+    val churnRatePct: Double?,
+    val ltvCents: Long?,
+    val trialConversion: TrialConversionResponse?,
     val overdue: OverdueResponse,
     val revenueLast12Months: List<RevenuePointResponse>,
+    val churnLast12Months: List<ChurnPointResponse>,
     val revenueByMethod: List<MethodRevenueResponse>,
     val topModulesByRevenue: List<ModuleRevenueResponse>,
     val recentSignups: List<RecentSignupResponse>,
+)
+
+data class TrialConversionResponse(
+    val started: Int,
+    val converted: Int,
+    val pct: Double,
+)
+
+data class ChurnPointResponse(
+    val year: Int,
+    val month: Int,
+    val churnRatePct: Double,
+    val canceled: Int,
+    val activeAtStart: Int,
+)
+
+data class RevenueSnapshotResponse(
+    val year: Int,
+    val month: Int,
+    val mrrCents: Long,
+    val arrCents: Long,
+    val activeSubscriptions: Int,
+    val trialSubscriptions: Int,
+    val overdueAmountCents: Long,
+    val newSignups: Int,
+    val canceledSubscriptions: Int,
+    val trialStarted: Int,
+    val trialConverted: Int,
+    val capturedAt: LocalDateTime,
+)
+
+data class BackfillSnapshotsResponse(
+    val captured: List<RevenueSnapshotResponse>,
 )
 
 data class KpiCardResponse(
