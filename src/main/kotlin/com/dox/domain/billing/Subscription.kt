@@ -19,6 +19,7 @@ data class Subscription(
     val canceledAt: LocalDateTime? = null,
     val cancelEffectiveAt: LocalDateTime? = null,
     val cancelReason: String? = null,
+    val bundlePriceId: UUID? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 )
