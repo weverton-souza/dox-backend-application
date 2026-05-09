@@ -23,6 +23,7 @@ import com.dox.application.port.output.UpdateAsaasSubscriptionCommand
 import com.dox.domain.billing.AsaasCustomer
 import com.dox.domain.billing.BillingCalculator
 import com.dox.domain.billing.BillingCycle
+import com.dox.domain.billing.BillingType
 import com.dox.domain.billing.Module
 import com.dox.domain.billing.ModuleSource
 import com.dox.domain.billing.NfseInvoice
@@ -55,6 +56,7 @@ class BillingServiceImpl(
     @Transactional
     override fun subscribeBundle(command: SubscribeBundleCommand): Subscription {
         ensureNoActiveSubscription(command.tenantId)
+        validatePaymentMethod(command.billingType, command.cycle)
         val bundle =
             bundleUseCase.getById(command.bundleId)
                 ?: throw ResourceNotFoundException("Bundle", command.bundleId)
@@ -79,6 +81,7 @@ class BillingServiceImpl(
     @Transactional
     override fun subscribeModules(command: SubscribeModulesCommand): Subscription {
         ensureNoActiveSubscription(command.tenantId)
+        validatePaymentMethod(command.billingType, command.cycle)
         val modules = command.moduleIds.map { id -> Module.fromId(id) ?: throw BusinessException("Módulo '$id' não existe") }.toSet()
         val breakdown = BillingCalculator.breakdown(modules, command.cycle)
         return subscribeAndActivate(
@@ -337,6 +340,21 @@ class BillingServiceImpl(
         val existing = subscriptionPort.findByTenantId(tenantId)
         if (existing != null && existing.status !in TERMINAL_STATUSES) {
             throw BusinessException("Tenant já possui subscription ativa (status=${existing.status})")
+        }
+    }
+
+    private fun validatePaymentMethod(
+        billingType: BillingType,
+        cycle: BillingCycle,
+    ) {
+        when (billingType) {
+            BillingType.BOLETO -> throw BusinessException("Pagamento via boleto não é suportado")
+            BillingType.UNDEFINED -> throw BusinessException("Método de pagamento é obrigatório")
+            BillingType.PIX ->
+                if (cycle == BillingCycle.MONTHLY) {
+                    throw BusinessException("PIX só pode ser usado em planos com cobrança única (anual, semestral ou trimestral). Para mensal, use cartão.")
+                }
+            BillingType.CREDIT_CARD -> Unit
         }
     }
 
