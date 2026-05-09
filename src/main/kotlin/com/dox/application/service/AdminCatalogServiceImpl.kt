@@ -10,11 +10,13 @@ import com.dox.application.port.input.UpdateModulePriceCommand
 import com.dox.application.port.output.AddonPersistencePort
 import com.dox.application.port.output.BillingAuditLogPersistencePort
 import com.dox.application.port.output.BundlePersistencePort
+import com.dox.application.port.output.BundlePricePersistencePort
 import com.dox.application.port.output.ModulePricePersistencePort
 import com.dox.domain.billing.Addon
 import com.dox.domain.billing.BillingAuditAction
 import com.dox.domain.billing.BillingAuditLog
 import com.dox.domain.billing.Bundle
+import com.dox.domain.billing.BundlePrice
 import com.dox.domain.billing.Module
 import com.dox.domain.billing.ModulePrice
 import com.dox.domain.exception.BusinessException
@@ -28,6 +30,7 @@ import java.util.UUID
 class AdminCatalogServiceImpl(
     private val modulePricePersistencePort: ModulePricePersistencePort,
     private val bundlePersistencePort: BundlePersistencePort,
+    private val bundlePricePersistencePort: BundlePricePersistencePort,
     private val addonPersistencePort: AddonPersistencePort,
     private val billingAuditLogPersistencePort: BillingAuditLogPersistencePort,
 ) : AdminCatalogUseCase {
@@ -133,6 +136,27 @@ class AdminCatalogServiceImpl(
 
         val saved = bundlePersistencePort.save(updated)
 
+        val priceChanged =
+            existing.priceMonthlyCents != saved.priceMonthlyCents ||
+                existing.priceYearlyCents != saved.priceYearlyCents ||
+                existing.seatsIncluded != saved.seatsIncluded ||
+                existing.trackingSlotsIncluded != saved.trackingSlotsIncluded
+        if (priceChanged) {
+            bundlePricePersistencePort.expireCurrent(saved.id)
+            bundlePricePersistencePort.save(
+                BundlePrice(
+                    bundleId = saved.id,
+                    priceMonthlyCents = saved.priceMonthlyCents,
+                    priceYearlyCents = saved.priceYearlyCents,
+                    seatsIncluded = saved.seatsIncluded,
+                    trackingSlotsIncluded = saved.trackingSlotsIncluded,
+                    validFrom = LocalDateTime.now(),
+                    notes = command.notes,
+                    createdByUserId = actorAdminId,
+                ),
+            )
+        }
+
         billingAuditLogPersistencePort.save(
             BillingAuditLog(
                 tenantId = null,
@@ -209,6 +233,19 @@ class AdminCatalogServiceImpl(
                     sortOrder = command.sortOrder,
                 ),
             )
+
+        bundlePricePersistencePort.save(
+            BundlePrice(
+                bundleId = saved.id,
+                priceMonthlyCents = saved.priceMonthlyCents,
+                priceYearlyCents = saved.priceYearlyCents,
+                seatsIncluded = saved.seatsIncluded,
+                trackingSlotsIncluded = saved.trackingSlotsIncluded,
+                validFrom = LocalDateTime.now(),
+                notes = "Primeira versão do bundle",
+                createdByUserId = actorAdminId,
+            ),
+        )
 
         billingAuditLogPersistencePort.save(
             BillingAuditLog(

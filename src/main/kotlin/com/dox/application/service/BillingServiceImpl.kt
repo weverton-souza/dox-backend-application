@@ -11,6 +11,7 @@ import com.dox.application.port.input.TokenizeCreditCardCommand
 import com.dox.application.port.input.TokenizedCard
 import com.dox.application.port.output.AsaasCustomerPersistencePort
 import com.dox.application.port.output.BillingPort
+import com.dox.application.port.output.BundlePricePersistencePort
 import com.dox.application.port.output.CreateAsaasCustomerCommand
 import com.dox.application.port.output.CreateAsaasSubscriptionCommand
 import com.dox.application.port.output.NfseInvoicePersistencePort
@@ -51,6 +52,7 @@ class BillingServiceImpl(
     private val invoicePort: NfseInvoicePersistencePort,
     private val paymentMethodCardPort: PaymentMethodCardPersistencePort,
     private val bundleUseCase: BundleUseCase,
+    private val bundlePricePort: BundlePricePersistencePort,
     private val moduleAccessUseCase: ModuleAccessUseCase,
 ) : BillingUseCase {
     @Transactional
@@ -62,6 +64,7 @@ class BillingServiceImpl(
                 ?: throw ResourceNotFoundException("Bundle", command.bundleId)
         val modules = bundleUseCase.expandToModules(bundle.id)
         val price = priceForCycle(bundle.priceMonthlyCents, bundle.priceYearlyCents, command.cycle)
+        val currentBundlePrice = bundlePricePort.findCurrent(bundle.id)
         return subscribeAndActivate(
             tenantId = command.tenantId,
             customerName = command.customerName,
@@ -75,6 +78,7 @@ class BillingServiceImpl(
             description = "Plano ${bundle.name}",
             source = ModuleSource.BUNDLE,
             sourceId = bundle.id,
+            bundlePriceId = currentBundlePrice?.id,
         )
     }
 
@@ -275,6 +279,7 @@ class BillingServiceImpl(
         description: String,
         source: ModuleSource,
         sourceId: String?,
+        bundlePriceId: UUID? = null,
     ): Subscription {
         val asaasCustomer = ensureAsaasCustomer(tenantId, customerName, customerCpfCnpj, customerEmail)
         val nextDueDate = LocalDate.now().plusDays(7)
@@ -302,6 +307,7 @@ class BillingServiceImpl(
                 currentPeriodStart = now,
                 currentPeriodEnd = now.plusMonths(cycle.months.toLong()),
                 nextDueDate = asaasSub.nextDueDate,
+                bundlePriceId = bundlePriceId,
             )
         val saved = subscriptionPort.save(subscription)
         modules.forEach { module ->
