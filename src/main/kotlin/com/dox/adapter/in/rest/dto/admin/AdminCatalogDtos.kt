@@ -3,6 +3,9 @@ package com.dox.adapter.`in`.rest.dto.admin
 import com.dox.domain.billing.AddonType
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -82,6 +85,61 @@ data class AdminAddonListItem(
     val active: Boolean,
     val sortOrder: Int,
     val updatedAt: LocalDateTime?,
+)
+
+data class CreateBundleRequest(
+    @field:NotBlank(message = "Id é obrigatório")
+    @field:Pattern(regexp = "^[a-z0-9_-]+$", message = "Id deve conter apenas letras minúsculas, números, hífen ou underscore")
+    @field:Size(max = 50, message = "Id deve ter no máximo 50 caracteres")
+    val id: String,
+    @field:NotBlank(message = "Nome é obrigatório")
+    @field:Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
+    val name: String,
+    @field:Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
+    val description: String? = null,
+    val modules: List<String> = emptyList(),
+    @field:Min(value = 0, message = "Preço mensal deve ser maior ou igual a zero")
+    val priceMonthlyCents: Int = 0,
+    @field:Min(value = 0, message = "Preço anual deve ser maior ou igual a zero")
+    val priceYearlyCents: Int = 0,
+    @field:Min(value = 1, message = "Vagas inclusas devem ser pelo menos 1")
+    val seatsIncluded: Int = 1,
+    @field:Min(value = 0, message = "Slots de tracking devem ser maior ou igual a zero")
+    val trackingSlotsIncluded: Int = 0,
+    val highlighted: Boolean = false,
+    val sortOrder: Int = 0,
+    @field:Size(max = 500, message = "Notas devem ter no máximo 500 caracteres")
+    val notes: String? = null,
+)
+
+data class CreateAddonRequest(
+    @field:NotBlank(message = "Id é obrigatório")
+    @field:Pattern(regexp = "^[a-z0-9_-]+$", message = "Id deve conter apenas letras minúsculas, números, hífen ou underscore")
+    @field:Size(max = 50, message = "Id deve ter no máximo 50 caracteres")
+    val id: String,
+    @field:NotBlank(message = "Nome é obrigatório")
+    @field:Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
+    val name: String,
+    @field:Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
+    val description: String? = null,
+    @field:NotNull(message = "Tipo é obrigatório")
+    val type: AddonType,
+    val targetModuleId: String? = null,
+    @field:Min(value = 0, message = "Preço mensal deve ser maior ou igual a zero")
+    val priceMonthlyCents: Int = 0,
+    @field:Min(value = 0, message = "Preço unitário deve ser maior ou igual a zero")
+    val priceUnitCents: Int? = null,
+    @field:DecimalMin(value = "0.0", message = "Taxa percentual deve ser maior ou igual a zero")
+    val feePercentage: BigDecimal? = null,
+    val availableForBundles: List<String> = emptyList(),
+    val sortOrder: Int = 0,
+    @field:Size(max = 500, message = "Notas devem ter no máximo 500 caracteres")
+    val notes: String? = null,
+)
+
+data class ArchiveCatalogRequest(
+    @field:Size(max = 500, message = "Notas devem ter no máximo 500 caracteres")
+    val notes: String? = null,
 )
 
 data class UpdateAddonRequest(

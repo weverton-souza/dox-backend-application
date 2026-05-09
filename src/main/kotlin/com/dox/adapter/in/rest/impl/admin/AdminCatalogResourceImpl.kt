@@ -4,12 +4,17 @@ import com.dox.adapter.`in`.rest.dto.admin.AdminAddonListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminBundleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModuleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModulePriceResponse
+import com.dox.adapter.`in`.rest.dto.admin.ArchiveCatalogRequest
+import com.dox.adapter.`in`.rest.dto.admin.CreateAddonRequest
+import com.dox.adapter.`in`.rest.dto.admin.CreateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateAddonRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateModulePriceRequest
 import com.dox.adapter.`in`.rest.resource.admin.AdminCatalogResource
 import com.dox.application.port.input.AdminCatalogUseCase
 import com.dox.application.port.input.AdminModuleCatalogItem
+import com.dox.application.port.input.CreateAddonCommand
+import com.dox.application.port.input.CreateBundleCommand
 import com.dox.application.port.input.UpdateAddonCommand
 import com.dox.application.port.input.UpdateBundleCommand
 import com.dox.application.port.input.UpdateModulePriceCommand
@@ -54,6 +59,38 @@ class AdminCatalogResourceImpl(
     }
 
     override fun listBundles(): ResponseEntity<List<AdminBundleListItem>> = responseEntity(adminCatalogUseCase.listBundles().map { it.toListItem() })
+
+    override fun createBundle(request: CreateBundleRequest): ResponseEntity<AdminBundleListItem> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val saved =
+            adminCatalogUseCase.createBundle(
+                command =
+                    CreateBundleCommand(
+                        id = request.id,
+                        name = request.name,
+                        description = request.description,
+                        modules = request.modules,
+                        priceMonthlyCents = request.priceMonthlyCents,
+                        priceYearlyCents = request.priceYearlyCents,
+                        seatsIncluded = request.seatsIncluded,
+                        trackingSlotsIncluded = request.trackingSlotsIncluded,
+                        highlighted = request.highlighted,
+                        sortOrder = request.sortOrder,
+                        notes = request.notes,
+                    ),
+                actorAdminId = actorAdminId,
+            )
+        return responseEntity(saved.toListItem())
+    }
+
+    override fun archiveBundle(
+        bundleId: String,
+        request: ArchiveCatalogRequest?,
+    ): ResponseEntity<AdminBundleListItem> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val saved = adminCatalogUseCase.archiveBundle(bundleId, actorAdminId, request?.notes)
+        return responseEntity(saved.toListItem())
+    }
 
     override fun updateBundle(
         bundleId: String,
@@ -120,6 +157,38 @@ class AdminCatalogResourceImpl(
         )
 
     override fun listAddons(): ResponseEntity<List<AdminAddonListItem>> = responseEntity(adminCatalogUseCase.listAddons().map { it.toListItem() })
+
+    override fun createAddon(request: CreateAddonRequest): ResponseEntity<AdminAddonListItem> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val saved =
+            adminCatalogUseCase.createAddon(
+                command =
+                    CreateAddonCommand(
+                        id = request.id,
+                        name = request.name,
+                        description = request.description,
+                        type = request.type,
+                        targetModuleId = request.targetModuleId,
+                        priceMonthlyCents = request.priceMonthlyCents,
+                        priceUnitCents = request.priceUnitCents,
+                        feePercentage = request.feePercentage,
+                        availableForBundles = request.availableForBundles,
+                        sortOrder = request.sortOrder,
+                        notes = request.notes,
+                    ),
+                actorAdminId = actorAdminId,
+            )
+        return responseEntity(saved.toListItem())
+    }
+
+    override fun archiveAddon(
+        addonId: String,
+        request: ArchiveCatalogRequest?,
+    ): ResponseEntity<AdminAddonListItem> {
+        val actorAdminId = ContextHolder.getUserIdOrThrow()
+        val saved = adminCatalogUseCase.archiveAddon(addonId, actorAdminId, request?.notes)
+        return responseEntity(saved.toListItem())
+    }
 
     override fun updateAddon(
         addonId: String,

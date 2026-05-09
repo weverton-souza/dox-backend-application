@@ -2,6 +2,8 @@ package com.dox.application.service
 
 import com.dox.application.port.input.AdminCatalogUseCase
 import com.dox.application.port.input.AdminModuleCatalogItem
+import com.dox.application.port.input.CreateAddonCommand
+import com.dox.application.port.input.CreateBundleCommand
 import com.dox.application.port.input.UpdateAddonCommand
 import com.dox.application.port.input.UpdateBundleCommand
 import com.dox.application.port.input.UpdateModulePriceCommand
@@ -169,6 +171,86 @@ class AdminCatalogServiceImpl(
             "sortOrder" to sortOrder,
         )
 
+    @Transactional
+    override fun createBundle(
+        command: CreateBundleCommand,
+        actorAdminId: UUID,
+    ): Bundle {
+        val normalizedId = command.id.trim().lowercase()
+        if (normalizedId.isBlank()) throw BusinessException("Id do bundle é obrigatório")
+        if (!normalizedId.matches(Regex("^[a-z0-9_-]+$"))) {
+            throw BusinessException("Id deve conter apenas letras minúsculas, números, hífen ou underscore")
+        }
+        if (bundlePersistencePort.findById(normalizedId) != null) {
+            throw BusinessException("Já existe bundle com id '$normalizedId'")
+        }
+        if (command.name.isBlank()) throw BusinessException("Nome é obrigatório")
+        if (command.priceMonthlyCents < 0) throw BusinessException("Preço mensal deve ser maior ou igual a zero")
+        if (command.priceYearlyCents < 0) throw BusinessException("Preço anual deve ser maior ou igual a zero")
+        if (command.seatsIncluded < 1) throw BusinessException("Vagas inclusas devem ser pelo menos 1")
+        if (command.trackingSlotsIncluded < 0) throw BusinessException("Slots de tracking devem ser maior ou igual a zero")
+        command.modules.forEach { moduleId ->
+            Module.fromId(moduleId) ?: throw BusinessException("Módulo desconhecido: $moduleId")
+        }
+
+        val saved =
+            bundlePersistencePort.save(
+                Bundle(
+                    id = normalizedId,
+                    name = command.name.trim(),
+                    description = command.description?.takeIf { it.isNotBlank() },
+                    modules = command.modules,
+                    priceMonthlyCents = command.priceMonthlyCents,
+                    priceYearlyCents = command.priceYearlyCents,
+                    seatsIncluded = command.seatsIncluded,
+                    trackingSlotsIncluded = command.trackingSlotsIncluded,
+                    highlighted = command.highlighted,
+                    active = true,
+                    sortOrder = command.sortOrder,
+                ),
+            )
+
+        billingAuditLogPersistencePort.save(
+            BillingAuditLog(
+                tenantId = null,
+                actorAdminId = actorAdminId,
+                action = BillingAuditAction.CREATE_BUNDLE,
+                beforeState = null,
+                afterState = saved.toAuditMap(),
+                notes = command.notes,
+            ),
+        )
+
+        return saved
+    }
+
+    @Transactional
+    override fun archiveBundle(
+        bundleId: String,
+        actorAdminId: UUID,
+        notes: String?,
+    ): Bundle {
+        val existing =
+            bundlePersistencePort.findById(bundleId)
+                ?: throw ResourceNotFoundException("Bundle", bundleId)
+        if (!existing.active) return existing
+
+        val saved = bundlePersistencePort.save(existing.copy(active = false))
+
+        billingAuditLogPersistencePort.save(
+            BillingAuditLog(
+                tenantId = null,
+                actorAdminId = actorAdminId,
+                action = BillingAuditAction.ARCHIVE_BUNDLE,
+                beforeState = existing.toAuditMap(),
+                afterState = saved.toAuditMap(),
+                notes = notes,
+            ),
+        )
+
+        return saved
+    }
+
     @Transactional(readOnly = true)
     override fun listAddons(): List<Addon> = addonPersistencePort.findAll()
 
@@ -212,6 +294,89 @@ class AdminCatalogServiceImpl(
                 beforeState = existing.toAuditMap(),
                 afterState = saved.toAuditMap(),
                 notes = command.notes,
+            ),
+        )
+
+        return saved
+    }
+
+    @Transactional
+    override fun createAddon(
+        command: CreateAddonCommand,
+        actorAdminId: UUID,
+    ): Addon {
+        val normalizedId = command.id.trim().lowercase()
+        if (normalizedId.isBlank()) throw BusinessException("Id do add-on é obrigatório")
+        if (!normalizedId.matches(Regex("^[a-z0-9_-]+$"))) {
+            throw BusinessException("Id deve conter apenas letras minúsculas, números, hífen ou underscore")
+        }
+        if (addonPersistencePort.findById(normalizedId) != null) {
+            throw BusinessException("Já existe add-on com id '$normalizedId'")
+        }
+        if (command.name.isBlank()) throw BusinessException("Nome é obrigatório")
+        if (command.priceMonthlyCents < 0) throw BusinessException("Preço mensal deve ser maior ou igual a zero")
+        command.priceUnitCents?.let {
+            if (it < 0) throw BusinessException("Preço unitário deve ser maior ou igual a zero")
+        }
+        command.feePercentage?.let {
+            if (it.signum() < 0) throw BusinessException("Taxa percentual deve ser maior ou igual a zero")
+        }
+        command.targetModuleId?.let { moduleId ->
+            Module.fromId(moduleId) ?: throw BusinessException("Módulo desconhecido: $moduleId")
+        }
+
+        val saved =
+            addonPersistencePort.save(
+                Addon(
+                    id = normalizedId,
+                    name = command.name.trim(),
+                    description = command.description?.takeIf { it.isNotBlank() },
+                    type = command.type,
+                    targetModuleId = command.targetModuleId,
+                    priceMonthlyCents = command.priceMonthlyCents,
+                    priceUnitCents = command.priceUnitCents,
+                    feePercentage = command.feePercentage,
+                    availableForBundles = command.availableForBundles,
+                    active = true,
+                    sortOrder = command.sortOrder,
+                ),
+            )
+
+        billingAuditLogPersistencePort.save(
+            BillingAuditLog(
+                tenantId = null,
+                actorAdminId = actorAdminId,
+                action = BillingAuditAction.CREATE_ADDON,
+                beforeState = null,
+                afterState = saved.toAuditMap(),
+                notes = command.notes,
+            ),
+        )
+
+        return saved
+    }
+
+    @Transactional
+    override fun archiveAddon(
+        addonId: String,
+        actorAdminId: UUID,
+        notes: String?,
+    ): Addon {
+        val existing =
+            addonPersistencePort.findById(addonId)
+                ?: throw ResourceNotFoundException("Addon", addonId)
+        if (!existing.active) return existing
+
+        val saved = addonPersistencePort.save(existing.copy(active = false))
+
+        billingAuditLogPersistencePort.save(
+            BillingAuditLog(
+                tenantId = null,
+                actorAdminId = actorAdminId,
+                action = BillingAuditAction.ARCHIVE_ADDON,
+                beforeState = existing.toAuditMap(),
+                afterState = saved.toAuditMap(),
+                notes = notes,
             ),
         )
 
