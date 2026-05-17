@@ -4,6 +4,9 @@ import com.dox.adapter.`in`.rest.dto.admin.AdminAddonListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminBundleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModuleListItem
 import com.dox.adapter.`in`.rest.dto.admin.AdminModulePriceResponse
+import com.dox.adapter.`in`.rest.dto.admin.ArchiveCatalogRequest
+import com.dox.adapter.`in`.rest.dto.admin.CreateAddonRequest
+import com.dox.adapter.`in`.rest.dto.admin.CreateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateAddonRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateBundleRequest
 import com.dox.adapter.`in`.rest.dto.admin.UpdateModulePriceRequest
@@ -14,6 +17,7 @@ import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -44,6 +48,12 @@ interface AdminCatalogResource : BaseResource {
     @GetMapping("/bundles")
     fun listBundles(): ResponseEntity<List<AdminBundleListItem>>
 
+    @Operation(summary = "Cria um novo bundle (tier comercial)")
+    @PostMapping("/bundles")
+    fun createBundle(
+        @Valid @RequestBody request: CreateBundleRequest,
+    ): ResponseEntity<AdminBundleListItem>
+
     @Operation(summary = "Atualiza campos editáveis do bundle (preços, seats, slots, highlighted, sortOrder, description)")
     @PutMapping("/bundles/{bundleId}")
     fun updateBundle(
@@ -51,14 +61,34 @@ interface AdminCatalogResource : BaseResource {
         @Valid @RequestBody request: UpdateBundleRequest,
     ): ResponseEntity<AdminBundleListItem>
 
+    @Operation(summary = "Arquiva bundle (active=false). Não permite mais novas assinaturas; existentes seguem normais.")
+    @PostMapping("/bundles/{bundleId}/archive")
+    fun archiveBundle(
+        @PathVariable bundleId: String,
+        @Valid @RequestBody(required = false) request: ArchiveCatalogRequest?,
+    ): ResponseEntity<AdminBundleListItem>
+
     @Operation(summary = "Lista todos os add-ons (inclusive inativos)")
     @GetMapping("/addons")
     fun listAddons(): ResponseEntity<List<AdminAddonListItem>>
+
+    @Operation(summary = "Cria um novo add-on")
+    @PostMapping("/addons")
+    fun createAddon(
+        @Valid @RequestBody request: CreateAddonRequest,
+    ): ResponseEntity<AdminAddonListItem>
 
     @Operation(summary = "Atualiza campos editáveis do add-on (preços, fee, active, availableForBundles, sortOrder)")
     @PutMapping("/addons/{addonId}")
     fun updateAddon(
         @PathVariable addonId: String,
         @Valid @RequestBody request: UpdateAddonRequest,
+    ): ResponseEntity<AdminAddonListItem>
+
+    @Operation(summary = "Arquiva add-on (active=false)")
+    @PostMapping("/addons/{addonId}/archive")
+    fun archiveAddon(
+        @PathVariable addonId: String,
+        @Valid @RequestBody(required = false) request: ArchiveCatalogRequest?,
     ): ResponseEntity<AdminAddonListItem>
 }

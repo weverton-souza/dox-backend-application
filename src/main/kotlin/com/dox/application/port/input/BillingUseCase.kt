@@ -4,6 +4,7 @@ import com.dox.domain.billing.BillingCycle
 import com.dox.domain.billing.BillingType
 import com.dox.domain.billing.NfseInvoice
 import com.dox.domain.billing.Payment
+import com.dox.domain.billing.PaymentMethodCard
 import com.dox.domain.billing.PriceBreakdown
 import com.dox.domain.billing.Subscription
 import java.time.LocalDate
@@ -17,6 +18,12 @@ data class SubscribeBundleCommand(
     val customerName: String,
     val customerCpfCnpj: String,
     val customerEmail: String? = null,
+    val customerMobilePhone: String,
+    val customerPostalCode: String,
+    val customerAddress: String,
+    val customerAddressNumber: String,
+    val customerAddressComplement: String? = null,
+    val customerProvince: String,
     val creditCardToken: String? = null,
 )
 
@@ -28,6 +35,12 @@ data class SubscribeModulesCommand(
     val customerName: String,
     val customerCpfCnpj: String,
     val customerEmail: String? = null,
+    val customerMobilePhone: String,
+    val customerPostalCode: String,
+    val customerAddress: String,
+    val customerAddressNumber: String,
+    val customerAddressComplement: String? = null,
+    val customerProvince: String,
     val creditCardToken: String? = null,
 )
 
@@ -61,6 +74,30 @@ data class TokenizedCard(
     val last4: String,
 )
 
+data class CustomerProfile(
+    val name: String,
+    val email: String?,
+    val cpfCnpj: String,
+    val mobilePhone: String?,
+    val postalCode: String?,
+    val address: String?,
+    val addressNumber: String?,
+    val complement: String?,
+    val province: String?,
+)
+
+data class UpdateCustomerProfileCommand(
+    val name: String,
+    val email: String?,
+    val cpfCnpj: String,
+    val mobilePhone: String,
+    val postalCode: String,
+    val address: String,
+    val addressNumber: String,
+    val complement: String?,
+    val province: String,
+)
+
 interface BillingUseCase {
     fun subscribeBundle(command: SubscribeBundleCommand): Subscription
 
@@ -89,6 +126,25 @@ interface BillingUseCase {
     ): List<Payment>
 
     fun listInvoices(tenantId: UUID): List<NfseInvoice>
+
+    fun listPaymentMethods(tenantId: UUID): List<PaymentMethodCard>
+
+    fun setDefaultPaymentMethod(
+        tenantId: UUID,
+        cardId: UUID,
+    ): PaymentMethodCard
+
+    fun deletePaymentMethod(
+        tenantId: UUID,
+        cardId: UUID,
+    )
+
+    fun getCustomerProfile(tenantId: UUID): CustomerProfile?
+
+    fun updateCustomerProfile(
+        tenantId: UUID,
+        command: UpdateCustomerProfileCommand,
+    ): CustomerProfile
 
     fun pricePreview(
         moduleIds: List<String>,

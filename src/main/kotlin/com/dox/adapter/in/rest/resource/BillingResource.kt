@@ -2,7 +2,9 @@ package com.dox.adapter.`in`.rest.resource
 
 import com.dox.adapter.`in`.rest.dto.billing.AddOrRemoveModuleRequest
 import com.dox.adapter.`in`.rest.dto.billing.CancelSubscriptionRequest
+import com.dox.adapter.`in`.rest.dto.billing.CustomerProfileResponse
 import com.dox.adapter.`in`.rest.dto.billing.InvoiceResponse
+import com.dox.adapter.`in`.rest.dto.billing.PaymentMethodCardResponse
 import com.dox.adapter.`in`.rest.dto.billing.PaymentResponse
 import com.dox.adapter.`in`.rest.dto.billing.PriceBreakdownResponse
 import com.dox.adapter.`in`.rest.dto.billing.SubscribeBundleRequest
@@ -10,6 +12,7 @@ import com.dox.adapter.`in`.rest.dto.billing.SubscribeModulesRequest
 import com.dox.adapter.`in`.rest.dto.billing.SubscriptionResponse
 import com.dox.adapter.`in`.rest.dto.billing.TokenizeCreditCardRequest
 import com.dox.adapter.`in`.rest.dto.billing.TokenizedCardResponse
+import com.dox.adapter.`in`.rest.dto.billing.UpdateCustomerProfileRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
@@ -18,11 +21,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalDate
+import java.util.UUID
 
 @Tag(name = "Billing", description = "Cobrança e assinatura DOX via Asaas")
 @RequestMapping("/billing")
@@ -75,6 +81,32 @@ interface BillingResource : BaseResource {
     @Operation(summary = "Listar notas fiscais do tenant")
     @GetMapping("/invoices")
     fun listInvoices(): ResponseEntity<List<InvoiceResponse>>
+
+    @Operation(summary = "Listar cartões salvos do tenant")
+    @GetMapping("/payment-methods")
+    fun listPaymentMethods(): ResponseEntity<List<PaymentMethodCardResponse>>
+
+    @Operation(summary = "Tornar cartão padrão")
+    @PostMapping("/payment-methods/{id}/default")
+    fun setDefaultPaymentMethod(
+        @PathVariable id: UUID,
+    ): ResponseEntity<PaymentMethodCardResponse>
+
+    @Operation(summary = "Excluir cartão")
+    @DeleteMapping("/payment-methods/{id}")
+    fun deletePaymentMethod(
+        @PathVariable id: UUID,
+    ): ResponseEntity<Void>
+
+    @Operation(summary = "Obter perfil de cobrança do tenant (dados do Asaas customer)")
+    @GetMapping("/customer-profile")
+    fun getCustomerProfile(): ResponseEntity<CustomerProfileResponse?>
+
+    @Operation(summary = "Atualizar endereço de cobrança do tenant")
+    @PutMapping("/customer-profile")
+    fun updateCustomerProfile(
+        @Valid @RequestBody request: UpdateCustomerProfileRequest,
+    ): ResponseEntity<CustomerProfileResponse>
 
     @Operation(summary = "Pré-visualizar preço sem persistir")
     @GetMapping("/price-preview")

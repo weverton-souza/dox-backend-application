@@ -31,6 +31,8 @@ class PaymentMethodCardJpaEntity(
     var holderName: String,
     @Column(name = "is_default", nullable = false)
     var isDefault: Boolean = false,
+    @Column(name = "display_order", nullable = false)
+    var displayOrder: Int = 0,
     @Column(name = "expires_at")
     var expiresAt: LocalDate? = null,
     @CreatedDate

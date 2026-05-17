@@ -8,10 +8,42 @@ data class CreateAsaasCustomerCommand(
     val name: String,
     val email: String?,
     val cpfCnpj: String,
+    val mobilePhone: String? = null,
+    val postalCode: String? = null,
+    val address: String? = null,
+    val addressNumber: String? = null,
+    val complement: String? = null,
+    val province: String? = null,
+)
+
+data class UpdateAsaasCustomerCommand(
+    val asaasCustomerId: String,
+    val name: String,
+    val email: String?,
+    val cpfCnpj: String,
+    val mobilePhone: String? = null,
+    val postalCode: String? = null,
+    val address: String? = null,
+    val addressNumber: String? = null,
+    val complement: String? = null,
+    val province: String? = null,
 )
 
 data class AsaasCustomerResult(
     val asaasCustomerId: String,
+)
+
+data class AsaasCustomerDetails(
+    val asaasCustomerId: String,
+    val name: String,
+    val email: String?,
+    val cpfCnpj: String,
+    val mobilePhone: String?,
+    val postalCode: String?,
+    val address: String?,
+    val addressNumber: String?,
+    val complement: String?,
+    val province: String?,
 )
 
 data class CreateAsaasSubscriptionCommand(
@@ -87,6 +119,10 @@ data class TokenizedCardResult(
 
 interface BillingPort {
     fun createCustomer(command: CreateAsaasCustomerCommand): AsaasCustomerResult
+
+    fun updateCustomer(command: UpdateAsaasCustomerCommand)
+
+    fun getCustomer(asaasCustomerId: String): AsaasCustomerDetails
 
     fun createSubscription(command: CreateAsaasSubscriptionCommand): AsaasSubscriptionResult
 

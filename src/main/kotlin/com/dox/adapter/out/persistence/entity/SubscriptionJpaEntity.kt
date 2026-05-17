@@ -45,6 +45,8 @@ class SubscriptionJpaEntity(
     var cancelEffectiveAt: LocalDateTime? = null,
     @Column(name = "cancel_reason", columnDefinition = "TEXT")
     var cancelReason: String? = null,
+    @Column(name = "bundle_price_id")
+    var bundlePriceId: UUID? = null,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

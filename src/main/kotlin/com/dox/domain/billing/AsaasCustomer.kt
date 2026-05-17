@@ -10,6 +10,12 @@ data class AsaasCustomer(
     val cpfCnpj: String,
     val email: String? = null,
     val name: String,
+    val billingMobilePhone: String? = null,
+    val billingPostalCode: String? = null,
+    val billingAddress: String? = null,
+    val billingAddressNumber: String? = null,
+    val billingComplement: String? = null,
+    val billingProvince: String? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,
 )

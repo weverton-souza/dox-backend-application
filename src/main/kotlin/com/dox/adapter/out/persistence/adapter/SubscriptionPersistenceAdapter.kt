@@ -40,6 +40,7 @@ class SubscriptionPersistenceAdapter(
         entity.canceledAt = subscription.canceledAt
         entity.cancelEffectiveAt = subscription.cancelEffectiveAt
         entity.cancelReason = subscription.cancelReason
+        entity.bundlePriceId = subscription.bundlePriceId
         return repository.save(entity).toDomain()
     }
 
@@ -59,6 +60,7 @@ class SubscriptionPersistenceAdapter(
             canceledAt = canceledAt,
             cancelEffectiveAt = cancelEffectiveAt,
             cancelReason = cancelReason,
+            bundlePriceId = bundlePriceId,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )
