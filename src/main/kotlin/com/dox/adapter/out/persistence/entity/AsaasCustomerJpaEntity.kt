@@ -28,6 +28,18 @@ class AsaasCustomerJpaEntity(
     var email: String? = null,
     @Column(name = "name", nullable = false, length = 255)
     var name: String,
+    @Column(name = "billing_mobile_phone", length = 20)
+    var billingMobilePhone: String? = null,
+    @Column(name = "billing_postal_code", length = 10)
+    var billingPostalCode: String? = null,
+    @Column(name = "billing_address", length = 255)
+    var billingAddress: String? = null,
+    @Column(name = "billing_address_number", length = 20)
+    var billingAddressNumber: String? = null,
+    @Column(name = "billing_complement", length = 255)
+    var billingComplement: String? = null,
+    @Column(name = "billing_province", length = 100)
+    var billingProvince: String? = null,
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null,

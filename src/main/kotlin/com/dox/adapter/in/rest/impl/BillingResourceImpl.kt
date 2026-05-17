@@ -2,7 +2,9 @@ package com.dox.adapter.`in`.rest.impl
 
 import com.dox.adapter.`in`.rest.dto.billing.AddOrRemoveModuleRequest
 import com.dox.adapter.`in`.rest.dto.billing.CancelSubscriptionRequest
+import com.dox.adapter.`in`.rest.dto.billing.CustomerProfileResponse
 import com.dox.adapter.`in`.rest.dto.billing.InvoiceResponse
+import com.dox.adapter.`in`.rest.dto.billing.PaymentMethodCardResponse
 import com.dox.adapter.`in`.rest.dto.billing.PaymentResponse
 import com.dox.adapter.`in`.rest.dto.billing.PriceBreakdownResponse
 import com.dox.adapter.`in`.rest.dto.billing.SubscribeBundleRequest
@@ -10,16 +12,20 @@ import com.dox.adapter.`in`.rest.dto.billing.SubscribeModulesRequest
 import com.dox.adapter.`in`.rest.dto.billing.SubscriptionResponse
 import com.dox.adapter.`in`.rest.dto.billing.TokenizeCreditCardRequest
 import com.dox.adapter.`in`.rest.dto.billing.TokenizedCardResponse
+import com.dox.adapter.`in`.rest.dto.billing.UpdateCustomerProfileRequest
 import com.dox.adapter.`in`.rest.resource.BillingResource
 import com.dox.application.port.input.BillingUseCase
 import com.dox.application.port.input.CancelSubscriptionCommand
+import com.dox.application.port.input.CustomerProfile
 import com.dox.application.port.input.SubscribeBundleCommand
 import com.dox.application.port.input.SubscribeModulesCommand
 import com.dox.application.port.input.TokenizeCreditCardCommand
+import com.dox.application.port.input.UpdateCustomerProfileCommand
 import com.dox.domain.billing.BillingCycle
 import com.dox.domain.billing.BillingType
 import com.dox.domain.billing.NfseInvoice
 import com.dox.domain.billing.Payment
+import com.dox.domain.billing.PaymentMethodCard
 import com.dox.domain.billing.PriceBreakdown
 import com.dox.domain.billing.Subscription
 import com.dox.domain.exception.BusinessException
@@ -29,6 +35,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
+import java.util.UUID
 
 @RestController
 class BillingResourceImpl(
@@ -46,6 +53,12 @@ class BillingResourceImpl(
                     customerName = request.customerName,
                     customerCpfCnpj = request.customerCpfCnpj,
                     customerEmail = request.customerEmail,
+                    customerMobilePhone = request.customerMobilePhone,
+                    customerPostalCode = request.customerPostalCode,
+                    customerAddress = request.customerAddress,
+                    customerAddressNumber = request.customerAddressNumber,
+                    customerAddressComplement = request.customerAddressComplement,
+                    customerProvince = request.customerProvince,
                     creditCardToken = request.creditCardToken,
                 ),
             )
@@ -64,6 +77,12 @@ class BillingResourceImpl(
                     customerName = request.customerName,
                     customerCpfCnpj = request.customerCpfCnpj,
                     customerEmail = request.customerEmail,
+                    customerMobilePhone = request.customerMobilePhone,
+                    customerPostalCode = request.customerPostalCode,
+                    customerAddress = request.customerAddress,
+                    customerAddressNumber = request.customerAddressNumber,
+                    customerAddressComplement = request.customerAddressComplement,
+                    customerProvince = request.customerProvince,
                     creditCardToken = request.creditCardToken,
                 ),
             )
@@ -110,6 +129,48 @@ class BillingResourceImpl(
     override fun listInvoices(): ResponseEntity<List<InvoiceResponse>> {
         val tenantId = ContextHolder.getTenantIdOrThrow()
         return responseEntity(billingUseCase.listInvoices(tenantId).map { it.toResponse() })
+    }
+
+    override fun listPaymentMethods(): ResponseEntity<List<PaymentMethodCardResponse>> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        return responseEntity(billingUseCase.listPaymentMethods(tenantId).map { it.toResponse() })
+    }
+
+    override fun setDefaultPaymentMethod(id: UUID): ResponseEntity<PaymentMethodCardResponse> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        return responseEntity(billingUseCase.setDefaultPaymentMethod(tenantId, id).toResponse())
+    }
+
+    override fun deletePaymentMethod(id: UUID): ResponseEntity<Void> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        billingUseCase.deletePaymentMethod(tenantId, id)
+        return ResponseEntity.noContent().build()
+    }
+
+    override fun getCustomerProfile(): ResponseEntity<CustomerProfileResponse?> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        return responseEntity(billingUseCase.getCustomerProfile(tenantId)?.toResponse())
+    }
+
+    override fun updateCustomerProfile(request: UpdateCustomerProfileRequest): ResponseEntity<CustomerProfileResponse> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        val updated =
+            billingUseCase.updateCustomerProfile(
+                tenantId = tenantId,
+                command =
+                    UpdateCustomerProfileCommand(
+                        name = request.name,
+                        email = request.email,
+                        cpfCnpj = request.cpfCnpj,
+                        mobilePhone = request.mobilePhone,
+                        postalCode = request.postalCode,
+                        address = request.address,
+                        addressNumber = request.addressNumber,
+                        complement = request.complement,
+                        province = request.province,
+                    ),
+            )
+        return responseEntity(updated.toResponse())
     }
 
     override fun pricePreview(
@@ -191,6 +252,29 @@ class BillingResourceImpl(
             pixQrCode = pixQrCode,
             pixCopyPaste = pixCopyPaste,
             description = description,
+        )
+
+    private fun CustomerProfile.toResponse() =
+        CustomerProfileResponse(
+            name = name,
+            email = email,
+            cpfCnpj = cpfCnpj,
+            mobilePhone = mobilePhone,
+            postalCode = postalCode,
+            address = address,
+            addressNumber = addressNumber,
+            complement = complement,
+            province = province,
+        )
+
+    private fun PaymentMethodCard.toResponse() =
+        PaymentMethodCardResponse(
+            id = id,
+            brand = brand,
+            last4 = last4,
+            holderName = holderName,
+            isDefault = isDefault,
+            expiresAt = expiresAt,
         )
 
     private fun NfseInvoice.toResponse() =

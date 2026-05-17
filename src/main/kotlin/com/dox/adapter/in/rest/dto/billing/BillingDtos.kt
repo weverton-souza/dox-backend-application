@@ -22,6 +22,23 @@ data class SubscribeBundleRequest(
     val customerCpfCnpj: String,
     @field:Email
     val customerEmail: String? = null,
+    @field:NotBlank
+    @field:Size(min = 10, max = 20)
+    val customerMobilePhone: String,
+    @field:NotBlank
+    @field:Size(min = 8, max = 10)
+    val customerPostalCode: String,
+    @field:NotBlank
+    @field:Size(max = 255)
+    val customerAddress: String,
+    @field:NotBlank
+    @field:Size(max = 20)
+    val customerAddressNumber: String,
+    @field:Size(max = 255)
+    val customerAddressComplement: String? = null,
+    @field:NotBlank
+    @field:Size(max = 100)
+    val customerProvince: String,
     val creditCardToken: String? = null,
 )
 
@@ -39,6 +56,23 @@ data class SubscribeModulesRequest(
     val customerCpfCnpj: String,
     @field:Email
     val customerEmail: String? = null,
+    @field:NotBlank
+    @field:Size(min = 10, max = 20)
+    val customerMobilePhone: String,
+    @field:NotBlank
+    @field:Size(min = 8, max = 10)
+    val customerPostalCode: String,
+    @field:NotBlank
+    @field:Size(max = 255)
+    val customerAddress: String,
+    @field:NotBlank
+    @field:Size(max = 20)
+    val customerAddressNumber: String,
+    @field:Size(max = 255)
+    val customerAddressComplement: String? = null,
+    @field:NotBlank
+    @field:Size(max = 100)
+    val customerProvince: String,
     val creditCardToken: String? = null,
 )
 
@@ -80,6 +114,55 @@ data class PaymentResponse(
     val pixQrCode: String?,
     val pixCopyPaste: String?,
     val description: String?,
+)
+
+data class CustomerProfileResponse(
+    val name: String,
+    val email: String?,
+    val cpfCnpj: String,
+    val mobilePhone: String?,
+    val postalCode: String?,
+    val address: String?,
+    val addressNumber: String?,
+    val complement: String?,
+    val province: String?,
+)
+
+data class UpdateCustomerProfileRequest(
+    @field:NotBlank
+    @field:Size(max = 255)
+    val name: String,
+    @field:Email
+    val email: String? = null,
+    @field:NotBlank
+    @field:Size(max = 20)
+    val cpfCnpj: String,
+    @field:NotBlank
+    @field:Size(min = 10, max = 20)
+    val mobilePhone: String,
+    @field:NotBlank
+    @field:Size(min = 8, max = 10)
+    val postalCode: String,
+    @field:NotBlank
+    @field:Size(max = 255)
+    val address: String,
+    @field:NotBlank
+    @field:Size(max = 20)
+    val addressNumber: String,
+    @field:Size(max = 255)
+    val complement: String? = null,
+    @field:NotBlank
+    @field:Size(max = 100)
+    val province: String,
+)
+
+data class PaymentMethodCardResponse(
+    val id: UUID,
+    val brand: String,
+    val last4: String,
+    val holderName: String,
+    val isDefault: Boolean,
+    val expiresAt: LocalDate?,
 )
 
 data class InvoiceResponse(

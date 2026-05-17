@@ -11,7 +11,7 @@ import java.util.UUID
 class PaymentMethodCardPersistenceAdapter(
     private val repository: PaymentMethodCardJpaRepository,
 ) : PaymentMethodCardPersistencePort {
-    override fun findByTenantId(tenantId: UUID): List<PaymentMethodCard> = repository.findByTenantIdOrderByCreatedAtDesc(tenantId).map { it.toDomain() }
+    override fun findByTenantId(tenantId: UUID): List<PaymentMethodCard> = repository.findByTenantIdOrderByDisplayOrderAsc(tenantId).map { it.toDomain() }
 
     override fun findDefault(tenantId: UUID): PaymentMethodCard? = repository.findByTenantIdAndIsDefaultTrue(tenantId)?.toDomain()
 
@@ -30,8 +30,13 @@ class PaymentMethodCardPersistenceAdapter(
         entity.last4 = card.last4
         entity.holderName = card.holderName
         entity.isDefault = card.isDefault
+        entity.displayOrder = card.displayOrder
         entity.expiresAt = card.expiresAt
         return repository.save(entity).toDomain()
+    }
+
+    override fun clearDefault(tenantId: UUID) {
+        repository.clearDefaultForTenant(tenantId)
     }
 
     override fun delete(id: UUID) {
@@ -47,6 +52,7 @@ class PaymentMethodCardPersistenceAdapter(
             last4 = last4,
             holderName = holderName,
             isDefault = isDefault,
+            displayOrder = displayOrder,
             expiresAt = expiresAt,
             createdAt = createdAt,
             updatedAt = updatedAt,

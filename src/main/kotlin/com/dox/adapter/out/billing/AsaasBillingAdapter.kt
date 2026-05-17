@@ -1,5 +1,6 @@
 package com.dox.adapter.out.billing
 
+import com.dox.application.port.output.AsaasCustomerDetails
 import com.dox.application.port.output.AsaasCustomerResult
 import com.dox.application.port.output.AsaasPaymentSnapshot
 import com.dox.application.port.output.AsaasSubscriptionResult
@@ -9,13 +10,16 @@ import com.dox.application.port.output.CreateAsaasSubscriptionCommand
 import com.dox.application.port.output.CreateOneTimePaymentCommand
 import com.dox.application.port.output.TokenizeCardCommand
 import com.dox.application.port.output.TokenizedCardResult
+import com.dox.application.port.output.UpdateAsaasCustomerCommand
 import com.dox.application.port.output.UpdateAsaasSubscriptionCommand
 import com.dox.domain.billing.BillingType
 import com.dox.domain.exception.BusinessException
+import com.dox.extensions.sanitizeDocument
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -39,11 +43,17 @@ class AsaasBillingAdapter(
 
     override fun createCustomer(command: CreateAsaasCustomerCommand): AsaasCustomerResult {
         val body =
-            mapOf(
-                "name" to command.name,
-                "cpfCnpj" to command.cpfCnpj.filter { it.isDigit() },
-                "email" to command.email,
-            ).filterValues { it != null }
+            customerBody(
+                name = command.name,
+                cpfCnpj = command.cpfCnpj,
+                email = command.email,
+                mobilePhone = command.mobilePhone,
+                postalCode = command.postalCode,
+                address = command.address,
+                addressNumber = command.addressNumber,
+                complement = command.complement,
+                province = command.province,
+            )
         val response =
             client.post()
                 .uri("/customers")
@@ -53,6 +63,69 @@ class AsaasBillingAdapter(
         val id = response["id"] as? String ?: throw BusinessException("Asaas /customers sem id na resposta")
         return AsaasCustomerResult(asaasCustomerId = id)
     }
+
+    override fun getCustomer(asaasCustomerId: String): AsaasCustomerDetails {
+        val response =
+            client.get()
+                .uri("/customers/{id}", asaasCustomerId)
+                .retrieve()
+                .body(Map::class.java) ?: throw BusinessException("Asaas GET /customers/$asaasCustomerId retornou vazio")
+        return AsaasCustomerDetails(
+            asaasCustomerId = response["id"] as? String ?: asaasCustomerId,
+            name = (response["name"] as? String) ?: "",
+            email = response["email"] as? String,
+            cpfCnpj = (response["cpfCnpj"] as? String) ?: "",
+            mobilePhone = response["mobilePhone"] as? String,
+            postalCode = response["postalCode"] as? String,
+            address = response["address"] as? String,
+            addressNumber = response["addressNumber"] as? String,
+            complement = response["complement"] as? String,
+            province = response["province"] as? String,
+        )
+    }
+
+    override fun updateCustomer(command: UpdateAsaasCustomerCommand) {
+        val body =
+            customerBody(
+                name = command.name,
+                cpfCnpj = command.cpfCnpj,
+                email = command.email,
+                mobilePhone = command.mobilePhone,
+                postalCode = command.postalCode,
+                address = command.address,
+                addressNumber = command.addressNumber,
+                complement = command.complement,
+                province = command.province,
+            )
+        client.post()
+            .uri("/customers/{id}", command.asaasCustomerId)
+            .body(body)
+            .retrieve()
+            .body(Map::class.java) ?: throw BusinessException("Asaas update /customers/${command.asaasCustomerId} retornou vazio")
+    }
+
+    private fun customerBody(
+        name: String,
+        cpfCnpj: String,
+        email: String?,
+        mobilePhone: String?,
+        postalCode: String?,
+        address: String?,
+        addressNumber: String?,
+        complement: String?,
+        province: String?,
+    ): Map<String, String?> =
+        mapOf(
+            "name" to name,
+            "cpfCnpj" to cpfCnpj.sanitizeDocument(),
+            "email" to email,
+            "mobilePhone" to mobilePhone?.filter { it.isDigit() }?.takeIf { it.isNotBlank() },
+            "postalCode" to postalCode?.filter { it.isDigit() }?.takeIf { it.isNotBlank() },
+            "address" to address?.takeIf { it.isNotBlank() },
+            "addressNumber" to addressNumber?.takeIf { it.isNotBlank() },
+            "complement" to complement?.takeIf { it.isNotBlank() },
+            "province" to province?.takeIf { it.isNotBlank() },
+        ).filterValues { it != null }
 
     override fun createSubscription(command: CreateAsaasSubscriptionCommand): AsaasSubscriptionResult {
         val body =
@@ -142,7 +215,7 @@ class AsaasBillingAdapter(
                     mapOf(
                         "name" to command.holderInfo.name,
                         "email" to command.holderInfo.email,
-                        "cpfCnpj" to command.holderInfo.cpfCnpj.filter { it.isDigit() },
+                        "cpfCnpj" to command.holderInfo.cpfCnpj.sanitizeDocument(),
                         "postalCode" to command.holderInfo.postalCode.filter { it.isDigit() },
                         "addressNumber" to command.holderInfo.addressNumber,
                         "addressComplement" to command.holderInfo.addressComplement,
@@ -152,16 +225,43 @@ class AsaasBillingAdapter(
                 "remoteIp" to command.remoteIp,
             )
         val response =
-            client.post()
-                .uri("/creditCard/tokenize")
-                .body(body)
-                .retrieve()
-                .body(Map::class.java) ?: throw BusinessException("Asaas /creditCard/tokenize retornou vazio")
+            runCatching {
+                client.post()
+                    .uri("/creditCard/tokenize")
+                    .body(body)
+                    .retrieve()
+                    .body(Map::class.java)
+            }.getOrElse { throw mapAsaasTokenizeError(it) }
+                ?: throw BusinessException("Asaas /creditCard/tokenize retornou vazio")
         val token = response["creditCardToken"] as? String ?: throw BusinessException("Asaas tokenize sem creditCardToken")
         val brand = response["creditCardBrand"] as? String ?: "UNKNOWN"
         val last4 = (response["creditCardNumber"] as? String)?.takeLast(4) ?: ""
         return TokenizedCardResult(creditCardToken = token, brand = brand, last4 = last4)
     }
+
+    private fun mapAsaasTokenizeError(ex: Throwable): BusinessException {
+        if (ex !is HttpClientErrorException) return BusinessException("Não foi possível validar o cartão. Tente novamente em alguns instantes.")
+        val code = extractAsaasErrorCode(ex)
+        val message =
+            when (code) {
+                "invalid_creditCard" -> "Bandeira não suportada. Tente Visa, Mastercard, Amex, Elo, Diners ou Discover."
+                "invalid_creditCardNumber" -> "Número do cartão inválido. Verifique e tente novamente."
+                "invalid_creditCardCcv" -> "CCV inválido. Confira o código de segurança do cartão."
+                "invalid_creditCardExpiry" -> "Validade do cartão inválida ou expirada."
+                "invalid_holderInfo" -> "Dados do titular incompletos ou inválidos."
+                "invalid_creditCardHolderName" -> "Nome do titular inválido."
+                else -> "O cartão não pôde ser validado pela operadora. Tente outro cartão ou revise os dados."
+            }
+        return BusinessException(message)
+    }
+
+    private fun extractAsaasErrorCode(ex: HttpClientErrorException): String? =
+        runCatching {
+            @Suppress("UNCHECKED_CAST")
+            val body = ex.getResponseBodyAs(Map::class.java) as? Map<String, Any?>
+            val errors = body?.get("errors") as? List<Map<String, Any?>>
+            errors?.firstOrNull()?.get("code") as? String
+        }.getOrNull()
 
     private fun mapPaymentSnapshot(response: Map<*, *>): AsaasPaymentSnapshot {
         val id = response["id"] as? String ?: throw BusinessException("Asaas payment sem id")

@@ -12,6 +12,7 @@ data class PaymentMethodCard(
     val last4: String,
     val holderName: String,
     val isDefault: Boolean = false,
+    val displayOrder: Int = 0,
     val expiresAt: LocalDate? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null,

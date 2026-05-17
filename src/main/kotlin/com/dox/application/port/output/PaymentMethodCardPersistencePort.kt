@@ -10,5 +10,7 @@ interface PaymentMethodCardPersistencePort {
 
     fun save(card: PaymentMethodCard): PaymentMethodCard
 
+    fun clearDefault(tenantId: UUID)
+
     fun delete(id: UUID)
 }

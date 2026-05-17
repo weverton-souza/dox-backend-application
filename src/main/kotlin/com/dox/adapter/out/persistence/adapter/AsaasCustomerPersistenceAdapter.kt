@@ -20,6 +20,12 @@ class AsaasCustomerPersistenceAdapter(
                 cpfCnpj = customer.cpfCnpj
                 email = customer.email
                 name = customer.name
+                billingMobilePhone = customer.billingMobilePhone
+                billingPostalCode = customer.billingPostalCode
+                billingAddress = customer.billingAddress
+                billingAddressNumber = customer.billingAddressNumber
+                billingComplement = customer.billingComplement
+                billingProvince = customer.billingProvince
             } ?: AsaasCustomerJpaEntity(
                 id = customer.id,
                 tenantId = customer.tenantId,
@@ -27,6 +33,12 @@ class AsaasCustomerPersistenceAdapter(
                 cpfCnpj = customer.cpfCnpj,
                 email = customer.email,
                 name = customer.name,
+                billingMobilePhone = customer.billingMobilePhone,
+                billingPostalCode = customer.billingPostalCode,
+                billingAddress = customer.billingAddress,
+                billingAddressNumber = customer.billingAddressNumber,
+                billingComplement = customer.billingComplement,
+                billingProvince = customer.billingProvince,
             )
         return repository.save(entity).toDomain()
     }
@@ -39,6 +51,12 @@ class AsaasCustomerPersistenceAdapter(
             cpfCnpj = cpfCnpj,
             email = email,
             name = name,
+            billingMobilePhone = billingMobilePhone,
+            billingPostalCode = billingPostalCode,
+            billingAddress = billingAddress,
+            billingAddressNumber = billingAddressNumber,
+            billingComplement = billingComplement,
+            billingProvince = billingProvince,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )
