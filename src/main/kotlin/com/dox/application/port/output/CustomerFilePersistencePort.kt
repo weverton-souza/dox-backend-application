@@ -9,4 +9,6 @@ interface CustomerFilePersistencePort {
     fun findByCustomerId(customerId: UUID): List<CustomerFile>
 
     fun findById(id: UUID): CustomerFile?
+
+    fun softDelete(id: UUID)
 }
