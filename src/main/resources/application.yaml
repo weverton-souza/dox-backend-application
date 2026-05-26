@@ -14,6 +14,11 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 15MB
+      max-request-size: 15MB
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
@@ -66,6 +71,16 @@ dox:
     api-base-url: ${API_BASE_URL:http://localhost:8080}
     landing-url: ${LANDING_URL:http://localhost:3000}
     frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  storage:
+    enabled: ${DOX_STORAGE_ENABLED:true}
+    endpoint: ${DOX_STORAGE_ENDPOINT:http://localhost:9000}
+    region: ${DOX_STORAGE_REGION:us-east-1}
+    bucket: ${DOX_STORAGE_BUCKET:dev-dox-s3-bucket}
+    access-key: ${DOX_STORAGE_ACCESS_KEY:minioadmin}
+    secret-key: ${DOX_STORAGE_SECRET_KEY:minioadmin}
+    presigned-url-ttl-minutes: ${DOX_STORAGE_PRESIGNED_TTL_MINUTES:60}
+    max-file-size-mb: ${DOX_STORAGE_MAX_FILE_SIZE_MB:10}
+    allowed-mime-types: ${DOX_STORAGE_ALLOWED_MIME_TYPES:application/pdf,image/jpeg,image/png,image/webp}
 
 asaas:
   api-key: ${ASAAS_API_KEY:}

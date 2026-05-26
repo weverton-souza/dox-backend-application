@@ -17,6 +17,13 @@ class CustomerFilePersistenceAdapter(
 
     override fun findById(id: UUID): CustomerFile? = repository.findById(id).orElse(null)?.toDomain()
 
+    override fun softDelete(id: UUID) {
+        repository.findById(id).ifPresent { entity ->
+            entity.deleted = true
+            repository.save(entity)
+        }
+    }
+
     private fun CustomerFile.toEntity() =
         CustomerFileJpaEntity().apply {
             id = this@toEntity.id
