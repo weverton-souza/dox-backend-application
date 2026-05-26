@@ -27,6 +27,8 @@ class SectionPromptBuilder(
                 "name", "age", "education", "profession",
                 "chiefComplaint", "diagnosis", "medications", "referralDoctor",
                 "guardianName", "guardianRelationship",
+                "allergies", "activeDiagnoses", "medicationsList",
+                "anamnesisHistory", "familyHistory",
             )
     }
 
