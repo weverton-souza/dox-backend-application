@@ -95,6 +95,7 @@ VALUES (
 
     {"id":"tpl-adulto-s4-ch1","type":"chart","order":11,"parentId":"tpl-adulto-s4","data":{
       "title":"Gráfico: WAIS-III — Subtestes",
+      "templateId":"b1000001-0000-4000-8000-000000000001",
       "chartType":"bar",
       "displayMode":"separated",
       "series":[{"id":"wais-verb","label":"Subtestes Verbais","color":"#0984E3"},{"id":"wais-exec","label":"Subtestes de Execução","color":"#00B894"}],
