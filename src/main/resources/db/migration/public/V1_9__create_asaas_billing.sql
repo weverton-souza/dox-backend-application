@@ -5,6 +5,12 @@ CREATE TABLE asaas_customers (
     cpf_cnpj              VARCHAR(20)  NOT NULL,
     email                 VARCHAR(255),
     name                  VARCHAR(255) NOT NULL,
+    billing_mobile_phone  VARCHAR(20),
+    billing_postal_code   VARCHAR(10),
+    billing_address       VARCHAR(255),
+    billing_address_number VARCHAR(20),
+    billing_complement    VARCHAR(255),
+    billing_province      VARCHAR(100),
     created_at            TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at            TIMESTAMP    NOT NULL DEFAULT NOW()
 );
@@ -63,6 +69,7 @@ CREATE TABLE payment_methods_card (
     last4                       VARCHAR(4)   NOT NULL,
     holder_name                 VARCHAR(255) NOT NULL,
     is_default                  BOOLEAN      NOT NULL DEFAULT FALSE,
+    display_order               INT          NOT NULL DEFAULT 0,
     expires_at                  DATE,
     created_at                  TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at                  TIMESTAMP    NOT NULL DEFAULT NOW()

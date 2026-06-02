@@ -10,17 +10,23 @@ CREATE TABLE tenants (
 
 -- Users
 CREATE TABLE users (
-    id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    email              VARCHAR(255) NOT NULL UNIQUE,
-    name               VARCHAR(255) NOT NULL,
-    password_hash      VARCHAR(255) NOT NULL,
-    personal_tenant_id UUID REFERENCES tenants(id),
-    deleted            BOOLEAN   NOT NULL DEFAULT FALSE,
-    created_at         TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at         TIMESTAMP NOT NULL DEFAULT NOW()
+    id                                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email                               VARCHAR(255) NOT NULL UNIQUE,
+    name                                VARCHAR(255) NOT NULL,
+    password_hash                       VARCHAR(255) NOT NULL,
+    personal_tenant_id                  UUID REFERENCES tenants(id),
+    email_verified_at                   TIMESTAMP NULL,
+    email_verification_token            VARCHAR(255) NULL,
+    email_verification_token_expires_at TIMESTAMP NULL,
+    deleted                             BOOLEAN   NOT NULL DEFAULT FALSE,
+    created_at                          TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at                          TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_users_email ON users(email) WHERE deleted = false;
+CREATE UNIQUE INDEX idx_users_email_verification_token
+    ON users(email_verification_token)
+    WHERE email_verification_token IS NOT NULL;
 
 -- Refresh Tokens
 CREATE TABLE refresh_tokens (
