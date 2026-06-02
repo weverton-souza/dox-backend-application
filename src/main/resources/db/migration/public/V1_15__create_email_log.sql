@@ -8,6 +8,7 @@ CREATE TABLE public.email_log (
     status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING', 'SENT', 'FAILED', 'DELIVERED', 'BOUNCED', 'COMPLAINED', 'OPENED', 'CLICKED', 'SUPPRESSED')),
     error_message TEXT NULL,
     idempotency_key VARCHAR(256) NULL,
+    form_link_id UUID NULL,
     tags JSONB NOT NULL DEFAULT '{}'::jsonb,
     sent_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -19,3 +20,4 @@ CREATE INDEX idx_email_log_recipient ON public.email_log(recipient_email);
 CREATE INDEX idx_email_log_template ON public.email_log(template_id, sent_at DESC);
 CREATE INDEX idx_email_log_tenant ON public.email_log(tenant_id, sent_at DESC) WHERE tenant_id IS NOT NULL;
 CREATE INDEX idx_email_log_status ON public.email_log(status, sent_at DESC);
+CREATE INDEX idx_email_log_form_link ON public.email_log(form_link_id, sent_at DESC) WHERE form_link_id IS NOT NULL;

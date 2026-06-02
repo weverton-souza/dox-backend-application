@@ -33,6 +33,8 @@ CREATE TABLE form_responses (
     respondent_name     VARCHAR(255),
     status              VARCHAR(50)  NOT NULL DEFAULT 'EM_ANDAMENTO',
     answers             JSONB     NOT NULL DEFAULT '[]'::JSONB,
+    additional_evaluators JSONB   NOT NULL DEFAULT '[]'::jsonb,
+    page_durations_ms     JSONB   NOT NULL DEFAULT '{}'::jsonb,
     generated_report_id UUID REFERENCES reports(id) ON DELETE SET NULL,
     created_at          TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMP NOT NULL DEFAULT NOW()
@@ -53,6 +55,9 @@ CREATE TABLE form_links (
     created_by          UUID        NOT NULL,
     status              VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     expires_at          TIMESTAMP   NOT NULL,
+    first_viewed_at     TIMESTAMP   NULL,
+    manual_resend_count INTEGER     NOT NULL DEFAULT 0
+        CHECK (manual_resend_count >= 0 AND manual_resend_count <= 3),
     created_at          TIMESTAMP   NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMP   NOT NULL DEFAULT NOW()
 );
@@ -60,3 +65,4 @@ CREATE TABLE form_links (
 CREATE INDEX idx_form_links_status            ON form_links(status);
 CREATE INDEX idx_form_links_form_version      ON form_links(form_id, form_version_id);
 CREATE INDEX idx_form_links_customer_contact  ON form_links(customer_contact_id);
+CREATE INDEX idx_form_links_first_viewed_at   ON form_links(first_viewed_at) WHERE first_viewed_at IS NOT NULL;
