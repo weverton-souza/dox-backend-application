@@ -7,6 +7,7 @@ import java.util.UUID
 
 data class WorkspaceInfo(
     val tenantId: UUID,
+    val organizationId: UUID?,
     val name: String,
     val type: TenantType,
     val vertical: Vertical,
@@ -21,6 +22,7 @@ data class CreateOrganizationCommand(
 )
 
 data class InviteMemberCommand(
+    val actorUserId: UUID,
     val organizationId: UUID,
     val email: String,
     val role: MemberRole,

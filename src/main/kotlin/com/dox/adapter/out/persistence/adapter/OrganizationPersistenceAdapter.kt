@@ -49,6 +49,15 @@ class OrganizationPersistenceAdapter(
         userId: UUID,
     ): Boolean = memberJpaRepository.existsByOrganizationIdAndUserId(organizationId, userId)
 
+    override fun countMembers(organizationId: UUID): Int = memberJpaRepository.countByOrganizationId(organizationId).toInt()
+
+    override fun findByTenantId(tenantId: UUID): Organization? = organizationJpaRepository.findByTenantId(tenantId)?.toDomain()
+
+    override fun findMember(
+        organizationId: UUID,
+        userId: UUID,
+    ): OrganizationMember? = memberJpaRepository.findByOrganizationIdAndUserId(organizationId, userId)?.toDomain()
+
     private fun OrganizationJpaEntity.toDomain() =
         Organization(
             id = id,

@@ -23,6 +23,7 @@ class WorkspaceResourceImpl(
             workspaceUseCase.listWorkspaces(userId).map {
                 WorkspaceResponse(
                     tenantId = it.tenantId,
+                    organizationId = it.organizationId,
                     name = it.name,
                     type = it.type,
                     vertical = it.vertical,
@@ -46,6 +47,7 @@ class WorkspaceResourceImpl(
         return responseEntity(
             WorkspaceResponse(
                 tenantId = result.tenantId,
+                organizationId = result.organizationId,
                 name = result.name,
                 type = result.type,
                 vertical = result.vertical,
@@ -61,6 +63,7 @@ class WorkspaceResourceImpl(
     ): ResponseEntity<Void> {
         workspaceUseCase.inviteMember(
             InviteMemberCommand(
+                actorUserId = ContextHolder.getUserIdOrThrow(),
                 organizationId = organizationId,
                 email = request.email,
                 role = request.role,

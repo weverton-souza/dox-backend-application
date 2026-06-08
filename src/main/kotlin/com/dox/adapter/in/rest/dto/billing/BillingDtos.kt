@@ -1,6 +1,7 @@
 package com.dox.adapter.`in`.rest.dto.billing
 
 import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
@@ -79,6 +80,13 @@ data class SubscribeModulesRequest(
 data class AddOrRemoveModuleRequest(
     @field:NotBlank
     val moduleId: String,
+)
+
+data class AddAddonRequest(
+    @field:NotBlank
+    val addonId: String,
+    @field:Min(1)
+    val quantity: Int = 1,
 )
 
 data class CancelSubscriptionRequest(

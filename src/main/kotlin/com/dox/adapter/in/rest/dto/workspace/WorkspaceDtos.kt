@@ -10,6 +10,7 @@ import java.util.UUID
 
 data class WorkspaceResponse(
     val tenantId: UUID,
+    val organizationId: UUID?,
     val name: String,
     val type: TenantType,
     val vertical: Vertical,

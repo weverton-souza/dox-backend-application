@@ -19,4 +19,13 @@ interface OrganizationPersistencePort {
         organizationId: UUID,
         userId: UUID,
     ): Boolean
+
+    fun countMembers(organizationId: UUID): Int
+
+    fun findByTenantId(tenantId: UUID): Organization?
+
+    fun findMember(
+        organizationId: UUID,
+        userId: UUID,
+    ): OrganizationMember?
 }

@@ -13,4 +13,11 @@ interface OrganizationMemberJpaRepository : JpaRepository<OrganizationMemberJpaE
         organizationId: UUID,
         userId: UUID,
     ): Boolean
+
+    fun countByOrganizationId(organizationId: UUID): Long
+
+    fun findByOrganizationIdAndUserId(
+        organizationId: UUID,
+        userId: UUID,
+    ): OrganizationMemberJpaEntity?
 }
