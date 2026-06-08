@@ -1,5 +1,6 @@
 package com.dox.adapter.`in`.rest.impl
 
+import com.dox.adapter.`in`.rest.dto.billing.AddAddonRequest
 import com.dox.adapter.`in`.rest.dto.billing.AddOrRemoveModuleRequest
 import com.dox.adapter.`in`.rest.dto.billing.CancelSubscriptionRequest
 import com.dox.adapter.`in`.rest.dto.billing.CustomerProfileResponse
@@ -97,6 +98,16 @@ class BillingResourceImpl(
     override fun removeModule(request: AddOrRemoveModuleRequest): ResponseEntity<SubscriptionResponse> {
         val tenantId = ContextHolder.getTenantIdOrThrow()
         return responseEntity(billingUseCase.removeModule(tenantId, request.moduleId).toResponse())
+    }
+
+    override fun addAddon(request: AddAddonRequest): ResponseEntity<SubscriptionResponse> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        return responseEntity(billingUseCase.addAddon(tenantId, request.addonId, request.quantity).toResponse())
+    }
+
+    override fun removeAddon(request: AddAddonRequest): ResponseEntity<SubscriptionResponse> {
+        val tenantId = ContextHolder.getTenantIdOrThrow()
+        return responseEntity(billingUseCase.removeAddon(tenantId, request.addonId, request.quantity).toResponse())
     }
 
     override fun cancel(request: CancelSubscriptionRequest?): ResponseEntity<SubscriptionResponse> {

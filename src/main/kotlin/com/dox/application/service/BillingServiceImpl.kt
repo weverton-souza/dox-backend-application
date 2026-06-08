@@ -11,19 +11,23 @@ import com.dox.application.port.input.SubscribeModulesCommand
 import com.dox.application.port.input.TokenizeCreditCardCommand
 import com.dox.application.port.input.TokenizedCard
 import com.dox.application.port.input.UpdateCustomerProfileCommand
+import com.dox.application.port.output.AddonPersistencePort
 import com.dox.application.port.output.AsaasCustomerPersistencePort
 import com.dox.application.port.output.BillingPort
 import com.dox.application.port.output.BundlePricePersistencePort
 import com.dox.application.port.output.CreateAsaasCustomerCommand
 import com.dox.application.port.output.CreateAsaasSubscriptionCommand
 import com.dox.application.port.output.NfseInvoicePersistencePort
+import com.dox.application.port.output.OrganizationPersistencePort
 import com.dox.application.port.output.PaymentMethodCardPersistencePort
 import com.dox.application.port.output.PaymentPersistencePort
 import com.dox.application.port.output.SubscriptionPersistencePort
+import com.dox.application.port.output.TenantAddonPersistencePort
 import com.dox.application.port.output.TokenizeCardCommand
 import com.dox.application.port.output.TokenizeCardHolderInfo
 import com.dox.application.port.output.UpdateAsaasCustomerCommand
 import com.dox.application.port.output.UpdateAsaasSubscriptionCommand
+import com.dox.domain.billing.AddonType
 import com.dox.domain.billing.AsaasCustomer
 import com.dox.domain.billing.BillingCalculator
 import com.dox.domain.billing.BillingCycle
@@ -38,9 +42,13 @@ import com.dox.domain.billing.Subscription
 import com.dox.domain.billing.SubscriptionEvent
 import com.dox.domain.billing.SubscriptionStateMachine
 import com.dox.domain.billing.SubscriptionStatus
+import com.dox.domain.billing.TenantAddon
+import com.dox.domain.enum.MemberRole
+import com.dox.domain.exception.AccessDeniedException
 import com.dox.domain.exception.BusinessException
 import com.dox.domain.exception.ResourceNotFoundException
 import com.dox.extensions.sanitizeDocument
+import com.dox.shared.ContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -58,6 +66,9 @@ class BillingServiceImpl(
     private val bundleUseCase: BundleUseCase,
     private val bundlePricePort: BundlePricePersistencePort,
     private val moduleAccessUseCase: ModuleAccessUseCase,
+    private val addonPersistencePort: AddonPersistencePort,
+    private val tenantAddonPort: TenantAddonPersistencePort,
+    private val organizationPersistencePort: OrganizationPersistencePort,
 ) : BillingUseCase {
     @Transactional
     override fun subscribeBundle(command: SubscribeBundleCommand): Subscription {
@@ -164,6 +175,119 @@ class BillingServiceImpl(
                     subscription.asaasSubscriptionId
                         ?: throw BusinessException("Subscription sem id Asaas"),
                 newValueCents = newValue,
+            ),
+        )
+        return subscriptionPort.save(subscription.copy(valueCents = newValue))
+    }
+
+    @Transactional
+    override fun addAddon(
+        tenantId: UUID,
+        addonId: String,
+        quantity: Int,
+    ): Subscription {
+        if (quantity < 1) throw BusinessException("Quantidade deve ser pelo menos 1")
+        requireOrgOwner(tenantId)
+        val subscription = requireActiveSubscription(tenantId)
+        val addon =
+            addonPersistencePort.findById(addonId)
+                ?: throw ResourceNotFoundException("Add-on", addonId)
+        if (!addon.active) throw BusinessException("Add-on '$addonId' não está disponível")
+        val unitPrice =
+            addon.priceUnitCents
+                ?: throw BusinessException("Add-on '$addonId' não é cobrado por unidade")
+        val bundleId = subscription.bundlePriceId?.let { bundlePricePort.findById(it)?.bundleId }
+        if (addon.availableForBundles.isNotEmpty() && bundleId !in addon.availableForBundles) {
+            throw BusinessException("O add-on '$addonId' não está disponível para o seu plano")
+        }
+
+        val existing = tenantAddonPort.findByTenantAndAddon(tenantId, addonId)
+        val newQuantity = if (existing != null && existing.canceledAt == null) existing.quantity + quantity else quantity
+        val basePrice = unitPrice * newQuantity
+        tenantAddonPort.save(
+            existing?.copy(
+                quantity = newQuantity,
+                canceledAt = null,
+                basePriceCents = basePrice,
+                finalPriceCents = 0,
+            ) ?: TenantAddon(
+                tenantId = tenantId,
+                addonId = addonId,
+                quantity = newQuantity,
+                activatedAt = LocalDateTime.now(),
+                basePriceCents = basePrice,
+                finalPriceCents = 0,
+            ),
+        )
+
+        val newValue = subscription.valueCents + unitPrice * quantity * subscription.billingCycle.months
+        chargeProration(subscription, unitPrice * quantity, "Assento adicional")
+        billingPort.updateSubscription(
+            UpdateAsaasSubscriptionCommand(
+                asaasSubscriptionId =
+                    subscription.asaasSubscriptionId
+                        ?: throw BusinessException("Subscription sem id Asaas"),
+                newValueCents = newValue,
+                updatePendingPayments = true,
+            ),
+        )
+        return subscriptionPort.save(subscription.copy(valueCents = newValue))
+    }
+
+    @Transactional
+    override fun removeAddon(
+        tenantId: UUID,
+        addonId: String,
+        quantity: Int,
+    ): Subscription {
+        if (quantity < 1) throw BusinessException("Quantidade deve ser pelo menos 1")
+        requireOrgOwner(tenantId)
+        val subscription = requireActiveSubscription(tenantId)
+        val addon =
+            addonPersistencePort.findById(addonId)
+                ?: throw ResourceNotFoundException("Add-on", addonId)
+        val unitPrice =
+            addon.priceUnitCents
+                ?: throw BusinessException("Add-on '$addonId' não é cobrado por unidade")
+        val existing = tenantAddonPort.findByTenantAndAddon(tenantId, addonId)
+        if (existing == null || existing.canceledAt != null || existing.quantity < 1) {
+            throw BusinessException("Não há '$addonId' ativo para remover")
+        }
+        val removeQty = quantity.coerceAtMost(existing.quantity)
+        val newQuantity = existing.quantity - removeQty
+
+        if (addon.type == AddonType.SEAT_QUOTA) {
+            val org = organizationPersistencePort.findByTenantId(tenantId)
+            if (org != null) {
+                val bundleSeats =
+                    subscription.bundlePriceId?.let { bundlePricePort.findById(it)?.seatsIncluded } ?: 1
+                val members = organizationPersistencePort.countMembers(org.id)
+                if (bundleSeats + newQuantity < members) {
+                    throw BusinessException(
+                        "Não é possível reduzir assentos: a organização tem $members membros. Remova profissionais antes.",
+                    )
+                }
+            }
+        }
+
+        tenantAddonPort.save(
+            existing.copy(
+                quantity = newQuantity,
+                canceledAt = if (newQuantity == 0) LocalDateTime.now() else null,
+                basePriceCents = unitPrice * newQuantity,
+                finalPriceCents = 0,
+            ),
+        )
+
+        val newValue =
+            (subscription.valueCents - unitPrice * removeQty * subscription.billingCycle.months).coerceAtLeast(0)
+        billingPort.updateSubscription(
+            UpdateAsaasSubscriptionCommand(
+                asaasSubscriptionId =
+                    subscription.asaasSubscriptionId
+                        ?: throw BusinessException("Subscription sem id Asaas"),
+                newValueCents = newValue,
+                updatePendingPayments = true,
             ),
         )
         return subscriptionPort.save(subscription.copy(valueCents = newValue))
@@ -608,16 +732,30 @@ class BillingServiceImpl(
         return subscription
     }
 
+    private fun requireOrgOwner(tenantId: UUID) {
+        val org = organizationPersistencePort.findByTenantId(tenantId) ?: return
+        val member = organizationPersistencePort.findMember(org.id, ContextHolder.getUserIdOrThrow())
+        if (member?.role != MemberRole.OWNER) {
+            throw AccessDeniedException("Apenas o OWNER da organização pode gerenciar assentos")
+        }
+    }
+
     private fun chargeProrationIfNeeded(
         subscription: Subscription,
         module: Module,
+    ) = chargeProration(subscription, module.basePriceMonthlyCents, module.displayName)
+
+    private fun chargeProration(
+        subscription: Subscription,
+        monthlyAmountCents: Int,
+        label: String,
     ) {
         val periodEnd = subscription.currentPeriodEnd ?: return
         val today = LocalDate.now()
         val end = periodEnd.toLocalDate()
         val daysRemaining = java.time.temporal.ChronoUnit.DAYS.between(today, end).toInt()
         if (daysRemaining <= 0) return
-        val prorationCents = BillingCalculator.computeProration(module.basePriceMonthlyCents, daysRemaining)
+        val prorationCents = BillingCalculator.computeProration(monthlyAmountCents, daysRemaining)
         if (prorationCents <= 0) return
         val asaasCustomer =
             asaasCustomerPort.findByTenantId(subscription.tenantId)
@@ -628,7 +766,7 @@ class BillingServiceImpl(
                 billingType = subscription.billingType,
                 valueCents = prorationCents,
                 dueDate = today.plusDays(7),
-                description = "Proporcional ${module.displayName} ($daysRemaining dias)",
+                description = "Proporcional $label ($daysRemaining dias)",
             ),
         )
     }

@@ -1,5 +1,6 @@
 package com.dox.adapter.`in`.rest.resource
 
+import com.dox.adapter.`in`.rest.dto.billing.AddAddonRequest
 import com.dox.adapter.`in`.rest.dto.billing.AddOrRemoveModuleRequest
 import com.dox.adapter.`in`.rest.dto.billing.CancelSubscriptionRequest
 import com.dox.adapter.`in`.rest.dto.billing.CustomerProfileResponse
@@ -55,6 +56,18 @@ interface BillingResource : BaseResource {
     @PatchMapping("/subscription/modules/remove")
     fun removeModule(
         @Valid @RequestBody request: AddOrRemoveModuleRequest,
+    ): ResponseEntity<SubscriptionResponse>
+
+    @Operation(summary = "Adicionar assentos/add-on à subscription ativa (com proration)")
+    @PatchMapping("/subscription/addons/add")
+    fun addAddon(
+        @Valid @RequestBody request: AddAddonRequest,
+    ): ResponseEntity<SubscriptionResponse>
+
+    @Operation(summary = "Remover assentos/add-on da subscription ativa")
+    @PatchMapping("/subscription/addons/remove")
+    fun removeAddon(
+        @Valid @RequestBody request: AddAddonRequest,
     ): ResponseEntity<SubscriptionResponse>
 
     @Operation(summary = "Cancelar subscription (mantém acesso até fim do período)")

@@ -151,15 +151,14 @@ class AuthServiceImpl(
         refreshTokenPersistencePort.deleteByUserId(userId)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     override fun switchTenant(command: SwitchTenantCommand): AuthResult {
         val user =
             userPersistencePort.findById(command.userId)
                 ?: throw ResourceNotFoundException("Usuário", command.userId.toString())
 
-        val tenant =
-            tenantPersistencePort.findById(command.tenantId)
-                ?: throw ResourceNotFoundException("Tenant", command.tenantId.toString())
+        tenantPersistencePort.findById(command.tenantId)
+            ?: throw ResourceNotFoundException("Tenant", command.tenantId.toString())
 
         val hasAccess =
             user.personalTenantId == command.tenantId ||
@@ -173,19 +172,7 @@ class AuthServiceImpl(
             throw AccessDeniedException("Sem acesso a este workspace")
         }
 
-        val accessToken = authTokenPort.generateAccessToken(user.id, user.email, command.tenantId)
-
-        return AuthResult(
-            accessToken = accessToken,
-            refreshToken = "",
-            userId = user.id,
-            email = user.email,
-            name = user.name,
-            tenantId = command.tenantId,
-            vertical = tenant.vertical,
-            emailVerified = user.emailVerifiedAt != null,
-            customerLabel = customerLabelService.resolveForTenant(command.tenantId, tenant.vertical),
-        )
+        return generateAuthResult(user, command.tenantId)
     }
 
     @Transactional

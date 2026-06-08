@@ -113,6 +113,18 @@ interface BillingUseCase {
         moduleId: String,
     ): Subscription
 
+    fun addAddon(
+        tenantId: UUID,
+        addonId: String,
+        quantity: Int,
+    ): Subscription
+
+    fun removeAddon(
+        tenantId: UUID,
+        addonId: String,
+        quantity: Int,
+    ): Subscription
+
     fun cancelSubscription(command: CancelSubscriptionCommand): Subscription
 
     fun reactivateSubscription(tenantId: UUID): Subscription
